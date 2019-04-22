@@ -16,7 +16,7 @@
 		<exception-type>java.lang.Exception</exception-type>
 		<location>/error.jsp</location>
 	</error-page>
-	
+
 	<filter>
 		<filter-name>SingleSignOutFilter</filter-name>
 		<filter-class>org.jasig.cas.client.session.SingleSignOutFilter</filter-class>
@@ -29,7 +29,7 @@
 		<filter-name>SingleSignOutFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
+
 	<filter>
 		<filter-name>AuthenticationFilter</filter-name>
 		<filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
@@ -39,26 +39,26 @@
 		</init-param>
 		<init-param>
 			<param-name>serverName</param-name>
-			<param-value>https://localhost:8443/cropcert/</param-value>
+			<param-value>https://localhost:8443/traceability/</param-value>
 		</init-param>
 		<init-param>
 			<param-name>gateway</param-name>
 			<param-value>false</param-value>
 		</init-param>
-<!-- 		<init-param>
+		<init-param>
 			<param-name>ignorePattern</param-name>
 			<param-value>/rest/v1/notification/*|/rest/v1/external/*</param-value>
 		</init-param>
 		<init-param>
 			<param-name>ignoreUrlPatternType</param-name>
 			<param-value>REGEX</param-value>
-		</init-param> -->
+		</init-param>
 	</filter>
 	<filter-mapping>
 		<filter-name>AuthenticationFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
+
 	<filter>
 		<filter-name>TicketValidationFilter</filter-name>
 		<filter-class>org.jasig.cas.client.validation.Cas30ProxyReceivingTicketValidationFilter</filter-class>
@@ -68,7 +68,7 @@
 		</init-param>
 		<init-param>
 			<param-name>serverName</param-name>
-			<param-value>https://localhost:8443/cropcert/</param-value>
+			<param-value>https://localhost:8443/traceability/</param-value>
 		</init-param>
 		<init-param>
 			<param-name>artifactParameterName</param-name>
@@ -83,7 +83,7 @@
 		<filter-name>TicketValidationFilter</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
-	
+
 	<filter>
 		<filter-name>RequestWrapperFilter</filter-name>
 		<filter-class>org.jasig.cas.client.util.HttpServletRequestWrapperFilter</filter-class>

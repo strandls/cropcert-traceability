@@ -41,15 +41,15 @@ public class Collection implements Serializable{
 	@Column (name = "quantity", nullable=false)
 	private float quantity;
 	
+	@Column (name = "available_quantity")
+	private float availableQuantity;
+	
 	@Column (name = "date")
 	private Date date;
 	
 	@Column (name = "timestamp")
 	private Timestamp timestamp;
 	
-	@Column (name = "batch_id")
-	private Long batchId;
-
 	public Long getCollectionId() {
 		return collectionId;
 	}
@@ -82,6 +82,14 @@ public class Collection implements Serializable{
 		this.quantity = quantity;
 	}
 
+	public float getAvailableQuantity() {
+		return availableQuantity;
+	}
+	
+	public void setAvailableQuantity(float availableQuantity) {
+		this.availableQuantity = availableQuantity;
+	}
+
 	public Date getDate() {
 		return date;
 	}
@@ -98,11 +106,4 @@ public class Collection implements Serializable{
 		this.timestamp = timestamp;
 	}
 
-	public Long getBatchId() {
-		return batchId;
-	}
-
-	public void setBatchId(Long batchId) {
-		this.batchId = batchId;
-	}
 }

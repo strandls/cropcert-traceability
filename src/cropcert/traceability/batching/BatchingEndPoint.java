@@ -1,4 +1,4 @@
-package cropcert.traceability.batch;
+package cropcert.traceability.batching;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,21 +16,20 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.hibernate.exception.ConstraintViolationException;
-import org.json.JSONException;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
-@Path("batch")
-public class BatchProductionEndPoint {
+@Path("batching")
+public class BatchingEndPoint {
 
 	
-	private BatchProductionService batchProductionService;
+	private BatchingService batchingService;
 	
 	@Inject
-	public BatchProductionEndPoint(BatchProductionService batchProductionService) {
-		this.batchProductionService = batchProductionService;
+	public BatchingEndPoint(BatchingService batchProductionService) {
+		this.batchingService = batchProductionService;
 	}
 	
 	@Path("{id}")
@@ -38,20 +37,20 @@ public class BatchProductionEndPoint {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response find(@PathParam("id") Long id) {
-		BatchProduction batchProduction = batchProductionService.findById(id);
-		return Response.status(Status.CREATED).entity(batchProduction).build();
+		Batching batching = batchingService.findById(id);
+		return Response.status(Status.CREATED).entity(batching).build();
 	}
 	
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<BatchProduction> findAll(
+	public List<Batching> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		if(limit==-1 || offset ==-1)
-			return batchProductionService.findAll();
+			return batchingService.findAll();
 		else
-			return batchProductionService.findAll(limit, offset);
+			return batchingService.findAll(limit, offset);
 	}
 	
 	@POST
@@ -59,8 +58,8 @@ public class BatchProductionEndPoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response save(String  jsonString) {
 		try {
-			BatchProduction batchProduction = batchProductionService.save(jsonString);
-			return Response.status(Status.CREATED).entity(batchProduction).build();
+			Batching batching = batchingService.save(jsonString);
+			return Response.status(Status.CREATED).entity(batching).build();
 		} catch(ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
 		}
@@ -71,9 +70,6 @@ public class BatchProductionEndPoint {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
