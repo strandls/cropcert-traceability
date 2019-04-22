@@ -22,6 +22,7 @@ public class CollectionService extends AbstractService<Collection>{
 
 	public Collection save(String jsonString) throws JsonParseException, JsonMappingException, IOException {
 		Collection collection = objectMappper.readValue(jsonString, Collection.class);
+		collection.setAvailableQuantity(collection.getQuantity());
 		return save(collection);
 	}
 }
