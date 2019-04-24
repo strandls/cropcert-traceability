@@ -23,6 +23,7 @@ import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 import cropcert.traceability.batch.BatchProductionModule;
+import cropcert.traceability.batching.BatchingModule;
 import cropcert.traceability.collection.CollectionModule;
 
 public class TraceabilityServletContextListener extends GuiceServletContextListener {
@@ -53,7 +54,7 @@ public class TraceabilityServletContextListener extends GuiceServletContextListe
 				
 				serve("/*").with(GuiceContainer.class);
 			}
-		}, new CollectionModule(), new BatchProductionModule());
+		}, new CollectionModule(), new BatchProductionModule(), new BatchingModule());
 		
 		return injector; 
 	}

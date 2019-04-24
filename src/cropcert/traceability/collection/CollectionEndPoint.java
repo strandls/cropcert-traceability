@@ -1,9 +1,7 @@
 package cropcert.traceability.collection;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
@@ -26,13 +24,6 @@ import com.google.inject.Inject;
 @Path("collection")
 public class CollectionEndPoint {
 
-	private static final Map<String, String> pathProperties = new HashMap<String, String>();
-	
-	static {
-		pathProperties.put("farmer", "membershipId");
-		pathProperties.put("cc", "ccCode");
-	}
-	
 	private CollectionService collectionService;
 	
 	@Inject
@@ -61,18 +52,25 @@ public class CollectionEndPoint {
 			return collectionService.findAll(limit, offset);
 	}
 	
+	@Path("available")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Collection> getAvailable(
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		return collectionService.getByPropertyWithCondtion("availableQuantity", 0.0f, "!=", limit, offset);
+	}
+	
 	@Path("farmer/{id}")
+	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Collection> getByFarmer(
 			@DefaultValue("") @PathParam("id") String value,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 
-		String property = "farmer";
-		if(value != null && 
-				(!"".equals(value)) && 
-				pathProperties.containsKey(property)) {
-			String propertyName = pathProperties.get(property);
+		String propertyName = "membershipId";
+		if(value != null && (!"".equals(value))) {
 			return collectionService.getByPropertyWithCondtion(propertyName, value, "=", limit, offset);
 		}
 		return null;
