@@ -63,6 +63,16 @@ public class BatchingEndPoint {
 		return batchingService.getByPropertyWithCondtion("collectionId", collectionId, "=", limit, offset);
 	}
 	
+	@Path("batch/{batch_id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Batching> getByBatch(
+			@PathParam("batch_id") Long batchId,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		return batchingService.getByPropertyWithCondtion("batchId", batchId, "=", limit, offset);
+	}
+	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
