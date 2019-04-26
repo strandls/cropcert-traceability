@@ -1,6 +1,8 @@
 package cropcert.traceability.batch;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -51,14 +53,26 @@ public class BatchProductionService extends AbstractService<BatchProduction>{
 		}
 		batchProduction.setQuantity(quantity);
 		batchProduction.setAvailableQuantity(quantity);
+		
+		// update the transfer time stamp
+		Timestamp transferTimestamp = batchProduction.getTransferTimestamp();
+		if (transferTimestamp == null) {
+			transferTimestamp = new Timestamp(new Date().getTime());
+			batchProduction.setTransferTimestamp(transferTimestamp);
+		}
 
 		// save the batch production for getting the batch id
 		batchProduction = save(batchProduction);
 		
 		// Add batch id to all batching and save it to database.
 		Long batchId = batchProduction.getBatchId();
+		String quality = batchProduction.getQuality();
 		for(Batching batching : batchings) {
 			batching.setBatchId(batchId);
+			batching.setTransferTimestamp(transferTimestamp);
+			if (batching.getQuality()==null || "".equals(batching.getQuality())) {
+				batching.setQuality(quality);
+			}
 			batchingService.save(batching);
 		}
 		
