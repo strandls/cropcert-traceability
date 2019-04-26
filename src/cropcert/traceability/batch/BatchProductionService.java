@@ -14,6 +14,8 @@ import com.google.inject.Inject;
 
 import cropcert.traceability.batching.Batching;
 import cropcert.traceability.batching.BatchingService;
+import cropcert.traceability.collection.Collection;
+import cropcert.traceability.collection.CollectionService;
 import cropcert.traceability.common.AbstractService;
 
 
@@ -24,6 +26,9 @@ public class BatchProductionService extends AbstractService<BatchProduction>{
 	
 	@Inject
 	private BatchingService batchingService;
+	
+	@Inject
+	private CollectionService collectionService;
 	
 	@Inject
 	public BatchProductionService(BatchProductionDao dao) {
@@ -56,6 +61,16 @@ public class BatchProductionService extends AbstractService<BatchProduction>{
 			batching.setBatchId(batchId);
 			batchingService.save(batching);
 		}
+		
+		// Update the collections quantity based on current batching.
+		for(Batching batching : batchings) {
+			Long collectionId = batching.getCollectionId();
+			Collection collection = collectionService.findById(collectionId);
+			float availaleQuantity = collection.getAvailableQuantity() - batching.getQuantity();
+			collection.setAvailableQuantity(availaleQuantity);
+			collectionService.update(collection);
+		}
+		
 		return batchProduction;
 	}
 	
