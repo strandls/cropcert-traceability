@@ -50,6 +50,12 @@ public class Collection implements Serializable{
 	@Column (name = "timestamp")
 	private Timestamp timestamp;
 	
+	@Column (name = "quality")
+	private String quality;
+	
+	@Column (name = "note")
+	private String note;
+	
 	public Long getCollectionId() {
 		return collectionId;
 	}
@@ -104,6 +110,22 @@ public class Collection implements Serializable{
 
 	public void setTimestamp(Timestamp timestamp) {
 		this.timestamp = timestamp;
+	}
+
+	public String getQuality() {
+		return quality;
+	}
+
+	public void setQuality(String quality) {
+		this.quality = quality;
+	}
+
+	public String getNote() {
+		return note;
+	}
+
+	public void setNote(String note) {
+		this.note = note;
 	}
 
 }
