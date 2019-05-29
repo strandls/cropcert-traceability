@@ -1,4 +1,4 @@
-package cropcert.traceability.batching;
+package cropcert.traceability.lot;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,20 +16,21 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.hibernate.exception.ConstraintViolationException;
+import org.json.JSONException;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
-@Path("batching")
-public class BatchingEndPoint {
+@Path("lot")
+public class LotEndPoint {
 
 	
-	private BatchingService batchingService;
+	private LotService lotService;
 	
 	@Inject
-	public BatchingEndPoint(BatchingService batchProductionService) {
-		this.batchingService = batchProductionService;
+	public LotEndPoint(LotService batchProductionService) {
+		this.lotService = batchProductionService;
 	}
 	
 	@Path("{id}")
@@ -37,40 +38,20 @@ public class BatchingEndPoint {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response find(@PathParam("id") Long id) {
-		Batching batching = batchingService.findById(id);
-		return Response.status(Status.CREATED).entity(batching).build();
+		Lot lot = lotService.findById(id);
+		return Response.status(Status.CREATED).entity(lot).build();
 	}
 	
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Batching> findAll(
+	public List<Lot> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		if(limit==-1 || offset ==-1)
-			return batchingService.findAll();
+			return lotService.findAll();
 		else
-			return batchingService.findAll(limit, offset);
-	}
-	
-	@Path("collection/{collection_id}")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Batching> getByCollection(
-			@PathParam("collection_id") Long collectionId,
-			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return batchingService.getByPropertyWithCondtion("collectionId", collectionId, "=", limit, offset);
-	}
-	
-	@Path("batch/{batch_id}")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Batching> getByBatch(
-			@PathParam("batch_id") Long batchId,
-			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return batchingService.getByPropertyWithCondtion("batchId", batchId, "=", limit, offset);
+			return lotService.findAll(limit, offset);
 	}
 	
 	@POST
@@ -78,8 +59,8 @@ public class BatchingEndPoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response save(String  jsonString) {
 		try {
-			Batching batching = batchingService.save(jsonString);
-			return Response.status(Status.CREATED).entity(batching).build();
+			Lot lot = lotService.save(jsonString);
+			return Response.status(Status.CREATED).entity(lot).build();
 		} catch(ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
 		}
@@ -90,6 +71,9 @@ public class BatchingEndPoint {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

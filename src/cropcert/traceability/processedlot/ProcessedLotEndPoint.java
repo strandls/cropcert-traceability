@@ -1,4 +1,4 @@
-package cropcert.traceability.collection;
+package cropcert.traceability.processedlot;
 
 import java.io.IOException;
 import java.util.List;
@@ -16,19 +16,21 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.hibernate.exception.ConstraintViolationException;
+import org.json.JSONException;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
-@Path("collection")
-public class CollectionEndPoint {
+@Path("processedlot")
+public class ProcessedLotEndPoint {
 
-	private CollectionService collectionService;
+	
+	private ProcessedLotService processedLotService;
 	
 	@Inject
-	public CollectionEndPoint(CollectionService collectionService) {
-		this.collectionService = collectionService;
+	public ProcessedLotEndPoint(ProcessedLotService batchProductionService) {
+		this.processedLotService = batchProductionService;
 	}
 	
 	@Path("{id}")
@@ -36,44 +38,20 @@ public class CollectionEndPoint {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response find(@PathParam("id") Long id) {
-		Collection user = collectionService.findById(id);
-		return Response.status(Status.CREATED).entity(user).build();
+		ProcessedLot processedLot = processedLotService.findById(id);
+		return Response.status(Status.CREATED).entity(processedLot).build();
 	}
 	
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Collection> findAll(			
+	public List<ProcessedLot> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		if(limit==-1 || offset ==-1)
-			return collectionService.findAll();
+			return processedLotService.findAll();
 		else
-			return collectionService.findAll(limit, offset);
-	}
-	
-	@Path("available")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Collection> getAvailable(
-			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return collectionService.getByPropertyWithCondtion("availableQuantity", 0.0f, "!=", limit, offset);
-	}
-	
-	@Path("farmer/{id}")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Collection> getByFarmer(
-			@DefaultValue("") @PathParam("id") String value,
-			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-
-		String propertyName = "membershipId";
-		if(value != null && (!"".equals(value))) {
-			return collectionService.getByPropertyWithCondtion(propertyName, value, "=", limit, offset);
-		}
-		return null;
+			return processedLotService.findAll(limit, offset);
 	}
 	
 	@POST
@@ -81,8 +59,8 @@ public class CollectionEndPoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response save(String  jsonString) {
 		try {
-			Collection collection = collectionService.save(jsonString);
-			return Response.status(Status.CREATED).entity(collection).build();
+			ProcessedLot processedLot = processedLotService.save(jsonString);
+			return Response.status(Status.CREATED).entity(processedLot).build();
 		} catch(ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
 		}
@@ -93,6 +71,9 @@ public class CollectionEndPoint {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

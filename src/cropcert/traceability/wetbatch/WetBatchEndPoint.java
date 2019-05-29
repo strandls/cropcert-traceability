@@ -1,4 +1,4 @@
-package cropcert.traceability.batch;
+package cropcert.traceability.wetbatch;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,15 +22,15 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
-@Path("batch")
-public class BatchProductionEndPoint {
+@Path("wetbatch")
+public class WetBatchEndPoint {
 
 	
-	private BatchProductionService batchProductionService;
+	private WetBatchService wetbatchService;
 	
 	@Inject
-	public BatchProductionEndPoint(BatchProductionService batchProductionService) {
-		this.batchProductionService = batchProductionService;
+	public WetBatchEndPoint(WetBatchService batchProductionService) {
+		this.wetbatchService = batchProductionService;
 	}
 	
 	@Path("{id}")
@@ -38,20 +38,20 @@ public class BatchProductionEndPoint {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response find(@PathParam("id") Long id) {
-		BatchProduction batchProduction = batchProductionService.findById(id);
-		return Response.status(Status.CREATED).entity(batchProduction).build();
+		WetBatch wetBatch = wetbatchService.findById(id);
+		return Response.status(Status.CREATED).entity(wetBatch).build();
 	}
 	
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<BatchProduction> findAll(
+	public List<WetBatch> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		if(limit==-1 || offset ==-1)
-			return batchProductionService.findAll();
+			return wetbatchService.findAll();
 		else
-			return batchProductionService.findAll(limit, offset);
+			return wetbatchService.findAll(limit, offset);
 	}
 	
 	@POST
@@ -59,8 +59,8 @@ public class BatchProductionEndPoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response save(String  jsonString) {
 		try {
-			BatchProduction batchProduction = batchProductionService.save(jsonString);
-			return Response.status(Status.CREATED).entity(batchProduction).build();
+			WetBatch wetBatch = wetbatchService.save(jsonString);
+			return Response.status(Status.CREATED).entity(wetBatch).build();
 		} catch(ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
 		}

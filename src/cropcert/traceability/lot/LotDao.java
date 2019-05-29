@@ -1,4 +1,4 @@
-package cropcert.traceability.batching;
+package cropcert.traceability.lot;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -7,19 +7,19 @@ import com.google.inject.Inject;
 
 import cropcert.traceability.common.AbstractDao;
 
-public class BatchingDao extends AbstractDao<Batching, Long>{
+public class LotDao extends AbstractDao<Lot, Long>{
 
 	@Inject
-	protected BatchingDao(SessionFactory sessionFactory) {
+	protected LotDao(SessionFactory sessionFactory) {
 		super(sessionFactory);
 	}
 
 	@Override
-	public Batching findById(Long id) {
+	public Lot findById(Long id) {
 		Session session = sessionFactory.openSession();
-		Batching entity = null;
+		Lot entity = null;
 		try {
-			entity = session.get(Batching.class, id);
+			entity = session.get(Lot.class, id);
 		} catch (Exception e) {
 			throw e;
 		} finally {

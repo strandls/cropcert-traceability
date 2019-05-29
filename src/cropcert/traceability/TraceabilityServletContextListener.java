@@ -22,9 +22,12 @@ import com.google.inject.servlet.GuiceServletContextListener;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
-import cropcert.traceability.batch.BatchProductionModule;
-import cropcert.traceability.batching.BatchingModule;
-import cropcert.traceability.collection.CollectionModule;
+import cropcert.traceability.batch.BatchModule;
+import cropcert.traceability.lot.LotModule;
+import cropcert.traceability.lotprocessing.LotProcessingModule;
+import cropcert.traceability.lotproduction.LotProductionModule;
+import cropcert.traceability.processedlot.ProcessedLotModule;
+import cropcert.traceability.wetbatch.WetBatchModule;
 
 public class TraceabilityServletContextListener extends GuiceServletContextListener {
 
@@ -55,7 +58,8 @@ public class TraceabilityServletContextListener extends GuiceServletContextListe
 				
 				serve("/*").with(GuiceContainer.class);
 			}
-		}, new CollectionModule(), new BatchProductionModule(), new BatchingModule());
+		}, new WetBatchModule(), new BatchModule(), new LotModule(), new ProcessedLotModule(), 
+				new LotProcessingModule(), new ProcessedLotModule(), new LotProductionModule());
 		
 		return injector; 
 	}

@@ -1,4 +1,4 @@
-package cropcert.traceability.collection;
+package cropcert.traceability.lotproduction;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -7,19 +7,19 @@ import com.google.inject.Inject;
 
 import cropcert.traceability.common.AbstractDao;
 
-public class CollectionDao extends AbstractDao<Collection, Long>{
+public class LotProductionDao extends AbstractDao<LotProduction, Long>{
 
 	@Inject
-	protected CollectionDao(SessionFactory sessionFactory) {
+	protected LotProductionDao(SessionFactory sessionFactory) {
 		super(sessionFactory);
 	}
 
 	@Override
-	public Collection findById(Long id) {
+	public LotProduction findById(Long id) {
 		Session session = sessionFactory.openSession();
-		Collection entity = null;
+		LotProduction entity = null;
 		try {
-			entity = session.get(Collection.class, id);
+			entity = session.get(LotProduction.class, id);
 		} catch (Exception e) {
 			throw e;
 		} finally {
