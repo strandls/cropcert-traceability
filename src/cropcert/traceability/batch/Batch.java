@@ -59,8 +59,8 @@ public class Batch implements Serializable {
 	@Column(name = "date")
 	private Date date;
 
-	@Column(name = "transfer_time_stamp")
-	private Timestamp transferTimestamp;
+	@Column(name = "timestamp")
+	private Timestamp timestamp;
 
 	public Long getBatchId() {
 		return id;
@@ -111,11 +111,11 @@ public class Batch implements Serializable {
 	}
 
 	public Timestamp getTransferTimestamp() {
-		return transferTimestamp;
+		return timestamp;
 	}
 
 	public void setTransferTimestamp(Timestamp transferTimestamp) {
-		this.transferTimestamp = transferTimestamp;
+		this.timestamp = transferTimestamp;
 	}
 
 	public String getType() {
