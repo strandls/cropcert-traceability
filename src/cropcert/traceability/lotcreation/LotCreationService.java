@@ -1,8 +1,11 @@
 package cropcert.traceability.lotcreation;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 
+import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -10,20 +13,49 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
 import cropcert.traceability.common.AbstractService;
+import cropcert.traceability.lot.Lot;
+import cropcert.traceability.lot.LotService;
 
 public class LotCreationService extends AbstractService<LotCreation> {
 
 	@Inject
 	private ObjectMapper objectMappper;
+	
+	@Inject 
+	private LotService lotService;
 
 	@Inject
 	public LotCreationService(LotCreationDao dao) {
 		super(dao);
 	}
 
-	public LotCreation save(String jsonString)
+	public Lot saveInBulk(String jsonString)
 			throws JsonParseException, JsonMappingException, IOException, JSONException {
-		LotCreation lot = objectMappper.readValue(jsonString, LotCreation.class);
-		return save(lot);
+		JSONObject jsonObject = new JSONObject(jsonString);
+		
+		
+		JSONArray jsonArray = (JSONArray) jsonObject.remove("batchIds");
+		
+		Lot lot = objectMappper.readValue(jsonObject.toString(), Lot.class);
+		
+		lot = lotService.save(lot);
+		
+		Timestamp timestamp = lot.getTimestamp();
+		
+		Long lotId = lot.getId();
+		
+		// Add traceability for the lot creation.
+		for(int i=0; i<jsonArray.length(); i++) {
+			Long batchId = jsonArray.getLong(i);
+			LotCreation lotCreation = new LotCreation();
+			lotCreation.setBatchId(batchId);
+			lotCreation.setLotId(lotId);
+			lotCreation.setTimestamp(timestamp);
+			lotCreation.setNote("");
+			
+			save(lotCreation);
+		}
+		
+		return lot;
 	}
 }

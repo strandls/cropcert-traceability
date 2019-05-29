@@ -52,10 +52,6 @@ public class Batch implements Serializable {
     @ColumnDefault("0.0")
     private float quantity;
 
-    @Column(name = "available_quantity")
-    @ColumnDefault("0.0")
-    private float availableQuantity;
-
     @Column(name = "date")
     private Date date;
 
@@ -95,14 +91,6 @@ public class Batch implements Serializable {
 
     public void setQuantity(float quantity) {
         this.quantity = quantity;
-    }
-
-    public float getAvailableQuantity() {
-        return availableQuantity;
-    }
-
-    public void setAvailableQuantity(float availableQuantity) {
-        this.availableQuantity = availableQuantity;
     }
 
     public Date getDate() {

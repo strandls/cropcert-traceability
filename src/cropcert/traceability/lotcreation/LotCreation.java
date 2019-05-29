@@ -31,11 +31,11 @@ public class LotCreation implements Serializable {
 	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 	
-	@Column(name = "batch_name")
-	private String batchName;
+	@Column(name = "batch_id")
+	private Long batchId;
 	
-	@Column(name = "lot_name")
-	private String lotName;
+	@Column(name = "lot_id")
+	private Long lotId;
 	
 	@Column(name = "timestamp")
 	private Timestamp timestamp;
@@ -51,20 +51,20 @@ public class LotCreation implements Serializable {
 		this.id = id;
 	}
 
-	public String getBatchNumber() {
-		return batchName;
+	public Long getBatchId() {
+		return batchId;
 	}
-
-	public void setBatchNumber(String batchNumber) {
-		this.batchName = batchNumber;
+	
+	public void setBatchId(Long batchId) {
+		this.batchId = batchId;
 	}
-
-	public String getLotNumber() {
-		return lotName;
+	
+	public Long getLotId() {
+		return lotId;
 	}
-
-	public void setLotNumber(String lotNumber) {
-		this.lotName = lotNumber;
+	
+	public void setLotId(Long lotId) {
+		this.lotId = lotId;
 	}
 
 	public Timestamp getTimestamp() {
@@ -82,6 +82,7 @@ public class LotCreation implements Serializable {
 	public void setNote(String note) {
 		this.note = note;
 	}
+
 
 
 }

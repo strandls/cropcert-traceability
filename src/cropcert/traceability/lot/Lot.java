@@ -55,11 +55,11 @@ public class Lot implements Serializable {
 		this.id = id;
 	}
 
-	public String getLotNumber() {
+	public String getLotName() {
 		return lotName;
 	}
 
-	public void setLotNumber(String lotNumber) {
+	public void setLotName(String lotNumber) {
 		this.lotName = lotNumber;
 	}
 

@@ -22,6 +22,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
+import cropcert.traceability.lot.Lot;
+
 @Path("lotcreation")
 public class LotCreationEndPoint {
 
@@ -59,8 +61,8 @@ public class LotCreationEndPoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response save(String  jsonString) {
 		try {
-			LotCreation lotCreation = lotCreationService.save(jsonString);
-			return Response.status(Status.CREATED).entity(lotCreation).build();
+			Lot lot = lotCreationService.saveInBulk(jsonString);
+			return Response.status(Status.CREATED).entity(lot).build();
 		} catch(ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
 		}

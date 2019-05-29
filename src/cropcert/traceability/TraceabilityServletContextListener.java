@@ -24,6 +24,7 @@ import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 import cropcert.traceability.batch.BatchModule;
 import cropcert.traceability.lot.LotModule;
+import cropcert.traceability.lotcreation.LotCreationModule;
 import cropcert.traceability.lotprocessing.LotProcessingModule;
 import cropcert.traceability.lotproduction.LotProductionModule;
 import cropcert.traceability.processedlot.ProcessedLotModule;
@@ -58,7 +59,7 @@ public class TraceabilityServletContextListener extends GuiceServletContextListe
 				
 				serve("/*").with(GuiceContainer.class);
 			}
-		}, new WetBatchModule(), new BatchModule(), new LotModule(), new ProcessedLotModule(), 
+		}, new WetBatchModule(), new BatchModule(), new LotModule(), new LotCreationModule(), 
 				new LotProcessingModule(), new ProcessedLotModule(), new LotProductionModule());
 		
 		return injector; 
