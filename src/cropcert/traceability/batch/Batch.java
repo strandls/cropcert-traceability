@@ -31,96 +31,107 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @DiscriminatorValue(value = "DRY")
 public class Batch implements Serializable {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -6287810889323128536L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = -6287810889323128536L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "batch_id_generator")
-	@SequenceGenerator(name = "batch_id_generator", sequenceName = "batch_id_seq", allocationSize = 50)
-	@Column(name = "id", updatable = false, nullable = false)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "batch_id_generator")
+    @SequenceGenerator(name = "batch_id_generator", sequenceName = "batch_id_seq", allocationSize = 50)
+    @Column(name = "id", updatable = false, nullable = false)
+    private Long id;
 
-	@Column(name = "batch_name")
-	private String batchName;
-	
-	@Column(name = "cc_code")
-	private Long ccCode;
+    @Column(name = "batch_name")
+    private String batchName;
 
-	@Column(name = "quantity")
-	@ColumnDefault("0.0")
-	private float quantity;
-	
-	@Column(name = "available_quantity")
-	@ColumnDefault("0.0")
-	private float availableQuantity;
+    @Column(name = "cc_code")
+    private Long ccCode;
 
-	@Column(name = "date")
-	private Date date;
+    @Column(name = "quantity")
+    @ColumnDefault("0.0")
+    private float quantity;
 
-	@Column(name = "timestamp")
-	private Timestamp timestamp;
+    @Column(name = "available_quantity")
+    @ColumnDefault("0.0")
+    private float availableQuantity;
 
-	public Long getBatchId() {
-		return id;
-	}
+    @Column(name = "date")
+    private Date date;
 
-	public void setBatchId(Long batchId) {
-		this.id = batchId;
-	}
+    @Column(name = "timestamp")
+    private Timestamp timestamp;
 
-	public Long getCcCode() {
-		return ccCode;
-	}
-	
-	public void setBatchName(String batchName) {
-		this.batchName = batchName;
-	}
-	
-	public String getBatchName() {
-		return batchName;
-	}
+    @Column(name = "note")
+    private String note;
 
-	public void setCcCode(Long ccCode) {
-		this.ccCode = ccCode;
-	}
+    public Long getBatchId() {
+        return id;
+    }
 
-	public float getQuantity() {
-		return quantity;
-	}
+    public void setBatchId(Long batchId) {
+        this.id = batchId;
+    }
 
-	public void setQuantity(float quantity) {
-		this.quantity = quantity;
-	}
-	
-	public float getAvailableQuantity() {
-		return availableQuantity;
-	}
-	
-	public void setAvailableQuantity(float availableQuantity) {
-		this.availableQuantity = availableQuantity;
-	}
+    public Long getCcCode() {
+        return ccCode;
+    }
 
-	public Date getDate() {
-		return date;
-	}
+    public void setBatchName(String batchName) {
+        this.batchName = batchName;
+    }
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+    public String getBatchName() {
+        return batchName;
+    }
 
-	public Timestamp getTransferTimestamp() {
-		return timestamp;
-	}
+    public void setCcCode(Long ccCode) {
+        this.ccCode = ccCode;
+    }
 
-	public void setTransferTimestamp(Timestamp transferTimestamp) {
-		this.timestamp = transferTimestamp;
-	}
+    public float getQuantity() {
+        return quantity;
+    }
 
-	public String getType() {
-		DiscriminatorValue value = this.getClass().getAnnotation(DiscriminatorValue.class);
-		return value == null ? null : value.value();
-	}
+    public void setQuantity(float quantity) {
+        this.quantity = quantity;
+    }
+
+    public float getAvailableQuantity() {
+        return availableQuantity;
+    }
+
+    public void setAvailableQuantity(float availableQuantity) {
+        this.availableQuantity = availableQuantity;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public Timestamp getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Timestamp timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public String getType() {
+        DiscriminatorValue value = this.getClass().getAnnotation(DiscriminatorValue.class);
+        return value == null ? null : value.value();
+    }
 
 }

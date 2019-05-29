@@ -28,10 +28,10 @@ public class BatchService extends AbstractService<Batch> {
 		Batch batch = objectMappper.readValue(jsonString, Batch.class);
 		
 		// update the transfer time stamp
-		Timestamp transferTimestamp = batch.getTransferTimestamp();
+		Timestamp transferTimestamp = batch.getTimestamp();
 		if (transferTimestamp == null) {
 			transferTimestamp = new Timestamp(new Date().getTime());
-			batch.setTransferTimestamp(transferTimestamp);
+			batch.setTimestamp(transferTimestamp);
 		}
 		batch = save(batch);
 		return batch;
