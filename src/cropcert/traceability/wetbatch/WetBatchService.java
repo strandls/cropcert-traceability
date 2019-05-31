@@ -14,58 +14,58 @@ import com.google.inject.Inject;
 import cropcert.traceability.common.AbstractService;
 
 public class WetBatchService extends AbstractService<WetBatch> {
-
-	@Inject
-	private ObjectMapper objectMappper;
-
-	@Inject
-	public WetBatchService(WetBatchDao dao) {
-		super(dao);
-	}
-
-	public WetBatch save(String jsonString)
-			throws JsonParseException, JsonMappingException, IOException, JSONException {
-		WetBatch batch = objectMappper.readValue(jsonString, WetBatch.class);
-		return save(batch);
-	}
-	
-	public WetBatch updateStartTime(String jsoString) throws JSONException {
-		JSONObject jsonObject = new JSONObject(jsoString);
-		Long id = jsonObject.getLong("id");
-		Timestamp startTime = (Timestamp) jsonObject.get("startTime");
-		
-		WetBatch wetBatch = findById(id);
-		wetBatch.setStartTime(startTime);
-		return update(wetBatch);
-	}
-	
-	public WetBatch updateFermentationEndTime(String jsoString) throws JSONException {
-		JSONObject jsonObject = new JSONObject(jsoString);
-		Long id = jsonObject.getLong("id");
-		Timestamp fermentationEndTime = (Timestamp) jsonObject.get("fermentationEndTime");
-		
-		WetBatch wetBatch = findById(id);
-		wetBatch.setFermentationEndTime(fermentationEndTime);
-		return update(wetBatch);
-	}
-	
-	public WetBatch updateDryingEndTime(String jsoString) throws JSONException {
-		JSONObject jsonObject = new JSONObject(jsoString);
-		Long id = jsonObject.getLong("id");
-		Timestamp dryingEndTime = (Timestamp) jsonObject.get("dryingEndTime");
-		
-		WetBatch wetBatch = findById(id);
-		wetBatch.setDryingEndTime(dryingEndTime);
-		return update(wetBatch);
-	}
-	
-	public WetBatch updatePerchmentQuantity(String jsoString) throws JSONException {
-		JSONObject jsonObject = new JSONObject(jsoString);
-		Long id = jsonObject.getLong("id");
-		float perchmentQuantity = (float) jsonObject.get("perchmentQuantity");
-		
-		WetBatch wetBatch = findById(id);
-		wetBatch.setPerchmentQuantity(perchmentQuantity);
-		return update(wetBatch);
-	}
+    
+    @Inject
+    private ObjectMapper objectMappper;
+    
+    @Inject
+    public WetBatchService(WetBatchDao dao) {
+        super(dao);
+    }
+    
+    public WetBatch save(String jsonString)
+            throws JsonParseException, JsonMappingException, IOException, JSONException {
+        WetBatch batch = objectMappper.readValue(jsonString, WetBatch.class);
+        return save(batch);
+    }
+    
+    public WetBatch updateStartTime(String jsoString) throws JSONException {
+        JSONObject jsonObject = new JSONObject(jsoString);
+        Long id = jsonObject.getLong("id");
+        Timestamp startTime = Timestamp.valueOf(jsonObject.get("startTime").toString());
+        
+        WetBatch wetBatch = findById(id);
+        wetBatch.setStartTime(startTime);
+        return update(wetBatch);
+    }
+    
+    public WetBatch updateFermentationEndTime(String jsoString) throws JSONException {
+        JSONObject jsonObject = new JSONObject(jsoString);
+        Long id = jsonObject.getLong("id");
+        Timestamp fermentationEndTime = Timestamp.valueOf(jsonObject.get("fermentationEndTime").toString());
+        
+        WetBatch wetBatch = findById(id);
+        wetBatch.setFermentationEndTime(fermentationEndTime);
+        return update(wetBatch);
+    }
+    
+    public WetBatch updateDryingEndTime(String jsoString) throws JSONException {
+        JSONObject jsonObject = new JSONObject(jsoString);
+        Long id = jsonObject.getLong("id");
+        Timestamp dryingEndTime = Timestamp.valueOf(jsonObject.get("dryingEndTime").toString());
+        
+        WetBatch wetBatch = findById(id);
+        wetBatch.setDryingEndTime(dryingEndTime);
+        return update(wetBatch);
+    }
+    
+    public WetBatch updatePerchmentQuantity(String jsoString) throws JSONException {
+        JSONObject jsonObject = new JSONObject(jsoString);
+        Long id = jsonObject.getLong("id");
+        float perchmentQuantity = Float.parseFloat(jsonObject.get("perchmentQuantity").toString());
+        
+        WetBatch wetBatch = findById(id);
+        wetBatch.setPerchmentQuantity(perchmentQuantity);
+        return update(wetBatch);
+    }
 }
