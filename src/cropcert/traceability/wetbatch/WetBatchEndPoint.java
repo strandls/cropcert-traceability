@@ -55,6 +55,16 @@ public class WetBatchEndPoint {
 			return wetbatchService.findAll(limit, offset);
 	}
 	
+	@Path("cc")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<WetBatch> getByCcCode(
+			@DefaultValue("-1") @QueryParam("ccCode") Long ccCode,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		return wetbatchService.getByPropertyWithCondtion("ccCode", ccCode, "=", limit, offset);
+	}
+	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
