@@ -1,4 +1,4 @@
-package cropcert.traceability.batch;
+package cropcert.traceability.cupping;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,15 +22,15 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
-@Path("batch")
-public class BatchEndPoint {
+@Path("cupping")
+public class CuppingEndPoint {
 
 	
-	private BatchService batchService;
+	private CuppingService cuppingService;
 	
 	@Inject
-	public BatchEndPoint(BatchService batchProductionService) {
-		this.batchService = batchProductionService;
+	public CuppingEndPoint(CuppingService batchProductionService) {
+		this.cuppingService = batchProductionService;
 	}
 	
 	@Path("{id}")
@@ -38,30 +38,20 @@ public class BatchEndPoint {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response find(@PathParam("id") Long id) {
-		Batch batchProduction = batchService.findById(id);
-		return Response.status(Status.CREATED).entity(batchProduction).build();
+		Cupping cupping = cuppingService.findById(id);
+		return Response.status(Status.CREATED).entity(cupping).build();
 	}
 	
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Batch> findAll(
+	public List<Cupping> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		if(limit==-1 || offset ==-1)
-			return batchService.findAll();
+			return cuppingService.findAll();
 		else
-			return batchService.findAll(limit, offset);
-	}
-	
-	@Path("cc")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Batch> getByCcCode(
-			@DefaultValue("-1") @QueryParam("ccCode") Long ccCode,
-			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return batchService.getByPropertyWithCondtion("ccCode", ccCode, "=", limit, offset);
+			return cuppingService.findAll(limit, offset);
 	}
 	
 	@POST
@@ -69,8 +59,8 @@ public class BatchEndPoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response save(String  jsonString) {
 		try {
-			Batch batchProduction = batchService.save(jsonString);
-			return Response.status(Status.CREATED).entity(batchProduction).build();
+			Cupping cupping = cuppingService.save(jsonString);
+			return Response.status(Status.CREATED).entity(cupping).build();
 		} catch(ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
 		}

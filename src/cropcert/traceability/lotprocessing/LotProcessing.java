@@ -32,10 +32,10 @@ public class LotProcessing implements Serializable {
 	private Long id;
 	
 	@Column(name = "lot_name")
-	private String lotName;
+	private String lotId;
 	
 	@Column(name = "processed_lot_name")
-	private String processedLotName;
+	private String processedLotId;
 	
 	@Column(name = "timestamp")
 	private Timestamp timestamp;
@@ -51,20 +51,20 @@ public class LotProcessing implements Serializable {
 		this.id = id;
 	}
 
-	public String getLotName() {
-		return lotName;
+	public String getLotId() {
+		return lotId;
 	}
 
-	public void setLotName(String lotName) {
-		this.lotName = lotName;
+	public void setLotId(String lotName) {
+		this.lotId = lotName;
 	}
 
-	public String getProcessedLotName() {
-		return processedLotName;
+	public String getProcessedLotId() {
+		return processedLotId;
 	}
 
-	public void setProcessedLotName(String processedLotName) {
-		this.processedLotName = processedLotName;
+	public void setProcessedLotId(String processedLotId) {
+		this.processedLotId = processedLotId;
 	}
 
 	public Timestamp getTimestamp() {

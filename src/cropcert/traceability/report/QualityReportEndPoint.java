@@ -1,4 +1,4 @@
-package cropcert.traceability.batch;
+package cropcert.traceability.report;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,15 +22,15 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
-@Path("batch")
-public class BatchEndPoint {
+@Path("report")
+public class QualityReportEndPoint {
 
 	
-	private BatchService batchService;
+	private QualityReportService qualityReportService;
 	
 	@Inject
-	public BatchEndPoint(BatchService batchProductionService) {
-		this.batchService = batchProductionService;
+	public QualityReportEndPoint(QualityReportService batchProductionService) {
+		this.qualityReportService = batchProductionService;
 	}
 	
 	@Path("{id}")
@@ -38,30 +38,20 @@ public class BatchEndPoint {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response find(@PathParam("id") Long id) {
-		Batch batchProduction = batchService.findById(id);
-		return Response.status(Status.CREATED).entity(batchProduction).build();
+		QualityReport qualityReport = qualityReportService.findById(id);
+		return Response.status(Status.CREATED).entity(qualityReport).build();
 	}
 	
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Batch> findAll(
+	public List<QualityReport> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		if(limit==-1 || offset ==-1)
-			return batchService.findAll();
+			return qualityReportService.findAll();
 		else
-			return batchService.findAll(limit, offset);
-	}
-	
-	@Path("cc")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Batch> getByCcCode(
-			@DefaultValue("-1") @QueryParam("ccCode") Long ccCode,
-			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return batchService.getByPropertyWithCondtion("ccCode", ccCode, "=", limit, offset);
+			return qualityReportService.findAll(limit, offset);
 	}
 	
 	@POST
@@ -69,8 +59,8 @@ public class BatchEndPoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response save(String  jsonString) {
 		try {
-			Batch batchProduction = batchService.save(jsonString);
-			return Response.status(Status.CREATED).entity(batchProduction).build();
+			QualityReport qualityReport = qualityReportService.save(jsonString);
+			return Response.status(Status.CREATED).entity(qualityReport).build();
 		} catch(ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
 		}
