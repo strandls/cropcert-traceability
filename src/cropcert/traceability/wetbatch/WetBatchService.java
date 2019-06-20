@@ -7,8 +7,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.inject.Inject;
 
 import cropcert.traceability.common.AbstractService;
@@ -68,4 +70,13 @@ public class WetBatchService extends AbstractService<WetBatch> {
         wetBatch.setPerchmentQuantity(perchmentQuantity);
         return update(wetBatch);
     }
+
+	public WetBatch update(String jsonString) throws JSONException, JsonProcessingException, IOException {
+		Long id = new JSONObject(jsonString).getLong("id");
+		WetBatch wetBatch = findById(id);
+		ObjectReader objectReader = objectMappper.readerForUpdating(wetBatch);
+		wetBatch = objectReader.readValue(jsonString);
+		wetBatch = update(wetBatch);
+		return wetBatch;
+	}
 }

@@ -34,8 +34,8 @@ public class ProcessedLot implements Serializable {
 	@Column(name = "lot_name")
 	private String lotName;
 	
-	@Column(name = "processing_date")
-	private Timestamp processingDate;
+	@Column(name = "processing_time")
+	private Timestamp processingTime;
 	
 	@Column(name = "out_turn")
 	private String outTurn;
@@ -55,13 +55,13 @@ public class ProcessedLot implements Serializable {
 	public void setLotName(String lotName) {
 		this.lotName = lotName;
 	}
-
-	public Timestamp getProcessingDate() {
-		return processingDate;
+	
+	public Timestamp getProcessingTime() {
+		return processingTime;
 	}
-
-	public void setProcessingDate(Timestamp processingDate) {
-		this.processingDate = processingDate;
+	
+	public void setProcessingTime(Timestamp processingTime) {
+		this.processingTime = processingTime;
 	}
 
 	public String getOutTurn() {

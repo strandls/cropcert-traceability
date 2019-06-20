@@ -92,6 +92,21 @@ public class WetBatchEndPoint {
 	}
 	
 	@PUT
+	@Produces
+	@Consumes
+	public WetBatch update(String jsonString) {
+		WetBatch wetBatch;
+		try {
+			wetBatch = wetbatchService.update(jsonString);
+			return wetBatch;
+		} catch (JSONException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@PUT
 	@Path("startTime")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
