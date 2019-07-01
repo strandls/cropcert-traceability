@@ -38,14 +38,32 @@ public class Lot implements Serializable {
 	@Column(name = "quantity")
 	private float quantity;
 	
+	@Column(name = "type")
+	private String type;
+
+	@Column(name = "created_on")
+	private Timestamp createdOn;
+	
 	@Column(name = "time_to_factory")
 	private Date timeToFactory;
 	
-	@Column(name = "timestamp")
-	private Timestamp timestamp;
+	@Column(name = "milling_time")
+	private Timestamp millingTime;
 	
-	@Column(name = "type")
-	private String type;
+	@Column(name = "out_turn")
+	private float outTurn;
+	
+	@Column(name = "grn_number")
+	private String grnNumber;
+	
+	@Column(name = "quality_report")
+	private Long reportId;
+	
+	@Column(name = "lot_status")
+	private LotStatus lotStatus;
+	
+	@Column(name = "is_deleted")
+	private Boolean isDeleted;
 
 	public Long getId() {
 		return id;
@@ -59,8 +77,8 @@ public class Lot implements Serializable {
 		return lotName;
 	}
 
-	public void setLotName(String lotNumber) {
-		this.lotName = lotNumber;
+	public void setLotName(String lotName) {
+		this.lotName = lotName;
 	}
 
 	public float getQuantity() {
@@ -71,6 +89,22 @@ public class Lot implements Serializable {
 		this.quantity = quantity;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	public Timestamp getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Timestamp createdOn) {
+		this.createdOn = createdOn;
+	}
+
 	public Date getTimeToFactory() {
 		return timeToFactory;
 	}
@@ -79,19 +113,52 @@ public class Lot implements Serializable {
 		this.timeToFactory = timeToFactory;
 	}
 
-	public Timestamp getTimestamp() {
-		return timestamp;
+	public Timestamp getMillingTime() {
+		return millingTime;
 	}
 
-	public void setTimestamp(Timestamp timestamp) {
-		this.timestamp = timestamp;
+	public void setMillingTime(Timestamp millingTime) {
+		this.millingTime = millingTime;
 	}
 
-	public String getType() {
-		return type;
+	public float getOutTurn() {
+		return outTurn;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setOutTurn(float outTurn) {
+		this.outTurn = outTurn;
 	}
+
+	public String getGrnNumber() {
+		return grnNumber;
+	}
+
+	public void setGrnNumber(String grnNumber) {
+		this.grnNumber = grnNumber;
+	}
+
+	public Long getReportId() {
+		return reportId;
+	}
+
+	public void setReportId(Long reportId) {
+		this.reportId = reportId;
+	}
+	
+	public LotStatus getLotStatus() {
+		return lotStatus;
+	}
+	
+	public void setLotStatus(LotStatus lotStatus) {
+		this.lotStatus = lotStatus;
+	}
+
+	public Boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+	
 }

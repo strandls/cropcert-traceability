@@ -37,6 +37,9 @@ public class LotCreation implements Serializable {
 	@Column(name = "lot_id")
 	private Long lotId;
 	
+	@Column(name = "user_id")
+	private String userId;
+	
 	@Column(name = "timestamp")
 	private Timestamp timestamp;
 	
@@ -65,6 +68,14 @@ public class LotCreation implements Serializable {
 	
 	public void setLotId(Long lotId) {
 		this.lotId = lotId;
+	}
+	
+	public String getUserId() {
+		return userId;
+	}
+	
+	public void setUserId(String userId) {
+		this.userId = userId;
 	}
 
 	public Timestamp getTimestamp() {

@@ -55,11 +55,17 @@ public class Batch implements Serializable {
     @Column(name = "date")
     private Date date;
 
-    @Column(name = "timestamp")
-    private Timestamp timestamp;
+    @Column(name = "created_on")
+    private Timestamp createdOn;
 
     @Column(name = "note")
     private String note;
+    
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
+    
+    @Column(name = "is_lot_Done")
+    private Boolean isLotDone;
 
     public Long getBatchId() {
         return id;
@@ -101,12 +107,12 @@ public class Batch implements Serializable {
         this.date = date;
     }
 
-    public Timestamp getTimestamp() {
-        return timestamp;
+    public Timestamp getCreatedOn() {
+        return createdOn;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
-        this.timestamp = timestamp;
+    public void setCreatedOn(Timestamp createdOn) {
+        this.createdOn = createdOn;
     }
 
     public String getNote() {
@@ -121,5 +127,21 @@ public class Batch implements Serializable {
         DiscriminatorValue value = this.getClass().getAnnotation(DiscriminatorValue.class);
         return value == null ? null : value.value();
     }
+
+	public Boolean isDeleted() {
+		return isDeleted;
+	}
+
+	public void setDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+
+	public Boolean isLotDone() {
+		return isLotDone;
+	}
+
+	public void setLotDone(Boolean isLotDone) {
+		this.isLotDone = isLotDone;
+	}
 
 }

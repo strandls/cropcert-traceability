@@ -3,6 +3,7 @@ package cropcert.traceability.batch;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -11,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -21,6 +23,8 @@ import org.json.JSONException;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
+
+import cropcert.traceability.util.UserUtil;
 
 @Path("batch")
 public class BatchEndPoint {
@@ -37,8 +41,10 @@ public class BatchEndPoint {
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response find(@PathParam("id") Long id) {
+	public Response find(@PathParam("id") Long id, @Context HttpServletRequest request) {
 		Batch batchProduction = batchService.findById(id);
+		String user = UserUtil.getUserDetails(request);
+		System.out.println(user);
 		return Response.status(Status.CREATED).entity(batchProduction).build();
 	}
 	
@@ -67,9 +73,9 @@ public class BatchEndPoint {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response save(String  jsonString) {
+	public Response save(String  jsonString, @Context HttpServletRequest request) {
 		try {
-			Batch batchProduction = batchService.save(jsonString);
+			Batch batchProduction = batchService.save(jsonString, request);
 			return Response.status(Status.CREATED).entity(batchProduction).build();
 		} catch(ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();

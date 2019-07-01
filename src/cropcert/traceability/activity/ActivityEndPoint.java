@@ -1,4 +1,4 @@
-package cropcert.traceability.processedlot;
+package cropcert.traceability.activity;
 
 import java.io.IOException;
 import java.util.List;
@@ -7,7 +7,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -23,15 +22,15 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
-@Path("processedlot")
-public class ProcessedLotEndPoint {
+@Path("activity")
+public class ActivityEndPoint {
 
 	
-	private ProcessedLotService processedLotService;
+	private ActivityService activityService;
 	
 	@Inject
-	public ProcessedLotEndPoint(ProcessedLotService batchProductionService) {
-		this.processedLotService = batchProductionService;
+	public ActivityEndPoint(ActivityService batchProductionService) {
+		this.activityService = batchProductionService;
 	}
 	
 	@Path("{id}")
@@ -39,20 +38,30 @@ public class ProcessedLotEndPoint {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response find(@PathParam("id") Long id) {
-		ProcessedLot processedLot = processedLotService.findById(id);
-		return Response.status(Status.CREATED).entity(processedLot).build();
+		Activity activity = activityService.findById(id);
+		return Response.status(Status.CREATED).entity(activity).build();
 	}
 	
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ProcessedLot> findAll(
+	public List<Activity> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		if(limit==-1 || offset ==-1)
-			return processedLotService.findAll();
+			return activityService.findAll();
 		else
-			return processedLotService.findAll(limit, offset);
+			return activityService.findAll(limit, offset);
+	}
+	
+	@Path("cc")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Activity> getByCcCode(
+			@DefaultValue("-1") @QueryParam("ccCode") Long ccCode,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		return activityService.getByPropertyWithCondtion("ccCode", ccCode, "=", limit, offset);
 	}
 	
 	@POST
@@ -60,8 +69,8 @@ public class ProcessedLotEndPoint {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response save(String  jsonString) {
 		try {
-			ProcessedLot processedLot = processedLotService.save(jsonString);
-			return Response.status(Status.CREATED).entity(processedLot).build();
+			Activity activity = activityService.save(jsonString);
+			return Response.status(Status.CREATED).entity(activity).build();
 		} catch(ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
 		}
@@ -75,21 +84,6 @@ public class ProcessedLotEndPoint {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	@PUT
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response update(String jsonString) {
-		ProcessedLot lot;
-		try {
-			lot = processedLotService.update(jsonString);
-			return Response.status(Status.CREATED).entity(lot).build();
-		} catch (JSONException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

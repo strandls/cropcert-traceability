@@ -32,8 +32,8 @@ public class Cupping implements Serializable {
 	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 	
-	@Column(name = "lot_name")
-    private String lotName;
+	@Column(name = "lot_id")
+    private Long lotId;
 	
 	@Column(name = "cupping_date")
 	private Date date;
@@ -91,6 +91,9 @@ public class Cupping implements Serializable {
 	
 	@Column(name = "notes")
 	private String notes;
+	
+	@Column(name = "is_deleted")
+	private Boolean isDeleted;
 
 	public Long getId() {
 		return id;
@@ -100,12 +103,12 @@ public class Cupping implements Serializable {
 		this.id = id;
 	}
 	
-	public String getLotName() {
-		return lotName;
+	public Long getLotId() {
+		return lotId;
 	}
 	
-	public void setLotName(String lotName) {
-		this.lotName = lotName;
+	public void setLotId(Long lotId) {
+		this.lotId = lotId;
 	}
 
 	public Date getDate() {
@@ -258,5 +261,13 @@ public class Cupping implements Serializable {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 }

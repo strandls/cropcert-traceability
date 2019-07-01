@@ -40,7 +40,7 @@ public class LotCreationService extends AbstractService<LotCreation> {
 		
 		lot = lotService.save(lot);
 		
-		Timestamp timestamp = lot.getTimestamp();
+		Timestamp timestamp = lot.getCreatedOn();
 		
 		Long lotId = lot.getId();
 		

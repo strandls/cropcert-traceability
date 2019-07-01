@@ -32,8 +32,8 @@ public class QualityReport implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
     
-    @Column(name = "lot_name")
-    private String lotName;
+    @Column(name = "lot_id")
+    private Long lotId;
     
     @Column(name = "lot_reception_date")
     private Date date;
@@ -133,6 +133,9 @@ public class QualityReport implements Serializable {
     
     @Column(name = "percentage_out_turn")
     private float percentageOutTurn;
+    
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
 
 	public Long getId() {
 		return id;
@@ -142,12 +145,12 @@ public class QualityReport implements Serializable {
 		this.id = id;
 	}
 	
-	public String getLotName() {
-		return lotName;
+	public Long getLotId() {
+		return lotId;
 	}
 	
-	public void setLotName(String lotName) {
-		this.lotName = lotName;
+	public void setLotId(Long lotId) {
+		this.lotId = lotId;
 	}
 
 	public Date getDate() {
@@ -396,6 +399,14 @@ public class QualityReport implements Serializable {
 
 	public void setPercentageOutTurn(float percentageOutTurn) {
 		this.percentageOutTurn = percentageOutTurn;
+	}
+
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 
     
