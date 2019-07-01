@@ -54,11 +54,11 @@ public class WetBatchEndPoint {
 	@Path("cc")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<WetBatch> getByCcCode(
-			@DefaultValue("-1") @QueryParam("ccCode") Long ccCode,
+	public List<WetBatch> getByCcCodes(
+			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return wetbatchService.getByPropertyWithCondtion("ccCode", ccCode, "=", limit, offset);
+		return wetbatchService.getByPropertyfromArray("ccCode", ccCodes, limit, offset);
 	}
 	
 	@PUT
