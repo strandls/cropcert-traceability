@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
+import cropcert.traceability.batch.Batch;
+import cropcert.traceability.batch.BatchService;
 import cropcert.traceability.common.AbstractService;
 import cropcert.traceability.lot.Lot;
 import cropcert.traceability.lot.LotService;
@@ -23,6 +25,9 @@ public class LotCreationService extends AbstractService<LotCreation> {
 	
 	@Inject 
 	private LotService lotService;
+	
+	@Inject
+	private BatchService batchService;
 
 	@Inject
 	public LotCreationService(LotCreationDao dao) {
@@ -47,12 +52,16 @@ public class LotCreationService extends AbstractService<LotCreation> {
 		// Add traceability for the lot creation.
 		for(int i=0; i<jsonArray.length(); i++) {
 			Long batchId = jsonArray.getLong(i);
+			
 			LotCreation lotCreation = new LotCreation();
 			lotCreation.setBatchId(batchId);
 			lotCreation.setLotId(lotId);
 			lotCreation.setTimestamp(timestamp);
 			lotCreation.setNote("");
 			
+			
+			// update the batch activity..
+			Batch batch = batchService.findById(batchId);
 			save(lotCreation);
 		}
 		

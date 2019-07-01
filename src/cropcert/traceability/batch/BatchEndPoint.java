@@ -60,7 +60,7 @@ public class BatchEndPoint {
 			return batchService.findAll(limit, offset);
 	}
 	
-	@Path("cc")
+	@Path("cc1")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Batch> getByCcCode(
@@ -68,6 +68,16 @@ public class BatchEndPoint {
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		return batchService.getByPropertyWithCondtion("ccCode", ccCode, "=", limit, offset);
+	}
+	
+	@Path("cc")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Batch> getByCcCodes(
+			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		return batchService.getByPropertyfromArray("ccCode", ccCodes, limit, offset);
 	}
 	
 	@POST

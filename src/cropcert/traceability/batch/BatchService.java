@@ -3,6 +3,7 @@ package cropcert.traceability.batch;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -25,7 +26,7 @@ public class BatchService extends AbstractService<Batch> {
 	private ObjectMapper objectMappper;
 	
 	@Inject
-	private ActivityService batchActivityService;
+	private ActivityService activityService;
 
 	@Inject
 	public BatchService(BatchDao dao) {
@@ -51,8 +52,17 @@ public class BatchService extends AbstractService<Batch> {
 		Timestamp timestamp = transferTimestamp = new Timestamp(new Date().getTime());
 		Activity activity = new Activity(Constants.BATCH, batch.getBatchId(), userId, 
 				timestamp, "batch_creation", batch.getBatchName());
-		activity = batchActivityService.save(activity);
+		activity = activityService.save(activity);
 		
 		return batch;
+	}
+	
+	/*
+	 * This object list is the comma separated value.
+	 */
+	public List<Batch> getByPropertyfromArray(String property, String objectList, int limit, int offset){
+		Object [] values = objectList.split(",");
+		((BatchDao) dao).getByPropertyfromArray(property, values, limit, offset);
+		return null;
 	}
 }
