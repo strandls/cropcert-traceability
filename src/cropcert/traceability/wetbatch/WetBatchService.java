@@ -2,6 +2,7 @@ package cropcert.traceability.wetbatch;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,5 +79,14 @@ public class WetBatchService extends AbstractService<WetBatch> {
 		wetBatch = objectReader.readValue(jsonString);
 		wetBatch = update(wetBatch);
 		return wetBatch;
+	}
+
+	public List<WetBatch> getByPropertyfromArray(String property, String ccCodes, Integer limit, Integer offset) {
+		Object[] values = ccCodes.split(",");
+        Long[] longValues = new Long[values.length];
+        for (int i = 0; i < values.length; i++) {
+            longValues[i] = Long.parseLong(values[i].toString());
+        }
+        return dao.getByPropertyfromArray(property, longValues, limit, offset);
 	}
 }

@@ -27,5 +27,4 @@ public class WetBatchDao extends AbstractDao<WetBatch, Long>{
 		}
 		return entity;
 	}
-
 }

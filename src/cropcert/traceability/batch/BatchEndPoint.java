@@ -60,16 +60,6 @@ public class BatchEndPoint {
 			return batchService.findAll(limit, offset);
 	}
 	
-	@Path("cc1")
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<Batch> getByCcCode(
-			@DefaultValue("-1") @QueryParam("ccCode") Long ccCode,
-			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return batchService.getByPropertyWithCondtion("ccCode", ccCode, "=", limit, offset);
-	}
-	
 	@Path("cc")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
