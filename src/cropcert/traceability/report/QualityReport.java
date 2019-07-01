@@ -51,7 +51,7 @@ public class QualityReport implements Serializable {
     private String coffeeType;
     
     @Column ( name = "over_turn_percentage")
-    private float overtTurnPercentage;
+    private float overTurnPercentage;
     
     @Column ( name = "mc")
     private float mc;
@@ -75,7 +75,7 @@ public class QualityReport implements Serializable {
     private float gradePB;
     
     @Column(name = "triage")
-    private float g1radeTriage;
+    private float gradeTriage;
     
     /** 
      * Severe defects fields
@@ -193,12 +193,12 @@ public class QualityReport implements Serializable {
 		this.coffeeType = coffeeType;
 	}
 
-	public float getOvertTurnPercentage() {
-		return overtTurnPercentage;
+	public float getOverTurnPercentage() {
+		return overTurnPercentage;
 	}
 
-	public void setOvertTurnPercentage(float overtTurnPercentage) {
-		this.overtTurnPercentage = overtTurnPercentage;
+	public void setOverTurnPercentage(float overTurnPercentage) {
+		this.overTurnPercentage = overTurnPercentage;
 	}
 
 	public float getMc() {
@@ -257,12 +257,12 @@ public class QualityReport implements Serializable {
 		this.gradePB = gradePB;
 	}
 
-	public float getG1radeTriage() {
-		return g1radeTriage;
+	public float getGradeTriage() {
+		return gradeTriage;
 	}
 
-	public void setG1radeTriage(float g1radeTriage) {
-		this.g1radeTriage = g1radeTriage;
+	public void setGradeTriage(float gradeTriage) {
+		this.gradeTriage = gradeTriage;
 	}
 
 	public float getFullBlack() {
