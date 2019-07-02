@@ -73,4 +73,48 @@ public class LotService extends AbstractService<Lot> {
 		}
 		return "Updated succesfully";
 	}
+
+	public String updateMillingTime(String jsonString, HttpServletRequest request)  throws JsonProcessingException, JSONException, IOException {
+		JSONObject jsonObject = new JSONObject(jsonString);
+		
+		Long id = jsonObject.getLong("id");
+		Lot lot = findById(id);
+		
+		String millingTimeString = jsonObject.get(Constants.MILLING_TIME).toString();		
+		Timestamp millingTime    = Timestamp.valueOf(millingTimeString);
+		
+		lot.setMillingTime(millingTime);
+		lot.setLotStatus(LotStatus.AT_UNION);
+		lot = update(lot);		
+		
+        String userId = UserUtil.getUserDetails(request);
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+                timestamp, Constants.MILLING_TIME, millingTime.toString());
+        activity = activityService.save(activity);
+        
+		return "Updated succesfully";
+	}
+
+	public String updateOutTurn(String jsonString, HttpServletRequest request)  throws JsonProcessingException, JSONException, IOException {
+		JSONObject jsonObject = new JSONObject(jsonString);
+		
+		Long id = jsonObject.getLong("id");
+		Lot lot = findById(id);
+		
+		String outTurnString = jsonObject.get(Constants.OUT_TURN).toString();
+		Float outTurn = Float.valueOf(outTurnString);
+		
+		lot.setOutTurn(outTurn);
+		lot.setLotStatus(LotStatus.AT_UNION);
+		lot = update(lot);		
+		
+        String userId = UserUtil.getUserDetails(request);
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+                timestamp, Constants.OUT_TURN, outTurn.toString());
+        activity = activityService.save(activity);
+        
+		return "Updated succesfully";
+	}
 }

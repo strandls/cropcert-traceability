@@ -117,4 +117,34 @@ public class LotEndPoint {
 		}
 		return null;
 	}
+	
+	@PUT
+	@Path("millingTime")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updateMillingTime(String jsonString, @Context HttpServletRequest request) {
+		try {
+			String response = lotService.updateMillingTime(jsonString, request);
+			return Response.status(Status.CREATED).entity(response).build();
+		} catch (JSONException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@PUT
+	@Path("outTurn")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updateOutTurn(String jsonString, @Context HttpServletRequest request) {
+		try {
+			String response = lotService.updateOutTurn(jsonString, request);
+			return Response.status(Status.CREATED).entity(response).build();
+		} catch (JSONException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
