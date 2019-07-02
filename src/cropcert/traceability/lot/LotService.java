@@ -2,7 +2,11 @@ package cropcert.traceability.lot;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,12 +18,18 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.inject.Inject;
 
 import cropcert.traceability.Constants;
+import cropcert.traceability.activity.Activity;
+import cropcert.traceability.activity.ActivityService;
 import cropcert.traceability.common.AbstractService;
+import cropcert.traceability.util.UserUtil;
 
 public class LotService extends AbstractService<Lot> {
 
 	@Inject
 	private ObjectMapper objectMappper;
+	
+	@Inject
+	private ActivityService activityService;
 
 	@Inject
 	public LotService(LotDao dao) {
@@ -41,19 +51,26 @@ public class LotService extends AbstractService<Lot> {
 		return lot;
 	}
 
-	public Lot updateTimeToFactory(String jsonString) throws JsonProcessingException, JSONException, IOException {
+	public String updateTimeToFactory(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
 		JSONObject jsonObject = new JSONObject(jsonString);
-		Long id = jsonObject.getLong("id");
-		Lot lot = findById(id);
+		JSONArray jsonArray   = jsonObject.getJSONArray("ids");
 		
 		String timeToFactoryString = jsonObject.get(Constants.TIME_TO_FACTORY).toString();		
 		Timestamp timeToFactory    = Timestamp.valueOf(timeToFactoryString);
 		
-		lot.setTimeToFactory(timeToFactory);
-		lot.setLotStatus(LotStatus.IN_TRANSPORT);
-		lot = update(lot);
-		
-		
-		return lot;
+		for (int i = 0; i < jsonArray.length(); i++) {
+			Long id = jsonArray.getLong(i);
+			Lot lot = findById(id);
+			lot.setTimeToFactory(timeToFactory);
+			lot.setLotStatus(LotStatus.IN_TRANSPORT);
+			lot = update(lot);		
+			
+	        String userId = UserUtil.getUserDetails(request);
+	        Timestamp timestamp = new Timestamp(new Date().getTime());
+	        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+	                timestamp, Constants.TIME_TO_FACTORY, timeToFactory.toString());
+	        activity = activityService.save(activity);
+		}
+		return "Updated succesfully";
 	}
 }

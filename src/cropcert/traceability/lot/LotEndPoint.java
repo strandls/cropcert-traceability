@@ -3,6 +3,7 @@ package cropcert.traceability.lot;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -12,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -105,11 +107,10 @@ public class LotEndPoint {
 	@Path("dispatch")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response updateTimeToFactory(String jsonString) {
-		Lot lot;
+	public Response updateTimeToFactory(String jsonString, @Context HttpServletRequest request) {
 		try {
-			lot = lotService.updateTimeToFactory(jsonString);
-			return Response.status(Status.CREATED).entity(lot).build();
+			String response = lotService.updateTimeToFactory(jsonString, request);
+			return Response.status(Status.CREATED).entity(response).build();
 		} catch (JSONException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

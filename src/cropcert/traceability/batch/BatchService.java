@@ -51,8 +51,8 @@ public class BatchService extends AbstractService<Batch> {
          */
         String userId = UserUtil.getUserDetails(request);
         Timestamp timestamp = transferTimestamp = new Timestamp(new Date().getTime());
-        Activity activity = new Activity(Constants.BATCH, batch.getBatchId(), userId,
-                timestamp, "batch_creation", batch.getBatchName());
+        Activity activity = new Activity(batch.getClass().getSimpleName(), batch.getBatchId(), userId,
+                timestamp, Constants.BATCH, batch.getBatchName());
         activity = activityService.save(activity);
 
         return batch;

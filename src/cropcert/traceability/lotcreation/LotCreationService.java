@@ -84,8 +84,8 @@ public class LotCreationService extends AbstractService<LotCreation> {
 		}
 		
 		// Add activity of lot creation.
-        Activity activity = new Activity(Constants.LOT, lotId, userId,
-                timestamp, "lot_creation", lot.getLotName());
+        Activity activity = new Activity(lot.getClass().getSimpleName(), lotId, userId,
+                timestamp, Constants.LOT, lot.getLotName());
         activity = activityService.save(activity);
 		
 		return lot;
