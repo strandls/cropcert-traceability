@@ -10,4 +10,5 @@ public class Constants {
 	public static final String MILLING_TIME    = "millingTime";
 	public static final String OUT_TURN		   = "outTurn";
 	public static final String GREEN_ANALYSIS  = "greenAnalysis";
+	public static final String DISPATCH_TIME   = "dispatchTime";
 }

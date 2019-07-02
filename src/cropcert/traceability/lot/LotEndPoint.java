@@ -61,9 +61,10 @@ public class LotEndPoint {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Lot> getAllByStatus(
-			@DefaultValue("-1") @PathParam("lotStatus") String lotStatus,
+			@DefaultValue("-1") @PathParam("lotStatus") String lotStatusString,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		LotStatus lotStatus = LotStatus.fromValue(lotStatusString);
 		return lotService.getByPropertyWithCondtion("lotStatus", lotStatus, "=", limit, offset);
 	}
 		
@@ -150,6 +151,21 @@ public class LotEndPoint {
 	public Response updateOutTurn(String jsonString, @Context HttpServletRequest request) {
 		try {
 			String response = lotService.updateOutTurn(jsonString, request);
+			return Response.status(Status.CREATED).entity(response).build();
+		} catch (JSONException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@PUT
+	@Path("dispatch/union")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response dispatchToUnion(String jsonString, @Context HttpServletRequest request) {
+		try {
+			String response = lotService.dispatchToUnion(jsonString, request);
 			return Response.status(Status.CREATED).entity(response).build();
 		} catch (JSONException | IOException e) {
 			// TODO Auto-generated catch block

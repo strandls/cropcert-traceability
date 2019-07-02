@@ -62,7 +62,7 @@ public class LotService extends AbstractService<Lot> {
 			Long id = jsonArray.getLong(i);
 			Lot lot = findById(id);
 			lot.setTimeToFactory(timeToFactory);
-			lot.setLotStatus(LotStatus.IN_TRANSPORT);
+			lot.setLotStatus(LotStatus.AT_FACTORY);
 			lot = update(lot);		
 			
 	        String userId = UserUtil.getUserDetails(request);
@@ -84,7 +84,7 @@ public class LotService extends AbstractService<Lot> {
 		Timestamp millingTime    = Timestamp.valueOf(millingTimeString);
 		
 		lot.setMillingTime(millingTime);
-		lot.setLotStatus(LotStatus.AT_UNION);
+		lot.setLotStatus(LotStatus.AT_FACTORY);
 		lot = update(lot);		
 		
         String userId = UserUtil.getUserDetails(request);
@@ -106,7 +106,7 @@ public class LotService extends AbstractService<Lot> {
 		Float outTurn = Float.valueOf(outTurnString);
 		
 		lot.setOutTurn(outTurn);
-		lot.setLotStatus(LotStatus.AT_UNION);
+		lot.setLotStatus(LotStatus.AT_FACTORY);
 		lot = update(lot);		
 		
         String userId = UserUtil.getUserDetails(request);
@@ -116,5 +116,28 @@ public class LotService extends AbstractService<Lot> {
         activity = activityService.save(activity);
         
 		return "Updated succesfully";
+	}
+
+	public String dispatchToUnion(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
+		JSONObject jsonObject = new JSONObject(jsonString);
+		JSONArray jsonArray   = jsonObject.getJSONArray("ids");
+		
+		String dispatchTimeString = jsonObject.get(Constants.DISPATCH_TIME).toString();		
+		Timestamp dispatchTime    = Timestamp.valueOf(dispatchTimeString);
+		
+		for (int i = 0; i < jsonArray.length(); i++) {
+			Long lotId = jsonArray.getLong(i);
+			
+			Lot lot = findById(lotId); 
+			lot.setLotStatus(LotStatus.AT_UNION); 
+			lot = update(lot);
+			
+	        String userId = UserUtil.getUserDetails(request);
+	        Timestamp timestamp = new Timestamp(new Date().getTime());
+	        Activity activity = new Activity(lot.getClass().getSimpleName(), lotId, userId,
+	                timestamp, Constants.DISPATCH_TIME, dispatchTime.toString());
+	        activity = activityService.save(activity);
+		}
+		return "Dispatched to union succesful";
 	}
 }
