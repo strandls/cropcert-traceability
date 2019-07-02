@@ -23,8 +23,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
-import cropcert.traceability.Constants;
-
 @Path("lot")
 public class LotEndPoint {
 
@@ -104,6 +102,7 @@ public class LotEndPoint {
 	}
 	
 	@PUT
+	@Path("dispatch")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response updateTimeToFactory(String jsonString) {
