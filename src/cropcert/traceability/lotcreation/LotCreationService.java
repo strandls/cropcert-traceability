@@ -79,6 +79,7 @@ public class LotCreationService extends AbstractService<LotCreation> {
 				throw new JSONException("Invalid batch id found");
 			}
 			batch.setLotDone(true);
+			batchService.update(batch);
 			save(lotCreation);
 		}
 		
