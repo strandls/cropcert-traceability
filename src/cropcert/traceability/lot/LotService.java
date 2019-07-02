@@ -50,9 +50,10 @@ public class LotService extends AbstractService<Lot> {
 		Timestamp timeToFactory    = Timestamp.valueOf(timeToFactoryString);
 		
 		lot.setTimeToFactory(timeToFactory);
-		jsonObject.get(activity);
+		lot.setLotStatus(LotStatus.IN_TRANSPORT);
+		lot = update(lot);
 		
-		Lot lot = update(jsonString);
+		
 		return lot;
 	}
 }

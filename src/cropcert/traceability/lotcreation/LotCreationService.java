@@ -22,6 +22,7 @@ import cropcert.traceability.batch.BatchService;
 import cropcert.traceability.common.AbstractService;
 import cropcert.traceability.lot.Lot;
 import cropcert.traceability.lot.LotService;
+import cropcert.traceability.lot.LotStatus;
 import cropcert.traceability.util.UserUtil;
 
 public class LotCreationService extends AbstractService<LotCreation> {
@@ -51,6 +52,7 @@ public class LotCreationService extends AbstractService<LotCreation> {
 		JSONArray jsonArray = (JSONArray) jsonObject.remove("batchIds");
 		
 		Lot lot = objectMappper.readValue(jsonObject.toString(), Lot.class);
+		lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
 		
 		lot = lotService.save(lot);
 		
