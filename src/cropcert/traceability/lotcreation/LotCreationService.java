@@ -3,6 +3,8 @@ package cropcert.traceability.lotcreation;
 import java.io.IOException;
 import java.sql.Timestamp;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,11 +14,15 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
+import cropcert.traceability.Constants;
+import cropcert.traceability.activity.Activity;
+import cropcert.traceability.activity.ActivityService;
 import cropcert.traceability.batch.Batch;
 import cropcert.traceability.batch.BatchService;
 import cropcert.traceability.common.AbstractService;
 import cropcert.traceability.lot.Lot;
 import cropcert.traceability.lot.LotService;
+import cropcert.traceability.util.UserUtil;
 
 public class LotCreationService extends AbstractService<LotCreation> {
 
@@ -28,13 +34,16 @@ public class LotCreationService extends AbstractService<LotCreation> {
 	
 	@Inject
 	private BatchService batchService;
+	
+	@Inject
+	private ActivityService activityService;
 
 	@Inject
 	public LotCreationService(LotCreationDao dao) {
 		super(dao);
 	}
 
-	public Lot saveInBulk(String jsonString)
+	public Lot saveInBulk(String jsonString, HttpServletRequest request)
 			throws JsonParseException, JsonMappingException, IOException, JSONException {
 		JSONObject jsonObject = new JSONObject(jsonString);
 		
@@ -59,11 +68,20 @@ public class LotCreationService extends AbstractService<LotCreation> {
 			lotCreation.setTimestamp(timestamp);
 			lotCreation.setNote("");
 			
-			
 			// update the batch activity..
 			Batch batch = batchService.findById(batchId);
+			if (batch == null) {
+				throw new JSONException("Invalid batch id found");
+			}
+			batch.setLotDone(true);
 			save(lotCreation);
 		}
+		
+		// Add activity of lot creation.
+		String userId = UserUtil.getUserDetails(request);
+        Activity activity = new Activity(Constants.LOT, lotId, userId,
+                timestamp, "lot_creation", lot.getLotName());
+        activity = activityService.save(activity);
 		
 		return lot;
 	}

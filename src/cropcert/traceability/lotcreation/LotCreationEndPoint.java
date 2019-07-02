@@ -3,6 +3,7 @@ package cropcert.traceability.lotcreation;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -11,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -59,9 +61,9 @@ public class LotCreationEndPoint {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response save(String  jsonString) {
+	public Response save(String  jsonString, @Context HttpServletRequest request) {
 		try {
-			Lot lot = lotCreationService.saveInBulk(jsonString);
+			Lot lot = lotCreationService.saveInBulk(jsonString, request);
 			return Response.status(Status.CREATED).entity(lot).build();
 		} catch(ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();

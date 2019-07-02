@@ -64,7 +64,7 @@ public class Batch implements Serializable {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
     
-    @Column(name = "is_lot_Done")
+    @Column(name = "is_lot_Done", columnDefinition = "boolean default false")
     private Boolean isLotDone;
 
     public Long getBatchId() {
