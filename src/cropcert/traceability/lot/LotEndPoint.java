@@ -115,7 +115,7 @@ public class LotEndPoint {
 	}
 	
 	@PUT
-	@Path("dispatch")
+	@Path("dispatch/factory")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response updateTimeToFactory(String jsonString, @Context HttpServletRequest request) {
@@ -151,6 +151,21 @@ public class LotEndPoint {
 	public Response updateOutTurn(String jsonString, @Context HttpServletRequest request) {
 		try {
 			String response = lotService.updateOutTurn(jsonString, request);
+			return Response.status(Status.CREATED).entity(response).build();
+		} catch (JSONException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@PUT
+	@Path("dispatch/union")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response dispatchToUnion(String jsonString, @Context HttpServletRequest request) {
+		try {
+			String response = lotService.dispatchToUnion(jsonString, request);
 			return Response.status(Status.CREATED).entity(response).build();
 		} catch (JSONException | IOException e) {
 			// TODO Auto-generated catch block

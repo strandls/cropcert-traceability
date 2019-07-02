@@ -118,7 +118,8 @@ public class LotService extends AbstractService<Lot> {
 		return "Updated succesfully";
 	}
 
-	public String dispatchToUnion(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
+	public String dispatchToUnion(String jsonString, HttpServletRequest request) 
+			throws JsonProcessingException, JSONException, IOException {
 		JSONObject jsonObject = new JSONObject(jsonString);
 		JSONArray jsonArray   = jsonObject.getJSONArray("ids");
 		
@@ -139,5 +140,27 @@ public class LotService extends AbstractService<Lot> {
 	        activity = activityService.save(activity);
 		}
 		return "Dispatched to union succesful";
+	}
+
+	public String updateGRNNumer(String jsonString, HttpServletRequest request) 
+			throws JsonProcessingException, JSONException, IOException {
+		JSONObject jsonObject = new JSONObject(jsonString);
+		
+		Long id = jsonObject.getLong("id");
+		Lot lot = findById(id);
+		
+		String grnNumber = jsonObject.get(Constants.GRN_NUMBER).toString();
+		
+		lot.setGrnNumber(grnNumber);
+		lot.setLotStatus(LotStatus.AT_UNION);
+		lot = update(lot);		
+		
+        String userId = UserUtil.getUserDetails(request);
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+                timestamp, Constants.GRN_NUMBER, grnNumber);
+        activity = activityService.save(activity);
+        
+		return "GRN number added successfully";
 	}
 }
