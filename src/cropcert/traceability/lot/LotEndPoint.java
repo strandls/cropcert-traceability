@@ -175,12 +175,12 @@ public class LotEndPoint {
 	}
 	
 	@PUT
-	@Path("dispatch/union")
+	@Path("grn")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response dispatchToUnion(String jsonString, @Context HttpServletRequest request) {
+	public Response updateGRNNumer(String jsonString, @Context HttpServletRequest request) {
 		try {
-			String response = lotService.dispatchToUnion(jsonString, request);
+			String response = lotService.updateGRNNumer(jsonString, request);
 			return Response.status(Status.CREATED).entity(response).build();
 		} catch (JSONException | IOException e) {
 			// TODO Auto-generated catch block
