@@ -1,7 +1,6 @@
 package cropcert.traceability.lot;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
@@ -45,7 +44,7 @@ public class Lot implements Serializable {
 	private Timestamp createdOn;
 	
 	@Column(name = "time_to_factory")
-	private Date timeToFactory;
+	private Timestamp timeToFactory;
 	
 	@Column(name = "milling_time")
 	private Timestamp millingTime;
@@ -56,8 +55,8 @@ public class Lot implements Serializable {
 	@Column(name = "grn_number")
 	private String grnNumber;
 	
-	@Column(name = "quality_report")
-	private Long reportId;
+	@Column(name = "green_analysis_id")
+	private Long greenAnalysisId;
 	
 	@Column(name = "lot_status")
 	private LotStatus lotStatus;
@@ -105,11 +104,11 @@ public class Lot implements Serializable {
 		this.createdOn = createdOn;
 	}
 
-	public Date getTimeToFactory() {
+	public Timestamp getTimeToFactory() {
 		return timeToFactory;
 	}
 
-	public void setTimeToFactory(Date timeToFactory) {
+	public void setTimeToFactory(Timestamp timeToFactory) {
 		this.timeToFactory = timeToFactory;
 	}
 
@@ -136,15 +135,15 @@ public class Lot implements Serializable {
 	public void setGrnNumber(String grnNumber) {
 		this.grnNumber = grnNumber;
 	}
-
-	public Long getReportId() {
-		return reportId;
-	}
-
-	public void setReportId(Long reportId) {
-		this.reportId = reportId;
+	
+	public Long getGreenAnalysisId() {
+		return greenAnalysisId;
 	}
 	
+	public void setGreenAnalysisId(Long greenAnalysisId) {
+		this.greenAnalysisId = greenAnalysisId;
+	}
+
 	public LotStatus getLotStatus() {
 		return lotStatus;
 	}

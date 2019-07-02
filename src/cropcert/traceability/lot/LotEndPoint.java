@@ -23,6 +23,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
+import cropcert.traceability.Constants;
+
 @Path("lot")
 public class LotEndPoint {
 
@@ -81,6 +83,11 @@ public class LotEndPoint {
 		return null;
 	}
 	
+	/**
+	 * Generic update of the lot from json. not recommended to use.
+	 * @param jsonString
+	 * @return
+	 */
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -88,6 +95,21 @@ public class LotEndPoint {
 		Lot lot;
 		try {
 			lot = lotService.update(jsonString);
+			return Response.status(Status.CREATED).entity(lot).build();
+		} catch (JSONException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updateTimeToFactory(String jsonString) {
+		Lot lot;
+		try {
+			lot = lotService.updateTimeToFactory(jsonString);
 			return Response.status(Status.CREATED).entity(lot).build();
 		} catch (JSONException | IOException e) {
 			// TODO Auto-generated catch block

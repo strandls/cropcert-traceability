@@ -58,6 +58,8 @@ public class LotCreationService extends AbstractService<LotCreation> {
 		
 		Long lotId = lot.getId();
 		
+		String userId = UserUtil.getUserDetails(request);
+		
 		// Add traceability for the lot creation.
 		for(int i=0; i<jsonArray.length(); i++) {
 			Long batchId = jsonArray.getLong(i);
@@ -65,6 +67,7 @@ public class LotCreationService extends AbstractService<LotCreation> {
 			LotCreation lotCreation = new LotCreation();
 			lotCreation.setBatchId(batchId);
 			lotCreation.setLotId(lotId);
+			lotCreation.setUserId(userId);
 			lotCreation.setTimestamp(timestamp);
 			lotCreation.setNote("");
 			
@@ -78,7 +81,6 @@ public class LotCreationService extends AbstractService<LotCreation> {
 		}
 		
 		// Add activity of lot creation.
-		String userId = UserUtil.getUserDetails(request);
         Activity activity = new Activity(Constants.LOT, lotId, userId,
                 timestamp, "lot_creation", lot.getLotName());
         activity = activityService.save(activity);
