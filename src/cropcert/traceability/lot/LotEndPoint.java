@@ -56,6 +56,16 @@ public class LotEndPoint {
 		else
 			return lotService.findAll(limit, offset);
 	}
+	
+	@Path("all/{lotStatus}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Lot> getAllByStatus(
+			@DefaultValue("-1") @PathParam("lotStatus") String lotStatus,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		return lotService.getByPropertyWithCondtion("lotStatus", lotStatus, "=", limit, offset);
+	}
 		
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
