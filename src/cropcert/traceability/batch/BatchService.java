@@ -43,6 +43,7 @@ public class BatchService extends AbstractService<Batch> {
             transferTimestamp = new Timestamp(new Date().getTime());
             batch.setCreatedOn(transferTimestamp);
         }
+        batch.setLotDone(false);
         batch = save(batch);
 
         /**
