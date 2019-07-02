@@ -24,9 +24,10 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
+import cropcert.traceability.batch.Batch;
 import cropcert.traceability.lot.Lot;
 
-@Path("lotcreation")
+@Path("lotCreation")
 public class LotCreationEndPoint {
 
 	
@@ -56,6 +57,16 @@ public class LotCreationEndPoint {
 			return lotCreationService.findAll();
 		else
 			return lotCreationService.findAll(limit, offset);
+	}
+	
+	@Path("lotId")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Batch> getBylotId(
+			@DefaultValue("-1") @QueryParam("lotId") String lotId,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		return lotCreationService.getByLotId(lotId, limit, offset);
 	}
 	
 	@POST
