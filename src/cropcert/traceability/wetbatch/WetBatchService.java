@@ -2,7 +2,10 @@ package cropcert.traceability.wetbatch;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,7 +17,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.inject.Inject;
 
+import cropcert.traceability.Constants;
+import cropcert.traceability.activity.Activity;
+import cropcert.traceability.activity.ActivityService;
 import cropcert.traceability.common.AbstractService;
+import cropcert.traceability.util.UserUtil;
 
 public class WetBatchService extends AbstractService<WetBatch> {
     
@@ -22,14 +29,36 @@ public class WetBatchService extends AbstractService<WetBatch> {
     private ObjectMapper objectMappper;
     
     @Inject
+    private ActivityService activityService;
+    
+    @Inject
     public WetBatchService(WetBatchDao dao) {
         super(dao);
     }
     
-    public WetBatch save(String jsonString)
+    public WetBatch save(String jsonString, HttpServletRequest request)
             throws JsonParseException, JsonMappingException, IOException, JSONException {
         WetBatch batch = objectMappper.readValue(jsonString, WetBatch.class);
-        return save(batch);
+        
+        // update the transfer time stamp
+        Timestamp transferTimestamp = batch.getCreatedOn();
+        if (transferTimestamp == null) {
+            transferTimestamp = new Timestamp(new Date().getTime());
+            batch.setCreatedOn(transferTimestamp);
+        }
+        batch.setLotDone(false);
+        batch = save(batch);
+
+        /**
+         * save the activity here.
+         */
+        String userId = UserUtil.getUserDetails(request);
+        Timestamp timestamp = transferTimestamp = new Timestamp(new Date().getTime());
+        Activity activity = new Activity(batch.getClass().getSimpleName(), batch.getBatchId(), userId,
+                timestamp, Constants.BATCH, batch.getBatchName());
+        activity = activityService.save(activity);
+        
+        return batch;
     }
     
     public WetBatch updateStartTime(String jsoString) throws JSONException {
