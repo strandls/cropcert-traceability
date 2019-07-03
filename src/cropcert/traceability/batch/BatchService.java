@@ -38,10 +38,10 @@ public class BatchService extends AbstractService<Batch> {
         Batch batch = objectMappper.readValue(jsonString, Batch.class);
 
         // update the transfer time stamp
-        Timestamp transferTimestamp = batch.getCreatedOn();
-        if (transferTimestamp == null) {
-            transferTimestamp = new Timestamp(new Date().getTime());
-            batch.setCreatedOn(transferTimestamp);
+        Timestamp createdOn = batch.getCreatedOn();
+        if (createdOn == null) {
+            createdOn = new Timestamp(new Date().getTime());
+            batch.setCreatedOn(createdOn);
         }
         batch.setLotDone(false);
         batch = save(batch);
@@ -50,7 +50,7 @@ public class BatchService extends AbstractService<Batch> {
          * save the activity here.
          */
         String userId = UserUtil.getUserDetails(request);
-        Timestamp timestamp = transferTimestamp = new Timestamp(new Date().getTime());
+        Timestamp timestamp = createdOn = new Timestamp(new Date().getTime());
         Activity activity = new Activity(batch.getClass().getSimpleName(), batch.getBatchId(), userId,
                 timestamp, Constants.BATCH, batch.getBatchName());
         activity = activityService.save(activity);

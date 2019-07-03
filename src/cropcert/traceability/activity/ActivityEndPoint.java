@@ -22,6 +22,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
+import cropcert.traceability.lot.Lot;
+
 @Path("activity")
 public class ActivityEndPoint {
 
@@ -62,6 +64,18 @@ public class ActivityEndPoint {
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		return activityService.getByPropertyWithCondtion("ccCode", ccCode, "=", limit, offset);
+	}
+	
+	@Path("lot")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Activity> getByLotId(
+			@DefaultValue("-1") @QueryParam("lotId") Long lotId,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		String [] properties = {"objectType", "objectId"};
+		Object [] values     = {Lot.class.getSimpleName(), lotId};
+		return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
 	}
 	
 	@POST
