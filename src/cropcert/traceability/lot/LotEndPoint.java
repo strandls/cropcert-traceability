@@ -175,7 +175,7 @@ public class LotEndPoint {
 	}
 	
 	@PUT
-	@Path("grn")
+	@Path("grnNumber")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response updateGRNNumer(String jsonString, @Context HttpServletRequest request) {
