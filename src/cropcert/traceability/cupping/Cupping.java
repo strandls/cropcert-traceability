@@ -35,6 +35,9 @@ public class Cupping implements Serializable {
 	@Column(name = "lot_id")
     private Long lotId;
 	
+	@Column(name = "lot_name")
+    private String lotName;
+	
 	@Column(name = "cupping_date")
 	private Date date;
 	
@@ -109,6 +112,14 @@ public class Cupping implements Serializable {
 	
 	public void setLotId(Long lotId) {
 		this.lotId = lotId;
+	}
+	
+	public String getLotName() {
+		return lotName;
+	}
+	
+	public void setLotName(String lotName) {
+		this.lotName = lotName;
 	}
 
 	public Date getDate() {
