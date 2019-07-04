@@ -14,10 +14,8 @@ import java.util.List;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Scopes;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.sun.jersey.guice.JerseyServletModule;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
@@ -53,13 +51,10 @@ public class TraceabilityServletContextListener extends GuiceServletContextListe
 				SessionFactory sessionFactory = configuration.buildSessionFactory();
 				
 				bind(SessionFactory.class).toInstance(sessionFactory);
-				bind(ObjectMapper.class).in(Scopes.SINGLETON);
-				bind(Ping.class).in(Scopes.SINGLETON);
-				bind(Logout.class).in(Scopes.SINGLETON);
 				
 				serve("/*").with(GuiceContainer.class);
 			}
-		}, new WetBatchModule(), new BatchModule(), new LotModule(), new LotCreationModule(), 
+		}, new MainModule(), new WetBatchModule(), new BatchModule(), new LotModule(), new LotCreationModule(), 
 				new CuppingModule(), new QualityReportModule(), new ActivityModule());
 		return injector; 
 	}
