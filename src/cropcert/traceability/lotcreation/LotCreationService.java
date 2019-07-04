@@ -3,7 +3,9 @@ package cropcert.traceability.lotcreation;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -87,7 +89,7 @@ public class LotCreationService extends AbstractService<LotCreation> {
 		
 		// Add activity of lot creation.
         Activity activity = new Activity(lot.getClass().getSimpleName(), lotId, userId,
-                timestamp, Constants.LOT, lot.getLotName());
+                timestamp, Constants.LOT_CREATION, lot.getLotName());
         activity = activityService.save(activity);
 		
 		return lot;
@@ -104,5 +106,20 @@ public class LotCreationService extends AbstractService<LotCreation> {
 			batches.add(batch);
 		}
 		return batches;
+	}
+
+	public List<Long> getLotOrigins(String lotIdString) {
+		Long lotId = Long.parseLong(lotIdString);
+		List<LotCreation> lotCreations = getByPropertyWithCondtion("lotId", lotId, "=", -1, -1);
+		List<Batch> batches = new ArrayList<Batch>();
+		Set<Long> ccCodes = new HashSet<Long>();
+		for (int i = 0; i < lotCreations.size(); i++) {
+			LotCreation lotCreation = lotCreations.get(i);
+			Long batchId = lotCreation.getBatchId();
+			Batch batch = batchService.findById(batchId);
+			ccCodes.add(batch.getCcCode());
+			batches.add(batch);
+		}
+		return new ArrayList<Long>(ccCodes);
 	}
 }

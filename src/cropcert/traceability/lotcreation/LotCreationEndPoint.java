@@ -69,6 +69,13 @@ public class LotCreationEndPoint {
 		return lotCreationService.getByLotId(lotId, limit, offset);
 	}
 	
+	@Path("lot/origin")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Long> getLotOrigins(@DefaultValue("-1") @QueryParam("lotId") String lotId) {
+		return lotCreationService.getLotOrigins(lotId);
+	}
+	
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
