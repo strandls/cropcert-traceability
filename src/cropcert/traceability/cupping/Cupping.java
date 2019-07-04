@@ -47,8 +47,8 @@ public class Cupping implements Serializable {
 	@Column(name = "cfa")
 	private String cfa;
 	
-	@Column(name = "cc_code")
-	private int ccCode;
+	@Column(name = "cc_name")
+	private String ccName;
 
 	@Column(name = "cupper")
 	private String cupper;
@@ -146,14 +146,14 @@ public class Cupping implements Serializable {
 		this.cfa = cfa;
 	}
 
-	public int getCcCode() {
-		return ccCode;
+	public String getCcName() {
+		return ccName;
 	}
-
-	public void setCcCode(int ccCode) {
-		this.ccCode = ccCode;
+	
+	public void setCcName(String ccName) {
+		this.ccName = ccName;
 	}
-
+	
 	public String getCupper() {
 		return cupper;
 	}
