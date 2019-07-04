@@ -3,6 +3,7 @@ package cropcert.traceability.activity;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -11,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -22,7 +24,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
+import cropcert.traceability.batch.Batch;
 import cropcert.traceability.lot.Lot;
+import cropcert.traceability.util.UserUtil;
 
 @Path("activity")
 public class ActivityEndPoint {
@@ -56,14 +60,21 @@ public class ActivityEndPoint {
 			return activityService.findAll(limit, offset);
 	}
 	
-	@Path("cc")
+	@Path("batch")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Activity> getByCcCode(
-			@DefaultValue("-1") @QueryParam("ccCode") Long ccCode,
+	public List<Activity> getByBatchId(
+			@DefaultValue("-1") @QueryParam("batchId") Long batchId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return activityService.getByPropertyWithCondtion("ccCode", ccCode, "=", limit, offset);
+		if(batchId == -1) {
+			String [] properties = {"objectType"};
+			Object [] values     = {Batch.class.getSimpleName()};
+			return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		}
+		String [] properties = {"objectType", "objectId"};
+		Object [] values     = {Batch.class.getSimpleName(), batchId};
+		return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
 	}
 	
 	@Path("lot")
@@ -73,8 +84,70 @@ public class ActivityEndPoint {
 			@DefaultValue("-1") @QueryParam("lotId") Long lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		if(lotId == -1) {
+			String [] properties = {"objectType"};
+			Object [] values     = {Lot.class.getSimpleName()};
+			return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		}
 		String [] properties = {"objectType", "objectId"};
 		Object [] values     = {Lot.class.getSimpleName(), lotId};
+		return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+	}
+	
+	@Path("user")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Activity> getByUserId(
+			@DefaultValue("") @QueryParam("userId") String userId,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset,
+			@Context HttpServletRequest request) {
+		if("".equals(userId) || userId == null)
+			userId = UserUtil.getUserDetails(request);
+		String [] properties = {"userId"};
+		Object [] values     = {userId};
+		return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+	}
+	
+	@Path("lot/user")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Activity> getByLotAndUserId(
+			@DefaultValue("-1") @QueryParam("lotId") Long lotId,
+			@DefaultValue("") @QueryParam("userId") String userId,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset,
+			@Context HttpServletRequest request) {
+		if("".equals(userId) || userId == null)
+			userId = UserUtil.getUserDetails(request);
+		if(lotId == -1) {
+			String [] properties = {"objectType", "userId"};
+			Object [] values     = {Lot.class.getSimpleName(), userId};
+			return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		}
+		String [] properties = {"objectType", "objectId", "userId"};
+		Object [] values     = {Lot.class.getSimpleName(), lotId, userId};
+		return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+	}
+	
+	@Path("batch/user")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<Activity> getByBatchAndUserId(
+			@DefaultValue("-1") @QueryParam("batchId") Long batchId,
+			@DefaultValue("") @QueryParam("userId") String userId,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset,
+			@Context HttpServletRequest request) {
+		if("".equals(userId) || userId == null)
+			userId = UserUtil.getUserDetails(request);
+		if(batchId == -1) {
+			String [] properties = {"objectType", "userId"};
+			Object [] values     = {Batch.class.getSimpleName(), userId};
+			return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		}
+		String [] properties = {"objectType", "objectId", "userId"};
+		Object [] values     = {Batch.class.getSimpleName(), batchId, userId};
 		return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
 	}
 	
