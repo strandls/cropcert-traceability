@@ -34,7 +34,7 @@ public class Lot implements Serializable {
 	@Column(name = "lot_name")
 	private String lotName;
 	
-	@Column(name = "coCode")
+	@Column(name = "co_code")
 	private Long coCode;
 	
 	@Column(name = "quantity")
