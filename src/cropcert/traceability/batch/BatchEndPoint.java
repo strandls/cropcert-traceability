@@ -65,9 +65,12 @@ public class BatchEndPoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Batch> getByCcCodes(
 			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
+			@DefaultValue("false") @QueryParam("isLotDone") Boolean isLotDone,
+			@DefaultValue("true") @QueryParam("isReadyForLot") Boolean isReadyForLot,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return batchService.getByPropertyfromArray("ccCode", ccCodes, limit, offset);
+		
+		return batchService.getByPropertyfromArray("ccCode", ccCodes, isLotDone, isReadyForLot, limit, offset);
 	}
 	
 	@POST

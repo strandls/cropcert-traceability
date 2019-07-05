@@ -43,6 +43,7 @@ public class BatchService extends AbstractService<Batch> {
             createdOn = new Timestamp(new Date().getTime());
             batch.setCreatedOn(createdOn);
         }
+        batch.setReadyForLot(true);
         batch.setLotDone(false);
         batch = save(batch);
 
@@ -61,12 +62,12 @@ public class BatchService extends AbstractService<Batch> {
     /*
 	 * This object list is the comma separated value.
      */
-    public List<Batch> getByPropertyfromArray(String property, String objectList, int limit, int offset) {
+    public List<Batch> getByPropertyfromArray(String property, String objectList, Boolean isLotDone, Boolean isReadyForLot, int limit, int offset) {
         Object[] values = objectList.split(",");
         Long[] longValues = new Long[values.length];
         for (int i = 0; i < values.length; i++) {
             longValues[i] = Long.parseLong(values[i].toString());
         }
-        return dao.getByPropertyfromArray(property, longValues, limit, offset);
+        return ((BatchDao)dao).getByPropertyfromArray(property, longValues, isLotDone, isReadyForLot, limit, offset);
     }
 }

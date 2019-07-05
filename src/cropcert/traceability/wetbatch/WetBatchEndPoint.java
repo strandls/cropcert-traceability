@@ -62,9 +62,11 @@ public class WetBatchEndPoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<WetBatch> getByCcCodes(
 			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
+			@DefaultValue("false") @QueryParam("isLotDone") Boolean isLotDone,
+			@DefaultValue("true") @QueryParam("isReadyForLot") Boolean isReadyForLot,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return wetbatchService.getByPropertyfromArray("ccCode", ccCodes, limit, offset);
+		return wetbatchService.getByPropertyfromArray("ccCode", ccCodes, isLotDone, isReadyForLot, limit, offset);
 	}
 	
 	@POST
@@ -90,6 +92,20 @@ public class WetBatchEndPoint {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return null;
+	}
+	
+	@PUT
+	@Path("readyForLot")
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updateReadyForLot(String jsonString) {
+		try {
+			wetbatchService.updateReadyForLot(jsonString);
+			return Response.status(Status.OK).build();
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		return null;
 	}
 	

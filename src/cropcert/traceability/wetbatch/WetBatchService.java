@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,6 +47,7 @@ public class WetBatchService extends AbstractService<WetBatch> {
             transferTimestamp = new Timestamp(new Date().getTime());
             batch.setCreatedOn(transferTimestamp);
         }
+        batch.setReadyForLot(false);
         batch.setLotDone(false);
         batch = save(batch);
 
@@ -110,12 +112,23 @@ public class WetBatchService extends AbstractService<WetBatch> {
 		return wetBatch;
 	}
 
-	public List<WetBatch> getByPropertyfromArray(String property, String ccCodes, Integer limit, Integer offset) {
+	public List<WetBatch> getByPropertyfromArray(String property, String ccCodes, Boolean isLotDone, Boolean isReadyForLot, Integer limit, Integer offset) {
 		Object[] values = ccCodes.split(",");
         Long[] longValues = new Long[values.length];
         for (int i = 0; i < values.length; i++) {
             longValues[i] = Long.parseLong(values[i].toString());
         }
-        return dao.getByPropertyfromArray(property, longValues, limit, offset);
+        return ((WetBatchDao) dao).getByPropertyfromArray(property, longValues, isLotDone, isReadyForLot, limit, offset);
+	}
+
+	public void updateReadyForLot(String jsonString) throws JSONException {
+		JSONArray jsonArray = new JSONObject(jsonString).getJSONArray("batchIds");
+		for (int i = 0; i < jsonArray.length(); i++) {
+			Long batchId = jsonArray.getLong(i);
+			WetBatch batch = dao.findById(batchId);
+			batch.setReadyForLot(true);
+			dao.update(batch);
+		}
+		
 	}
 }

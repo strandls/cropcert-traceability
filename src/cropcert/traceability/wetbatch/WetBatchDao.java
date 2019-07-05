@@ -34,7 +34,7 @@ public class WetBatchDao extends AbstractDao<WetBatch, Long>{
 		return entity;
 	}
 	
-	public List<WetBatch> getByPropertyfromArray(String property, Object[] values, int limit, int offset) {
+	public List<WetBatch> getByPropertyfromArray(String property, Object[] values, Boolean isLotDone, Boolean isReadyForLot, int limit, int offset) {
 		
 		/*
 		 * queary to get all batches from collection center ids specified in the values and 
@@ -42,8 +42,10 @@ public class WetBatchDao extends AbstractDao<WetBatch, Long>{
 		 */
 		String queryStr = "" +
 			    "from "+daoType.getSimpleName()+" t " +
-			    "where t."+property+" in (:values) and isLotDone = false" +
-			    " order by id";
+			    "where t."+property+" in (:values) and "
+			    		+ " isLotDone = " + isLotDone + " and "
+			    		+ " isReadyForLot = " + isReadyForLot 
+			    		+ " order by id";
 		Session session = sessionFactory.openSession();
 		Query query = session.createQuery(queryStr);
 		query.setParameterList("values", values);

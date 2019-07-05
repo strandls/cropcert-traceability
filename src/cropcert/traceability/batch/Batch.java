@@ -64,6 +64,9 @@ public class Batch implements Serializable {
     @Column(name = "is_deleted")
     private Boolean isDeleted;
     
+    @Column(name = "is_ready_for_lot")
+    private Boolean isReadyForLot;
+    
     @Column(name = "is_lot_Done")
     private Boolean isLotDone;
 
@@ -134,6 +137,14 @@ public class Batch implements Serializable {
 
 	public void setDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
+	}
+	
+	public Boolean isReadyForLot() {
+		return isReadyForLot;
+	}
+	
+	public void setReadyForLot(Boolean isReadyForLot) {
+		this.isReadyForLot = isReadyForLot;
 	}
 
 	public Boolean isLotDone() {
