@@ -34,6 +34,9 @@ public class Lot implements Serializable {
 	@Column(name = "lot_name")
 	private String lotName;
 	
+	@Column(name = "coCode")
+	private Long coCode;
+	
 	@Column(name = "quantity")
 	private float quantity;
 	
@@ -80,6 +83,14 @@ public class Lot implements Serializable {
 		this.lotName = lotName;
 	}
 
+	public Long getCoCode() {
+		return coCode;
+	}
+	
+	public void setCoCode(Long coCode) {
+		this.coCode = coCode;
+	}
+	
 	public float getQuantity() {
 		return quantity;
 	}

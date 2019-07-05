@@ -1,7 +1,13 @@
 package cropcert.traceability.lot;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.NoResultException;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 import com.google.inject.Inject;
 
@@ -26,6 +32,29 @@ public class LotDao extends AbstractDao<Lot, Long>{
 			session.close();
 		}
 		return entity;
+	}
+	
+	public List<Lot> getByPropertyfromArray(String property, Object[] values, LotStatus lotStatus, int limit, int offset) {
+		String queryStr = "" +
+			    "from "+daoType.getSimpleName()+" t " +
+			    "where t."+property+" in (:values) and " +
+			    " lotStatus = " + lotStatus +
+			    " order by id";
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery(queryStr);
+		query.setParameterList("values", values);
+
+		List<Lot> resultList = new ArrayList<Lot>();
+		try {
+			if(limit>0 && offset >= 0)
+				query = query.setFirstResult(offset).setMaxResults(limit);
+			resultList = query.getResultList();
+			
+		} catch (NoResultException e) {
+			throw e;
+		}
+		session.close();
+		return resultList;
 	}
 
 }

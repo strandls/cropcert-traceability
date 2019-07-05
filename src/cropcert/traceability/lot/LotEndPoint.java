@@ -62,10 +62,10 @@ public class LotEndPoint {
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<Lot> getAllByStatus(
 			@DefaultValue("-1") @PathParam("lotStatus") String lotStatusString,
+			@DefaultValue("-1") @QueryParam("coCodes") String coCodes,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		LotStatus lotStatus = LotStatus.fromValue(lotStatusString);
-		return lotService.getByPropertyWithCondtion("lotStatus", lotStatus, "=", limit, offset);
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {		
+		return lotService.getByStatusAndUnion(lotStatusString, coCodes, limit, offset);
 	}
 		
 	@POST
