@@ -38,11 +38,12 @@ public class LotDao extends AbstractDao<Lot, Long>{
 		String queryStr = "" +
 			    "from "+daoType.getSimpleName()+" t " +
 			    "where t."+property+" in (:values) and " +
-			    " lotStatus = " + lotStatus +
+			    " t.lotStatus = :lotStatus" +
 			    " order by id";
 		Session session = sessionFactory.openSession();
 		Query query = session.createQuery(queryStr);
 		query.setParameterList("values", values);
+                query.setParameter("lotStatus", lotStatus);
 
 		List<Lot> resultList = new ArrayList<Lot>();
 		try {
