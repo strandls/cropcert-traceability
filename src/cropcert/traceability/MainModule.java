@@ -10,6 +10,5 @@ public class MainModule extends AbstractModule {
 		bind(ObjectMapper.class).in(Scopes.SINGLETON);
 		bind(Ping.class).in(Scopes.SINGLETON);
 		bind(Logout.class).in(Scopes.SINGLETON);
-		bind(JavaClient.class).in(Scopes.SINGLETON);
 	}
 }
