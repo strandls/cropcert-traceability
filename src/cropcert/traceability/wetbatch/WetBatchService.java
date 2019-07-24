@@ -25,22 +25,22 @@ import cropcert.traceability.common.AbstractService;
 import cropcert.traceability.util.UserUtil;
 
 public class WetBatchService extends AbstractService<WetBatch> {
-    
+
     @Inject
     private ObjectMapper objectMappper;
-    
+
     @Inject
     private ActivityService activityService;
-    
+
     @Inject
     public WetBatchService(WetBatchDao dao) {
         super(dao);
     }
-    
+
     public WetBatch save(String jsonString, HttpServletRequest request)
             throws JsonParseException, JsonMappingException, IOException, JSONException {
         WetBatch batch = objectMappper.readValue(jsonString, WetBatch.class);
-        
+
         // update the transfer time stamp
         Timestamp transferTimestamp = batch.getCreatedOn();
         if (transferTimestamp == null) {
@@ -59,76 +59,76 @@ public class WetBatchService extends AbstractService<WetBatch> {
         Activity activity = new Activity(batch.getClass().getSimpleName(), batch.getBatchId(), userId,
                 timestamp, Constants.BATCH, batch.getBatchName());
         activity = activityService.save(activity);
-        
+
         return batch;
     }
-    
+
     public WetBatch updateStartTime(String jsoString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsoString);
         Long id = jsonObject.getLong("id");
-        Timestamp startTime = Timestamp.valueOf(jsonObject.get("startTime").toString());
-        
+        Timestamp startTime = new Timestamp((Long) jsonObject.get("startTime"));
+
         WetBatch wetBatch = findById(id);
         wetBatch.setStartTime(startTime);
         return update(wetBatch);
     }
-    
+
     public WetBatch updateFermentationEndTime(String jsoString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsoString);
         Long id = jsonObject.getLong("id");
-        Timestamp fermentationEndTime = Timestamp.valueOf(jsonObject.get("fermentationEndTime").toString());
-        
+        Timestamp fermentationEndTime = new Timestamp((Long) jsonObject.get("fermentationEndTime"));
+
         WetBatch wetBatch = findById(id);
         wetBatch.setFermentationEndTime(fermentationEndTime);
         return update(wetBatch);
     }
-    
+
     public WetBatch updateDryingEndTime(String jsoString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsoString);
         Long id = jsonObject.getLong("id");
-        Timestamp dryingEndTime = Timestamp.valueOf(jsonObject.get("dryingEndTime").toString());
-        
+        Timestamp dryingEndTime = new Timestamp((Long) jsonObject.get("dryingEndTime"));
+
         WetBatch wetBatch = findById(id);
         wetBatch.setDryingEndTime(dryingEndTime);
         return update(wetBatch);
     }
-    
+
     public WetBatch updatePerchmentQuantity(String jsoString) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsoString);
         Long id = jsonObject.getLong("id");
         float perchmentQuantity = Float.parseFloat(jsonObject.get("perchmentQuantity").toString());
-        
+
         WetBatch wetBatch = findById(id);
         wetBatch.setPerchmentQuantity(perchmentQuantity);
         return update(wetBatch);
     }
 
-	public WetBatch update(String jsonString) throws JSONException, JsonProcessingException, IOException {
-		Long id = new JSONObject(jsonString).getLong("id");
-		WetBatch wetBatch = findById(id);
-		ObjectReader objectReader = objectMappper.readerForUpdating(wetBatch);
-		wetBatch = objectReader.readValue(jsonString);
-		wetBatch = update(wetBatch);
-		return wetBatch;
-	}
+    public WetBatch update(String jsonString) throws JSONException, JsonProcessingException, IOException {
+        Long id = new JSONObject(jsonString).getLong("id");
+        WetBatch wetBatch = findById(id);
+        ObjectReader objectReader = objectMappper.readerForUpdating(wetBatch);
+        wetBatch = objectReader.readValue(jsonString);
+        wetBatch = update(wetBatch);
+        return wetBatch;
+    }
 
-	public List<WetBatch> getByPropertyfromArray(String property, String ccCodes, Boolean isLotDone, Boolean isReadyForLot, Integer limit, Integer offset) {
-		Object[] values = ccCodes.split(",");
+    public List<WetBatch> getByPropertyfromArray(String property, String ccCodes, Boolean isLotDone, Boolean isReadyForLot, Integer limit, Integer offset) {
+        Object[] values = ccCodes.split(",");
         Long[] longValues = new Long[values.length];
         for (int i = 0; i < values.length; i++) {
             longValues[i] = Long.parseLong(values[i].toString());
         }
         return ((WetBatchDao) dao).getByPropertyfromArray(property, longValues, isLotDone, isReadyForLot, limit, offset);
-	}
+    }
 
-	public void updateReadyForLot(String jsonString) throws JSONException {
-		JSONArray jsonArray = new JSONObject(jsonString).getJSONArray("batchIds");
-		for (int i = 0; i < jsonArray.length(); i++) {
-			Long batchId = jsonArray.getLong(i);
-			WetBatch batch = dao.findById(batchId);
-			batch.setReadyForLot(true);
-			dao.update(batch);
-		}
-		
-	}
+    public void updateReadyForLot(String jsonString) throws JSONException {
+        JSONArray jsonArray = new JSONObject(jsonString).getJSONArray("batchIds");
+        for (int i = 0; i < jsonArray.length(); i++) {
+            Long batchId = jsonArray.getLong(i);
+            WetBatch batch = dao.findById(batchId);
+            batch.setReadyForLot(true);
+            dao.update(batch);
+        }
+
+    }
 }
