@@ -111,14 +111,12 @@ public class LotCreationService extends AbstractService<LotCreation> {
 	public List<Long> getLotOrigins(String lotIdString) {
 		Long lotId = Long.parseLong(lotIdString);
 		List<LotCreation> lotCreations = getByPropertyWithCondtion("lotId", lotId, "=", -1, -1);
-		List<Batch> batches = new ArrayList<Batch>();
 		Set<Long> ccCodes = new HashSet<Long>();
 		for (int i = 0; i < lotCreations.size(); i++) {
 			LotCreation lotCreation = lotCreations.get(i);
 			Long batchId = lotCreation.getBatchId();
 			Batch batch = batchService.findById(batchId);
 			ccCodes.add(batch.getCcCode());
-			batches.add(batch);
 		}
 		return new ArrayList<Long>(ccCodes);
 	}
