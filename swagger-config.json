@@ -1,0 +1,14 @@
+{
+    "modelPackage": "cropcert.traceability.model",
+    "apiPackage": "cropcert.traceability.api",
+    "invokerPackage": "cropcert.traceability",
+    "groupId": "cropcert",
+    "artifactId": "traceability",
+    "artifactVersion": "1.0.0",
+    "fullJavaUtil": true,
+    "dateLibrary": "java8",
+    "library": "jersey1",
+    "developerName": "Vilay Kandi",
+    "developerEmail": "vilayk@strandls.com",
+    "java8": true
+} 
