@@ -28,6 +28,7 @@ import com.google.inject.Inject;
 import cropcert.traceability.model.WetBatch;
 import cropcert.traceability.service.WetBatchService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Path("wetbatch")
 @Api("Wet Batch")
@@ -45,6 +46,9 @@ public class WetBatchApi {
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get the wet batch by id",
+			response = WetBatch.class)
 	public Response find(@PathParam("id") Long id) {
 		WetBatch wetBatch = wetbatchService.findById(id);
 		return Response.status(Status.CREATED).entity(wetBatch).build();
@@ -53,6 +57,9 @@ public class WetBatchApi {
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get list of all the wet batches",
+			response = List.class)
 	public List<WetBatch> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
@@ -65,6 +72,9 @@ public class WetBatchApi {
 	@Path("cc")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get list of wet batches by cc codes",
+			response = WetBatch.class)
 	public List<WetBatch> getByCcCodes(
 			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
 			@DefaultValue("false") @QueryParam("isLotDone") Boolean isLotDone,
@@ -77,6 +87,9 @@ public class WetBatchApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Save the wet batch",
+			response = WetBatch.class)
 	public Response save(String  jsonString, @Context HttpServletRequest request) {
 		try {
 			WetBatch wetBatch = wetbatchService.save(jsonString, request);
@@ -103,6 +116,9 @@ public class WetBatchApi {
 	@PUT
 	@Path("readyForLot")
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "update the wet batch for lot creation",
+			response = WetBatch.class)
 	public Response updateReadyForLot(String jsonString) {
 		try {
 			wetbatchService.updateReadyForLot(jsonString);
@@ -115,24 +131,12 @@ public class WetBatchApi {
 	}
 	
 	@PUT
-	@Produces
-	@Consumes
-	public WetBatch update(String jsonString) {
-		WetBatch wetBatch;
-		try {
-			wetBatch = wetbatchService.update(jsonString);
-			return wetBatch;
-		} catch (JSONException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	@PUT
 	@Path("startTime")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "update the wet batch for start time",
+			response = WetBatch.class)
 	public WetBatch updateStartTime(String jsonString) throws JSONException {
 		WetBatch wetBatch = wetbatchService.updateStartTime(jsonString);
 		return wetBatch;
@@ -142,6 +146,9 @@ public class WetBatchApi {
 	@Path("fermentationEndTime")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "update the wet batch for fermentation time",
+			response = WetBatch.class)
 	public WetBatch updateFermentationEndTime(String jsonString) throws JSONException {
 		WetBatch wetBatch = wetbatchService.updateFermentationEndTime(jsonString);
 		return wetBatch;
@@ -151,6 +158,9 @@ public class WetBatchApi {
 	@Path("dryingEndTime")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "update the wet batch for drying time",
+			response = WetBatch.class)
 	public WetBatch updateDryingEndTime(String jsonString) throws JSONException {
 		WetBatch wetBatch = wetbatchService.updateDryingEndTime(jsonString);
 		return wetBatch;
@@ -160,6 +170,9 @@ public class WetBatchApi {
 	@Path("perchmentQuantity")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "update the wet batch for perchment quantity",
+			response = WetBatch.class)
 	public WetBatch updatePerchmentQuantity(String jsonString) throws JSONException {
 		WetBatch wetBatch = wetbatchService.updatePerchmentQuantity(jsonString);
 		return wetBatch;

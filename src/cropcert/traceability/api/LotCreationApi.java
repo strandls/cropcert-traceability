@@ -29,67 +29,71 @@ import cropcert.traceability.model.Lot;
 import cropcert.traceability.model.LotCreation;
 import cropcert.traceability.service.LotCreationService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Path("lotCreation")
 @Api("Lot creation")
 public class LotCreationApi {
-	
+
 	private LotCreationService lotCreationService;
-	
+
 	@Inject
 	public LotCreationApi(LotCreationService batchProductionService) {
 		this.lotCreationService = batchProductionService;
 	}
-	
+
 	@Path("{id}")
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = LotCreation.class, value = "Get lot creation entry by id", notes = "This method is not required to call, bit tricky")
 	public Response find(@PathParam("id") Long id) {
 		LotCreation lotCreation = lotCreationService.findById(id);
 		return Response.status(Status.CREATED).entity(lotCreation).build();
 	}
-	
+
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<LotCreation> findAll(
-			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+	@ApiOperation(response = List.class, value = "Get list of lot creation")
+	public List<LotCreation> findAll(@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		if(limit==-1 || offset ==-1)
+		if (limit == -1 || offset == -1)
 			return lotCreationService.findAll();
 		else
 			return lotCreationService.findAll(limit, offset);
 	}
-	
+
 	@Path("lotId")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<Batch> getBylotId(
-			@DefaultValue("-1") @QueryParam("lotId") String lotId,
+	@ApiOperation(response = List.class, value = "Get list of all the lot creation entries, whoes lot id is given")
+	public List<Batch> getBylotId(@DefaultValue("-1") @QueryParam("lotId") String lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		return lotCreationService.getByLotId(lotId, limit, offset);
 	}
-	
+
 	@Path("lot/origin")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = List.class, value = "Collection center ids of the lot creation")
 	public List<Long> getLotOrigins(@DefaultValue("-1") @QueryParam("lotId") String lotId) {
 		return lotCreationService.getLotOrigins(lotId);
 	}
-	
+
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response save(String  jsonString, @Context HttpServletRequest request) {
+	@ApiOperation(response = List.class, value = "Lot creation", notes = "Here you save the lot with the help of multiple lot creation ids."
+			+ "This is the where we keep trace of traceability")
+	public Response save(String jsonString, @Context HttpServletRequest request) {
 		try {
 			Lot lot = lotCreationService.saveInBulk(jsonString, request);
 			return Response.status(Status.CREATED).entity(lot).build();
-		} catch(ConstraintViolationException e) {
+		} catch (ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
-		}
-		catch (JsonParseException e) {
+		} catch (JsonParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JsonMappingException e) {

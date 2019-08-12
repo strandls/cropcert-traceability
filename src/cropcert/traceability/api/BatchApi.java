@@ -28,6 +28,7 @@ import cropcert.traceability.model.Batch;
 import cropcert.traceability.service.BatchService;
 import cropcert.traceability.util.UserUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Path("batch")
 @Api("Batch")
@@ -45,6 +46,9 @@ public class BatchApi {
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get the batch by id",
+			response = Batch.class)
 	public Response find(@PathParam("id") Long id, @Context HttpServletRequest request) {
 		Batch batchProduction = batchService.findById(id);
 		String user = UserUtil.getUserDetails(request);
@@ -55,6 +59,9 @@ public class BatchApi {
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get all the batches",
+			response = List.class)
 	public List<Batch> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
@@ -67,6 +74,9 @@ public class BatchApi {
 	@Path("cc")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get list of batches by cc codes",
+			response = List.class)
 	public List<Batch> getByCcCodes(
 			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
 			@DefaultValue("false") @QueryParam("isLotDone") Boolean isLotDone,
@@ -80,6 +90,9 @@ public class BatchApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Save the batch",
+			response = Batch.class)
 	public Response save(String  jsonString, @Context HttpServletRequest request) {
 		try {
 			Batch batchProduction = batchService.save(jsonString, request);

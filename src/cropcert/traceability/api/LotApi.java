@@ -28,9 +28,11 @@ import com.google.inject.Inject;
 import cropcert.traceability.model.Lot;
 import cropcert.traceability.service.LotService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Path("lot")
 @Api("Lot")
+@ApiOperation("")
 public class LotApi {
 	
 	private LotService lotService;
@@ -44,6 +46,7 @@ public class LotApi {
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(response=Lot.class, value = "Find the lot by its id")
 	public Response find(@PathParam("id") Long id) {
 		Lot lot = lotService.findById(id);
 		return Response.status(Status.CREATED).entity(lot).build();
@@ -52,6 +55,7 @@ public class LotApi {
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(response=List.class, value = "Get all the Lots")
 	public List<Lot> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
@@ -64,6 +68,7 @@ public class LotApi {
 	@Path("all/{lotStatus}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(response=List.class, value = "Get all the Lots by the status")
 	public List<Lot> getAllByStatus(
 			@DefaultValue("-1") @PathParam("lotStatus") String lotStatusString,
 			@DefaultValue("-1") @QueryParam("coCodes") String coCodes,
@@ -75,6 +80,7 @@ public class LotApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response=Lot.class, value = "save the lot")
 	public Response save(String  jsonString) {
 		try {
 			Lot lot = lotService.save(jsonString);
@@ -98,30 +104,11 @@ public class LotApi {
 		return null;
 	}
 	
-	/**
-	 * Generic update of the lot from json. not recommended to use.
-	 * @param jsonString
-	 * @return
-	 */
-	@PUT
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response update(String jsonString) {
-		Lot lot;
-		try {
-			lot = lotService.update(jsonString);
-			return Response.status(Status.CREATED).entity(lot).build();
-		} catch (JSONException | IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
 	@PUT
 	@Path("dispatch/factory")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response=Lot.class, value = "update time to factory")
 	public Response updateTimeToFactory(String jsonString, @Context HttpServletRequest request) {
 		try {
 			String response = lotService.updateTimeToFactory(jsonString, request);
@@ -137,6 +124,7 @@ public class LotApi {
 	@Path("millingTime")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response=Lot.class, value = "update time for milling")
 	public Response updateMillingTime(String jsonString, @Context HttpServletRequest request) {
 		try {
 			String response = lotService.updateMillingTime(jsonString, request);
@@ -152,6 +140,7 @@ public class LotApi {
 	@Path("outTurn")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response=Lot.class, value = "update out turn time")
 	public Response updateOutTurn(String jsonString, @Context HttpServletRequest request) {
 		try {
 			String response = lotService.updateOutTurn(jsonString, request);
@@ -167,6 +156,7 @@ public class LotApi {
 	@Path("dispatch/union")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response=Lot.class, value = "update time to dispatch")
 	public Response dispatchToUnion(String jsonString, @Context HttpServletRequest request) {
 		try {
 			String response = lotService.dispatchToUnion(jsonString, request);
@@ -182,6 +172,7 @@ public class LotApi {
 	@Path("grnNumber")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response=Lot.class, value = "update grnNumber to factory")
 	public Response updateGRNNumer(String jsonString, @Context HttpServletRequest request) {
 		try {
 			String response = lotService.updateGRNNumer(jsonString, request);

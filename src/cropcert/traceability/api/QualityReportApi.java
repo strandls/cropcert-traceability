@@ -25,6 +25,7 @@ import com.google.inject.Inject;
 import cropcert.traceability.model.QualityReport;
 import cropcert.traceability.service.QualityReportService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Path("report")
 @Api("Quality report")
@@ -42,6 +43,9 @@ public class QualityReportApi {
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get the report by id",
+			response = QualityReport.class)
 	public Response find(@PathParam("id") Long id) {
 		QualityReport qualityReport = qualityReportService.findById(id);
 		return Response.status(Status.CREATED).entity(qualityReport).build();
@@ -50,6 +54,9 @@ public class QualityReportApi {
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get list of all the reports",
+			response = List.class)
 	public List<QualityReport> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
@@ -62,6 +69,9 @@ public class QualityReportApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Save the report",
+			response = QualityReport.class)
 	public Response save(String  jsonString) {
 		try {
 			QualityReport qualityReport = qualityReportService.save(jsonString);

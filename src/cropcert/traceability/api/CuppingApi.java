@@ -25,6 +25,7 @@ import com.google.inject.Inject;
 import cropcert.traceability.model.Cupping;
 import cropcert.traceability.service.CuppingService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Path("cupping")
 @Api("Cupping")
@@ -41,6 +42,9 @@ public class CuppingApi {
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get the Cupping by id",
+			response = Cupping.class)
 	public Response find(@PathParam("id") Long id) {
 		Cupping cupping = cuppingService.findById(id);
 		return Response.status(Status.CREATED).entity(cupping).build();
@@ -49,6 +53,9 @@ public class CuppingApi {
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get list of all the Cuppings",
+			response = List.class)
 	public List<Cupping> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
@@ -61,6 +68,9 @@ public class CuppingApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Save the Cupping",
+			response = Cupping.class)
 	public Response save(String  jsonString) {
 		try {
 			Cupping cupping = cuppingService.save(jsonString);

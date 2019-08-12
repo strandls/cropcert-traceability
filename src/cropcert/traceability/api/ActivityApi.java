@@ -30,6 +30,7 @@ import cropcert.traceability.model.Lot;
 import cropcert.traceability.service.ActivityService;
 import cropcert.traceability.util.UserUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Path("activity")
 @Api("Activity")
@@ -46,6 +47,9 @@ public class ActivityApi {
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get the activity by id",
+			response = Activity.class)
 	public Response find(@PathParam("id") Long id) {
 		Activity activity = activityService.findById(id);
 		return Response.status(Status.CREATED).entity(activity).build();
@@ -54,6 +58,9 @@ public class ActivityApi {
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get list of the activities",
+			response = List.class)
 	public List<Activity> findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
@@ -66,6 +73,9 @@ public class ActivityApi {
 	@Path("batch")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get list of the activities by batch ID",
+			response = List.class)
 	public List<Activity> getByBatchId(
 			@DefaultValue("-1") @QueryParam("batchId") Long batchId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
@@ -83,6 +93,9 @@ public class ActivityApi {
 	@Path("lot")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get list of the activities by Lot ID",
+			response = List.class)
 	public List<Activity> getByLotId(
 			@DefaultValue("-1") @QueryParam("lotId") Long lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
@@ -100,6 +113,9 @@ public class ActivityApi {
 	@Path("user")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get list of the activities by User ID",
+			response = List.class)
 	public List<Activity> getByUserId(
 			@DefaultValue("") @QueryParam("userId") String userId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
@@ -115,6 +131,9 @@ public class ActivityApi {
 	@Path("lot/user")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get list of the activities by lot and user ID",
+			response = List.class)
 	public List<Activity> getByLotAndUserId(
 			@DefaultValue("-1") @QueryParam("lotId") Long lotId,
 			@DefaultValue("") @QueryParam("userId") String userId,
@@ -136,6 +155,9 @@ public class ActivityApi {
 	@Path("batch/user")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Get list of the activities by batch and user ID",
+			response = List.class)
 	public List<Activity> getByBatchAndUserId(
 			@DefaultValue("-1") @QueryParam("batchId") Long batchId,
 			@DefaultValue("") @QueryParam("userId") String userId,
@@ -157,6 +179,9 @@ public class ActivityApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(
+			value = "Save the activity",
+			response = Activity.class)
 	public Response save(String  jsonString) {
 		try {
 			Activity activity = activityService.save(jsonString);
