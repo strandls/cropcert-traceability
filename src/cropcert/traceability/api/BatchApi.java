@@ -28,10 +28,15 @@ import cropcert.traceability.model.Batch;
 import cropcert.traceability.service.BatchService;
 import cropcert.traceability.util.UserUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @Path("batch")
 @Api("Batch")
+@ApiImplicitParams({
+    @ApiImplicitParam(name = "Authorization", value = "Authorization token", 
+                      required = true, dataType = "string", paramType = "header") })
 public class BatchApi {
 
 	

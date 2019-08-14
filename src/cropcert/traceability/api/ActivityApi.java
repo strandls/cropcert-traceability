@@ -30,10 +30,15 @@ import cropcert.traceability.model.Lot;
 import cropcert.traceability.service.ActivityService;
 import cropcert.traceability.util.UserUtil;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @Path("activity")
 @Api("Activity")
+@ApiImplicitParams({
+    @ApiImplicitParam(name = "Authorization", value = "Authorization token", 
+                      required = true, dataType = "string", paramType = "header") })
 public class ActivityApi {
 	
 	private ActivityService activityService;

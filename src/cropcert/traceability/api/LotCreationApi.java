@@ -29,10 +29,15 @@ import cropcert.traceability.model.Lot;
 import cropcert.traceability.model.LotCreation;
 import cropcert.traceability.service.LotCreationService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @Path("lotCreation")
 @Api("Lot creation")
+@ApiImplicitParams({
+    @ApiImplicitParam(name = "Authorization", value = "Authorization token", 
+                      required = true, dataType = "string", paramType = "header") })
 public class LotCreationApi {
 
 	private LotCreationService lotCreationService;

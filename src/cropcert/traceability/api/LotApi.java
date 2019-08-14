@@ -28,11 +28,15 @@ import com.google.inject.Inject;
 import cropcert.traceability.model.Lot;
 import cropcert.traceability.service.LotService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @Path("lot")
 @Api("Lot")
-@ApiOperation("")
+@ApiImplicitParams({
+    @ApiImplicitParam(name = "Authorization", value = "Authorization token", 
+                      required = true, dataType = "string", paramType = "header") })
 public class LotApi {
 	
 	private LotService lotService;

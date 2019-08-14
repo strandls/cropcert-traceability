@@ -25,10 +25,15 @@ import com.google.inject.Inject;
 import cropcert.traceability.model.Cupping;
 import cropcert.traceability.service.CuppingService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @Path("cupping")
 @Api("Cupping")
+@ApiImplicitParams({
+    @ApiImplicitParam(name = "Authorization", value = "Authorization token", 
+                      required = true, dataType = "string", paramType = "header") })
 public class CuppingApi {
 
 	private CuppingService cuppingService;
