@@ -13,6 +13,4 @@ public class Constants {
 	public static final String GREEN_ANALYSIS  = "greenAnalysis";
 	public static final String DISPATCH_TIME   = "dispatchTime";
 	public static final String GRN_NUMBER 	   = "grnNumber";
-	
-	public static final String JWT_SALT = "12345678901234567890123456789012";
 }
