@@ -59,26 +59,33 @@ public class LotApi {
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(response=List.class, value = "Get all the Lots")
-	public List<Lot> findAll(
+	@ApiOperation(value = "Get all the Lots",
+			response=Lot.class, 
+			responseContainer = "List")
+	public Response findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		List<Lot> lots;
 		if(limit==-1 || offset ==-1)
-			return lotService.findAll();
+			lots = lotService.findAll();
 		else
-			return lotService.findAll(limit, offset);
+			lots = lotService.findAll(limit, offset);
+		return Response.ok().entity(lots).build();
 	}
 	
 	@Path("all/{lotStatus}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(response=List.class, value = "Get all the Lots by the status")
-	public List<Lot> getAllByStatus(
+	@ApiOperation(value = "Get all the Lots by the status",
+			response=Lot.class, 
+			responseContainer = "List")
+	public Response getAllByStatus(
 			@DefaultValue("-1") @PathParam("lotStatus") String lotStatusString,
 			@DefaultValue("-1") @QueryParam("coCodes") String coCodes,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {		
-		return lotService.getByStatusAndUnion(lotStatusString, coCodes, limit, offset);
+		List<Lot> lots = lotService.getByStatusAndUnion(lotStatusString, coCodes, limit, offset);
+		return Response.ok().entity(lots).build();
 	}
 		
 	@POST

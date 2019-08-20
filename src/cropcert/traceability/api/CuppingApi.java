@@ -60,14 +60,17 @@ public class CuppingApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(
 			value = "Get list of all the Cuppings",
-			response = List.class)
-	public List<Cupping> findAll(
+			response = Cupping.class,
+			responseContainer = "List")
+	public Response findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		List<Cupping> cuppings;
 		if(limit==-1 || offset ==-1)
-			return cuppingService.findAll();
+			cuppings = cuppingService.findAll();
 		else
-			return cuppingService.findAll(limit, offset);
+			cuppings = cuppingService.findAll(limit, offset);
+		return Response.ok().entity(cuppings).build();
 	}
 	
 	@POST

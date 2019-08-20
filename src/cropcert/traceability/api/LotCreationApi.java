@@ -51,7 +51,9 @@ public class LotCreationApi {
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = LotCreation.class, value = "Get lot creation entry by id", notes = "This method is not required to call, bit tricky")
+	@ApiOperation(value = "Get lot creation entry by id", 
+			notes = "This method is not required to call, bit tricky",
+			response = LotCreation.class)
 	public Response find(@PathParam("id") Long id) {
 		LotCreation lotCreation = lotCreationService.findById(id);
 		return Response.status(Status.CREATED).entity(lotCreation).build();
@@ -60,37 +62,47 @@ public class LotCreationApi {
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = List.class, value = "Get list of lot creation")
-	public List<LotCreation> findAll(@DefaultValue("-1") @QueryParam("limit") Integer limit,
+	@ApiOperation(value = "Get list of lot creation",
+			response = LotCreation.class, 
+			responseContainer = "List")
+	public Response findAll(@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		List<LotCreation> lotCreations;
 		if (limit == -1 || offset == -1)
-			return lotCreationService.findAll();
+			lotCreations = lotCreationService.findAll();
 		else
-			return lotCreationService.findAll(limit, offset);
+			lotCreations = lotCreationService.findAll(limit, offset);
+		return Response.ok().entity(lotCreations).build();
 	}
 
 	@Path("lotId")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = List.class, value = "Get list of all the lot creation entries, whoes lot id is given")
-	public List<Batch> getBylotId(@DefaultValue("-1") @QueryParam("lotId") String lotId,
+	@ApiOperation(value = "Get list of all the lot creation entries, whoes lot id is given",
+			response = Batch.class, 
+			responseContainer = "List")
+	public Response getBylotId(@DefaultValue("-1") @QueryParam("lotId") String lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return lotCreationService.getByLotId(lotId, limit, offset);
+		List<Batch> batches = lotCreationService.getByLotId(lotId, limit, offset);
+		return Response.ok().entity(batches).build();
 	}
 
 	@Path("lot/origin")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = List.class, value = "Collection center ids of the lot creation")
-	public List<Long> getLotOrigins(@DefaultValue("-1") @QueryParam("lotId") String lotId) {
-		return lotCreationService.getLotOrigins(lotId);
+	@ApiOperation(value = "Collection center ids of the lot creation",
+			response = Long.class, 
+			responseContainer = "List")
+	public Response getLotOrigins(@DefaultValue("-1") @QueryParam("lotId") String lotId) {
+		List<Long> origins = lotCreationService.getLotOrigins(lotId);
+		return Response.ok().entity(origins).build();
 	}
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = List.class, value = "Lot creation", notes = "Here you save the lot with the help of multiple lot creation ids."
+	@ApiOperation(response = Lot.class, value = "Lot creation", notes = "Here you save the lot with the help of multiple lot creation ids."
 			+ "This is the where we keep trace of traceability")
 	public Response save(String jsonString, @Context HttpServletRequest request) {
 		try {

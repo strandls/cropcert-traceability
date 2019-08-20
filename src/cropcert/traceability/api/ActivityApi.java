@@ -37,164 +37,158 @@ import io.swagger.annotations.ApiOperation;
 @Path("activity")
 @Api("Activity")
 @ApiImplicitParams({
-    @ApiImplicitParam(name = "Authorization", value = "Authorization token", 
-                      required = true, dataType = "string", paramType = "header") })
+		@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 public class ActivityApi {
-	
+
 	private ActivityService activityService;
-	
+
 	@Inject
 	public ActivityApi(ActivityService batchProductionService) {
 		this.activityService = batchProductionService;
 	}
-	
+
 	@Path("{id}")
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get the activity by id",
-			response = Activity.class)
+	@ApiOperation(value = "Get the activity by id", response = Activity.class)
 	public Response find(@PathParam("id") Long id) {
 		Activity activity = activityService.findById(id);
 		return Response.status(Status.CREATED).entity(activity).build();
 	}
-	
+
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get list of the activities",
-			response = List.class)
-	public List<Activity> findAll(
-			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+	@ApiOperation(value = "Get list of the activities", response = Activity.class, responseContainer = "List")
+	public Response findAll(@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		if(limit==-1 || offset ==-1)
-			return activityService.findAll();
+		List<Activity> activities;
+		if (limit == -1 || offset == -1)
+			activities = activityService.findAll();
 		else
-			return activityService.findAll(limit, offset);
+			activities = activityService.findAll(limit, offset);
+		return Response.ok().entity(activities).build();
 	}
-	
+
 	@Path("batch")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get list of the activities by batch ID",
-			response = List.class)
-	public List<Activity> getByBatchId(
-			@DefaultValue("-1") @QueryParam("batchId") Long batchId,
+	@ApiOperation(value = "Get list of the activities by batch ID", response = Activity.class, responseContainer = "List")
+	public Response getByBatchId(@DefaultValue("-1") @QueryParam("batchId") Long batchId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		if(batchId == -1) {
-			String [] properties = {"objectType"};
-			Object [] values     = {Batch.class.getSimpleName()};
-			return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+
+		List<Activity> activities;
+		if (batchId == -1) {
+			String[] properties = { "objectType" };
+			Object[] values = { Batch.class.getSimpleName() };
+			activities = activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		} else {
+			String[] properties = { "objectType", "objectId" };
+			Object[] values = { Batch.class.getSimpleName(), batchId };
+			activities = activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
 		}
-		String [] properties = {"objectType", "objectId"};
-		Object [] values     = {Batch.class.getSimpleName(), batchId};
-		return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		return Response.ok().entity(activities).build();
 	}
-	
+
 	@Path("lot")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get list of the activities by Lot ID",
-			response = List.class)
-	public List<Activity> getByLotId(
-			@DefaultValue("-1") @QueryParam("lotId") Long lotId,
+	@ApiOperation(value = "Get list of the activities by Lot ID", response = Activity.class, responseContainer = "List")
+	public Response getByLotId(@DefaultValue("-1") @QueryParam("lotId") Long lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		if(lotId == -1) {
-			String [] properties = {"objectType"};
-			Object [] values     = {Lot.class.getSimpleName()};
-			return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		List<Activity> activities;
+		if (lotId == -1) {
+			String[] properties = { "objectType" };
+			Object[] values = { Lot.class.getSimpleName() };
+			activities = activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		} else {
+			String[] properties = { "objectType", "objectId" };
+			Object[] values = { Lot.class.getSimpleName(), lotId };
+			activities = activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
 		}
-		String [] properties = {"objectType", "objectId"};
-		Object [] values     = {Lot.class.getSimpleName(), lotId};
-		return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		return Response.ok().entity(activities).build();
 	}
-	
+
 	@Path("user")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get list of the activities by User ID",
-			response = List.class)
-	public List<Activity> getByUserId(
-			@DefaultValue("") @QueryParam("userId") String userId,
+	@ApiOperation(value = "Get list of the activities by User ID", response = Activity.class, responseContainer = "List")
+	public Response getByUserId(@DefaultValue("") @QueryParam("userId") String userId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset,
-			@Context HttpServletRequest request) {
-		if("".equals(userId) || userId == null)
+			@DefaultValue("-1") @QueryParam("offset") Integer offset, @Context HttpServletRequest request) {
+		if ("".equals(userId) || userId == null)
 			userId = UserUtil.getUserDetails(request);
-		String [] properties = {"userId"};
-		Object [] values     = {userId};
-		return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+
+		String[] properties = { "userId" };
+		Object[] values = { userId };
+		List<Activity> activities = activityService.getByMultiplePropertyWithCondtion(properties, values, limit,
+				offset);
+		return Response.ok().entity(activities).build();
 	}
-	
+
 	@Path("lot/user")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get list of the activities by lot and user ID",
-			response = List.class)
-	public List<Activity> getByLotAndUserId(
-			@DefaultValue("-1") @QueryParam("lotId") Long lotId,
+	@ApiOperation(value = "Get list of the activities by lot and user ID", response = Activity.class, responseContainer = "List")
+	public Response getByLotAndUserId(@DefaultValue("-1") @QueryParam("lotId") Long lotId,
 			@DefaultValue("") @QueryParam("userId") String userId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset,
-			@Context HttpServletRequest request) {
-		if("".equals(userId) || userId == null)
+			@DefaultValue("-1") @QueryParam("offset") Integer offset, @Context HttpServletRequest request) {
+
+		if ("".equals(userId) || userId == null)
 			userId = UserUtil.getUserDetails(request);
-		if(lotId == -1) {
-			String [] properties = {"objectType", "userId"};
-			Object [] values     = {Lot.class.getSimpleName(), userId};
-			return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+
+		List<Activity> activities;
+		if (lotId == -1) {
+			String[] properties = { "objectType", "userId" };
+			Object[] values = { Lot.class.getSimpleName(), userId };
+			activities = activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		} else {
+			String[] properties = { "objectType", "objectId", "userId" };
+			Object[] values = { Lot.class.getSimpleName(), lotId, userId };
+			activities = activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
 		}
-		String [] properties = {"objectType", "objectId", "userId"};
-		Object [] values     = {Lot.class.getSimpleName(), lotId, userId};
-		return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		return Response.ok().entity(activities).build();
 	}
-	
+
 	@Path("batch/user")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get list of the activities by batch and user ID",
-			response = List.class)
-	public List<Activity> getByBatchAndUserId(
-			@DefaultValue("-1") @QueryParam("batchId") Long batchId,
+	@ApiOperation(value = "Get list of the activities by batch and user ID", response = Activity.class, responseContainer = "List")
+	public Response getByBatchAndUserId(@DefaultValue("-1") @QueryParam("batchId") Long batchId,
 			@DefaultValue("") @QueryParam("userId") String userId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset,
-			@Context HttpServletRequest request) {
-		if("".equals(userId) || userId == null)
+			@DefaultValue("-1") @QueryParam("offset") Integer offset, @Context HttpServletRequest request) {
+		if ("".equals(userId) || userId == null)
 			userId = UserUtil.getUserDetails(request);
-		if(batchId == -1) {
-			String [] properties = {"objectType", "userId"};
-			Object [] values     = {Batch.class.getSimpleName(), userId};
-			return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+
+		List<Activity> activities;
+		if (batchId == -1) {
+			String[] properties = { "objectType", "userId" };
+			Object[] values = { Batch.class.getSimpleName(), userId };
+			activities = activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		} else {
+			String[] properties = { "objectType", "objectId", "userId" };
+			Object[] values = { Batch.class.getSimpleName(), batchId, userId };
+			activities = activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
 		}
-		String [] properties = {"objectType", "objectId", "userId"};
-		Object [] values     = {Batch.class.getSimpleName(), batchId, userId};
-		return activityService.getByMultiplePropertyWithCondtion(properties, values, limit, offset);
+		return Response.ok().entity(activities).build();
 	}
-	
+
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Save the activity",
-			response = Activity.class)
-	public Response save(String  jsonString) {
+	@ApiOperation(value = "Save the activity", response = Activity.class)
+	public Response save(String jsonString) {
 		try {
 			Activity activity = activityService.save(jsonString);
 			return Response.status(Status.CREATED).entity(activity).build();
-		} catch(ConstraintViolationException e) {
+		} catch (ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
-		}
-		catch (JsonParseException e) {
+		} catch (JsonParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JsonMappingException e) {

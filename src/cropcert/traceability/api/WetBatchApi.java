@@ -64,14 +64,18 @@ public class WetBatchApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(
 			value = "Get list of all the wet batches",
-			response = List.class)
-	public List<WetBatch> findAll(
+			response = WetBatch.class,
+			responseContainer = "List")
+	public Response findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		
+		List<WetBatch> wetBatches;
 		if(limit==-1 || offset ==-1)
-			return wetbatchService.findAll();
+			wetBatches = wetbatchService.findAll();
 		else
-			return wetbatchService.findAll(limit, offset);
+			wetBatches = wetbatchService.findAll(limit, offset);
+		return Response.ok().entity(wetBatches).build();
 	}
 	
 	@Path("cc")
@@ -79,14 +83,17 @@ public class WetBatchApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(
 			value = "Get list of wet batches by cc codes",
-			response = WetBatch.class)
-	public List<WetBatch> getByCcCodes(
+			response = WetBatch.class,
+			responseContainer = "List")
+	public Response getByCcCodes(
 			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
 			@DefaultValue("false") @QueryParam("isLotDone") Boolean isLotDone,
 			@DefaultValue("true") @QueryParam("isReadyForLot") Boolean isReadyForLot,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		return wetbatchService.getByPropertyfromArray("ccCode", ccCodes, isLotDone, isReadyForLot, limit, offset);
+		
+		List<WetBatch> wetBathces = wetbatchService.getByPropertyfromArray("ccCode", ccCodes, isLotDone, isReadyForLot, limit, offset);
+		return Response.ok().entity(wetBathces).build();
 	}
 	
 	@POST
@@ -142,9 +149,9 @@ public class WetBatchApi {
 	@ApiOperation(
 			value = "update the wet batch for start time",
 			response = WetBatch.class)
-	public WetBatch updateStartTime(String jsonString) throws JSONException {
+	public Response updateStartTime(String jsonString) throws JSONException {
 		WetBatch wetBatch = wetbatchService.updateStartTime(jsonString);
-		return wetBatch;
+		return Response.ok().entity(wetBatch).build();
 	}
 	
 	@PUT
@@ -154,9 +161,9 @@ public class WetBatchApi {
 	@ApiOperation(
 			value = "update the wet batch for fermentation time",
 			response = WetBatch.class)
-	public WetBatch updateFermentationEndTime(String jsonString) throws JSONException {
+	public Response updateFermentationEndTime(String jsonString) throws JSONException {
 		WetBatch wetBatch = wetbatchService.updateFermentationEndTime(jsonString);
-		return wetBatch;
+		return Response.ok().entity(wetBatch).build();
 	}
 	
 	@PUT
@@ -166,9 +173,9 @@ public class WetBatchApi {
 	@ApiOperation(
 			value = "update the wet batch for drying time",
 			response = WetBatch.class)
-	public WetBatch updateDryingEndTime(String jsonString) throws JSONException {
+	public Response updateDryingEndTime(String jsonString) throws JSONException {
 		WetBatch wetBatch = wetbatchService.updateDryingEndTime(jsonString);
-		return wetBatch;
+		return Response.ok().entity(wetBatch).build();
 	}
 	
 	@PUT
@@ -178,8 +185,8 @@ public class WetBatchApi {
 	@ApiOperation(
 			value = "update the wet batch for perchment quantity",
 			response = WetBatch.class)
-	public WetBatch updatePerchmentQuantity(String jsonString) throws JSONException {
+	public Response updatePerchmentQuantity(String jsonString) throws JSONException {
 		WetBatch wetBatch = wetbatchService.updatePerchmentQuantity(jsonString);
-		return wetBatch;
+		return Response.ok().entity(wetBatch).build();
 	}
 }

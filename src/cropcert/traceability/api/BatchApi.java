@@ -66,14 +66,18 @@ public class BatchApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(
 			value = "Get all the batches",
-			response = List.class)
-	public List<Batch> findAll(
+			response = Batch.class,
+			responseContainer = "List")
+	public Response findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		
+		List<Batch> batches;
 		if(limit==-1 || offset ==-1)
-			return batchService.findAll();
+			batches = batchService.findAll();
 		else
-			return batchService.findAll(limit, offset);
+			batches = batchService.findAll(limit, offset);
+		return Response.ok().entity(batches).build();
 	}
 	
 	@Path("cc")
@@ -81,15 +85,17 @@ public class BatchApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(
 			value = "Get list of batches by cc codes",
-			response = List.class)
-	public List<Batch> getByCcCodes(
+			response = Batch.class,
+			responseContainer = "List")
+	public Response getByCcCodes(
 			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
 			@DefaultValue("false") @QueryParam("isLotDone") Boolean isLotDone,
 			@DefaultValue("true") @QueryParam("isReadyForLot") Boolean isReadyForLot,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		
-		return batchService.getByPropertyfromArray("ccCode", ccCodes, isLotDone, isReadyForLot, limit, offset);
+		List<Batch> batches = batchService.getByPropertyfromArray("ccCode", ccCodes, isLotDone, isReadyForLot, limit, offset);
+		return Response.ok().entity(batches).build();
 	}
 	
 	@POST

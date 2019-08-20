@@ -61,14 +61,17 @@ public class QualityReportApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(
 			value = "Get list of all the reports",
-			response = List.class)
-	public List<QualityReport> findAll(
+			response = QualityReport.class,
+			responseContainer = "List")
+	public Response findAll(
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		List<QualityReport> qualityReports;
 		if(limit==-1 || offset ==-1)
-			return qualityReportService.findAll();
+			qualityReports = qualityReportService.findAll();
 		else
-			return qualityReportService.findAll(limit, offset);
+			qualityReports = qualityReportService.findAll(limit, offset);
+		return Response.ok().entity(qualityReports).build();
 	}
 	
 	@POST
