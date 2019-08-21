@@ -15,10 +15,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+
 @Entity
-@Table(name = "quality_report")
+@Table(name = "report_quality")
 @XmlRootElement
 @JsonIgnoreProperties
+@ApiModel("QualityReport")
 public class QualityReport implements Serializable {
 
     /**

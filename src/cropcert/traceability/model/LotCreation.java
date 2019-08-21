@@ -14,10 +14,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+
 @Entity
 @Table(name = "lot_creation")
 @XmlRootElement
 @JsonIgnoreProperties
+@ApiModel("LotCreation")
 public class LotCreation implements Serializable {
 
 	/**

@@ -15,10 +15,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+
 @Entity
-@Table(name = "cupping")
+@Table(name = "report_cupping")
 @XmlRootElement
 @JsonIgnoreProperties
+@ApiModel("Cupping")
 public class Cupping implements Serializable {
 
 	/**

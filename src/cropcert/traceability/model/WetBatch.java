@@ -11,12 +11,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+
 @Entity
-@Table(name="wet_batch")
+@Table(name="batch_wet")
 @XmlRootElement
 @JsonIgnoreProperties
 @PrimaryKeyJoinColumn(name="id")
 @DiscriminatorValue(value= "WET")
+@ApiModel("WetBatch")
 public class WetBatch extends Batch{
 
 	/**

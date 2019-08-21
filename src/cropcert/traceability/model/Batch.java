@@ -22,6 +22,8 @@ import org.hibernate.annotations.ColumnDefault;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.swagger.annotations.ApiModel;
+
 @Entity
 @Table(name = "batch")
 @XmlRootElement
@@ -29,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue(value = "DRY")
+@ApiModel("Batch")
 public class Batch implements Serializable {
 
     /**

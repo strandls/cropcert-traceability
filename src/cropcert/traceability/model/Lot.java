@@ -15,11 +15,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import cropcert.traceability.LotStatus;
+import io.swagger.annotations.ApiModel;
 
 @Entity
 @Table(name = "lot")
 @XmlRootElement
 @JsonIgnoreProperties
+@ApiModel("Lot")
 public class Lot implements Serializable {
 
 	/**
