@@ -11,7 +11,6 @@ public class APIModule extends AbstractModule {
 		bind(BatchApi.class).in(Scopes.SINGLETON);
 		bind(CuppingApi.class).in(Scopes.SINGLETON);
 		bind(LotApi.class).in(Scopes.SINGLETON);
-		bind(LotCreationApi.class).in(Scopes.SINGLETON);
 		bind(QualityReportApi.class).in(Scopes.SINGLETON);
 		bind(WetBatchApi.class).in(Scopes.SINGLETON);
 	}

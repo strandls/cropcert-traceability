@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
+import cropcert.traceability.model.Batch;
 import cropcert.traceability.model.Lot;
 import cropcert.traceability.service.LotService;
 import io.swagger.annotations.Api;
@@ -92,9 +93,9 @@ public class LotApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(response=Lot.class, value = "save the lot")
-	public Response save(String  jsonString) {
+	public Response save(@Context HttpServletRequest request, String  jsonString) {
 		try {
-			Lot lot = lotService.save(jsonString);
+			Lot lot = lotService.saveInBulk(jsonString, request);
 			return Response.status(Status.CREATED).entity(lot).build();
 		} catch(ConstraintViolationException e) {
 			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
@@ -113,6 +114,30 @@ public class LotApi {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	@Path("origin")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Collection center ids of the lot creation",
+			response = Long.class, 
+			responseContainer = "List")
+	public Response getLotOrigins(@DefaultValue("-1") @QueryParam("lotId") String lotId) {
+		List<Long> origins = lotService.getLotOrigins(lotId);
+		return Response.ok().entity(origins).build();
+	}
+	
+	@Path("batches")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Get list of all the lot creation entries, whoes lot id is given",
+			response = Batch.class, 
+			responseContainer = "List")
+	public Response getBylotId(@DefaultValue("-1") @QueryParam("lotId") String lotId,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		List<Batch> batches = lotService.getByLotId(lotId, limit, offset);
+		return Response.ok().entity(batches).build();
 	}
 	
 	@PUT

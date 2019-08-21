@@ -22,7 +22,9 @@ import cropcert.traceability.Constants;
 import cropcert.traceability.LotStatus;
 import cropcert.traceability.dao.LotDao;
 import cropcert.traceability.model.Activity;
+import cropcert.traceability.model.Batch;
 import cropcert.traceability.model.Lot;
+import cropcert.traceability.model.LotCreation;
 import cropcert.traceability.util.UserUtil;
 
 public class LotService extends AbstractService<Lot> {
@@ -32,17 +34,64 @@ public class LotService extends AbstractService<Lot> {
 
     @Inject
     private ActivityService activityService;
+    
+    @Inject
+    private BatchService batchService;
+    
+    @Inject
+    private LotCreationService lotCreationService;
 
     @Inject
     public LotService(LotDao dao) {
         super(dao);
     }
-
-    public Lot save(String jsonString)
-            throws JsonParseException, JsonMappingException, IOException, JSONException {
-        Lot lot = objectMappper.readValue(jsonString, Lot.class);
-        return save(lot);
-    }
+    
+	public Lot saveInBulk(String jsonString, HttpServletRequest request)
+			throws JsonParseException, JsonMappingException, IOException, JSONException {
+		JSONObject jsonObject = new JSONObject(jsonString);
+		
+		
+		JSONArray jsonArray = (JSONArray) jsonObject.remove("batchIds");
+		
+		Lot lot = objectMappper.readValue(jsonObject.toString(), Lot.class);
+		lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
+		
+		lot = save(lot);
+		
+		Timestamp timestamp = lot.getCreatedOn();
+		
+		Long lotId = lot.getId();
+		
+		String userId = UserUtil.getUserDetails(request);
+		
+		// Add traceability for the lot creation.
+		for(int i=0; i<jsonArray.length(); i++) {
+			Long batchId = jsonArray.getLong(i);
+			
+			LotCreation lotCreation = new LotCreation();
+			lotCreation.setBatchId(batchId);
+			lotCreation.setLotId(lotId);
+			lotCreation.setUserId(userId);
+			lotCreation.setTimestamp(timestamp);
+			lotCreation.setNote("");
+			
+			// update the batch activity..
+			Batch batch = batchService.findById(batchId);
+			if (batch == null) {
+				throw new JSONException("Invalid batch id found");
+			}
+			batch.setLotDone(true);
+			batchService.update(batch);
+			lotCreationService.save(lotCreation);
+		}
+		
+		// Add activity of lot creation.
+        Activity activity = new Activity(lot.getClass().getSimpleName(), lotId, userId,
+                timestamp, Constants.LOT_CREATION, lot.getLotName());
+        activity = activityService.save(activity);
+		
+		return lot;
+	}
 
     public Lot update(String jsonString) throws JSONException, JsonProcessingException, IOException {
         Long id = new JSONObject(jsonString).getLong("id");
@@ -172,4 +221,12 @@ public class LotService extends AbstractService<Lot> {
         }
         return ((LotDao) dao).getByPropertyfromArray("coCode", longValues, lotStatus, limit, offset);
     }
+
+	public List<Long> getLotOrigins(String lotId) {
+		return lotCreationService.getLotOrigins(lotId);
+	}
+
+	public List<Batch> getByLotId(String lotId, Integer limit, Integer offset) {
+		return lotCreationService.getByLotId(lotId, limit, offset);
+	}
 }
