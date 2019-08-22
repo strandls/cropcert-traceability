@@ -62,6 +62,11 @@ public class LotService extends AbstractService<Lot> {
 		
 		Long lotId = lot.getId();
 		
+		// update the name, by appending the lot id to name
+		String lotName = lot.getLotName() + "_" + lotId;
+		lot.setLotName(lotName);
+		update(lot);
+		
 		String userId = UserUtil.getUserDetails(request);
 		
 		// Add traceability for the lot creation.

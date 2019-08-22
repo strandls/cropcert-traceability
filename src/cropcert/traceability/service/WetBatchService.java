@@ -50,6 +50,11 @@ public class WetBatchService extends AbstractService<WetBatch> {
         batch.setReadyForLot(false);
         batch.setLotDone(false);
         batch = save(batch);
+        
+        // Update the batch name, with batch id as well
+        String batchName = batch.getBatchName() + "_" + batch.getBatchId();
+        batch.setBatchName(batchName);
+        update(batch);
 
         /**
          * save the activity here.
