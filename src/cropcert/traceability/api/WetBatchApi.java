@@ -47,7 +47,7 @@ public class WetBatchApi {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get the wet batch by id", response = WetBatch.class)
-	public Response find(@PathParam("id") Long id) {
+	public Response find(@Context HttpServletRequest request, @PathParam("id") Long id) {
 		WetBatch wetBatch = wetbatchService.findById(id);
 		return Response.status(Status.CREATED).entity(wetBatch).build();
 	}
@@ -56,7 +56,7 @@ public class WetBatchApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of all the wet batches", response = WetBatch.class, responseContainer = "List")
-	public Response findAll(@DefaultValue("-1") @QueryParam("limit") Integer limit,
+	public Response findAll(@Context HttpServletRequest request, @DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 
 		List<WetBatch> wetBatches;
@@ -71,7 +71,8 @@ public class WetBatchApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of wet batches by cc codes", response = WetBatch.class, responseContainer = "List")
-	public Response getByCcCodes(@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
+	public Response getByCcCodes(@Context HttpServletRequest request,
+			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
 			@DefaultValue("false") @QueryParam("isLotDone") Boolean isLotDone,
 			@DefaultValue("true") @QueryParam("isReadyForLot") Boolean isReadyForLot,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
@@ -89,7 +90,7 @@ public class WetBatchApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
-	public Response save(String jsonString, @Context HttpServletRequest request) {
+	public Response save(@Context HttpServletRequest request, String jsonString) {
 		WetBatch wetBatch;
 		try {
 			wetBatch = wetbatchService.save(jsonString, request);
@@ -107,7 +108,7 @@ public class WetBatchApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
-	public Response updateReadyForLot(String jsonString, @Context HttpServletRequest request) throws JSONException {
+	public Response updateReadyForLot(@Context HttpServletRequest request, String jsonString) throws JSONException {
 		wetbatchService.updateReadyForLot(jsonString);
 		return Response.status(Status.OK).build();
 	}
@@ -120,7 +121,7 @@ public class WetBatchApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
-	public Response updateStartTime(String jsonString, @Context HttpServletRequest request) throws JSONException {
+	public Response updateStartTime(@Context HttpServletRequest request, String jsonString) throws JSONException {
 		WetBatch wetBatch = wetbatchService.updateStartTime(jsonString);
 		return Response.ok().entity(wetBatch).build();
 	}
@@ -133,7 +134,8 @@ public class WetBatchApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
-	public Response updateFermentationEndTime(String jsonString, @Context HttpServletRequest request) throws JSONException {
+	public Response updateFermentationEndTime(@Context HttpServletRequest request, String jsonString)
+			throws JSONException {
 		WetBatch wetBatch = wetbatchService.updateFermentationEndTime(jsonString);
 		return Response.ok().entity(wetBatch).build();
 	}
@@ -146,7 +148,7 @@ public class WetBatchApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
-	public Response updateDryingEndTime(String jsonString, @Context HttpServletRequest request) throws JSONException {
+	public Response updateDryingEndTime(@Context HttpServletRequest request, String jsonString) throws JSONException {
 		WetBatch wetBatch = wetbatchService.updateDryingEndTime(jsonString);
 		return Response.ok().entity(wetBatch).build();
 	}
@@ -159,7 +161,8 @@ public class WetBatchApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
-	public Response updatePerchmentQuantity(String jsonString, @Context HttpServletRequest request) throws JSONException {
+	public Response updatePerchmentQuantity(@Context HttpServletRequest request, String jsonString)
+			throws JSONException {
 		WetBatch wetBatch = wetbatchService.updatePerchmentQuantity(jsonString);
 		return Response.ok().entity(wetBatch).build();
 	}

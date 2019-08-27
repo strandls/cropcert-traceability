@@ -48,7 +48,7 @@ public class LotApi {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(response = Lot.class, value = "Find the lot by its id")
-	public Response find(@PathParam("id") Long id) {
+	public Response find(@Context HttpServletRequest request, @PathParam("id") Long id) {
 		Lot lot = lotService.findById(id);
 		return Response.status(Status.CREATED).entity(lot).build();
 	}
@@ -57,7 +57,7 @@ public class LotApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get all the Lots", response = Lot.class, responseContainer = "List")
-	public Response findAll(@DefaultValue("-1") @QueryParam("limit") Integer limit,
+	public Response findAll(@Context HttpServletRequest request, @DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		List<Lot> lots;
 		if (limit == -1 || offset == -1)
@@ -71,7 +71,8 @@ public class LotApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get all the Lots by the status", response = Lot.class, responseContainer = "List")
-	public Response getAllByStatus(@DefaultValue("-1") @PathParam("lotStatus") String lotStatusString,
+	public Response getAllByStatus(@Context HttpServletRequest request,
+			@DefaultValue("-1") @PathParam("lotStatus") String lotStatusString,
 			@DefaultValue("-1") @QueryParam("coCodes") String coCodes,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
@@ -83,7 +84,8 @@ public class LotApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Collection center ids of the lot creation", response = Long.class, responseContainer = "List")
-	public Response getLotOrigins(@DefaultValue("-1") @QueryParam("lotId") String lotId) {
+	public Response getLotOrigins(@Context HttpServletRequest request,
+			@DefaultValue("-1") @QueryParam("lotId") String lotId) {
 		List<Long> origins = lotService.getLotOrigins(lotId);
 		return Response.ok().entity(origins).build();
 	}
@@ -92,7 +94,8 @@ public class LotApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of all the lot creation entries, whoes lot id is given", response = Batch.class, responseContainer = "List")
-	public Response getBylotId(@DefaultValue("-1") @QueryParam("lotId") String lotId,
+	public Response getBylotId(@Context HttpServletRequest request,
+			@DefaultValue("-1") @QueryParam("lotId") String lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		List<Batch> batches = lotService.getByLotId(lotId, limit, offset);
@@ -125,7 +128,7 @@ public class LotApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
-	public Response updateTimeToFactory(String jsonString, @Context HttpServletRequest request) {
+	public Response updateTimeToFactory(@Context HttpServletRequest request, String jsonString) {
 		try {
 			String response = lotService.updateTimeToFactory(jsonString, request);
 			return Response.ok().entity(response).build();
@@ -143,7 +146,7 @@ public class LotApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
-	public Response updateMillingTime(String jsonString, @Context HttpServletRequest request) {
+	public Response updateMillingTime(@Context HttpServletRequest request, String jsonString) {
 		try {
 			String response = lotService.updateMillingTime(jsonString, request);
 			return Response.ok().entity(response).build();
@@ -161,7 +164,7 @@ public class LotApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
-	public Response updateOutTurn(String jsonString, @Context HttpServletRequest request) {
+	public Response updateOutTurn(@Context HttpServletRequest request, String jsonString) {
 		try {
 			String response = lotService.updateOutTurn(jsonString, request);
 			return Response.ok().entity(response).build();
@@ -179,7 +182,7 @@ public class LotApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
-	public Response dispatchToUnion(String jsonString, @Context HttpServletRequest request) {
+	public Response dispatchToUnion(@Context HttpServletRequest request, String jsonString) {
 		try {
 			String response = lotService.dispatchToUnion(jsonString, request);
 			return Response.ok().entity(response).build();
@@ -197,7 +200,7 @@ public class LotApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
-	public Response updateGRNNumer(String jsonString, @Context HttpServletRequest request) {
+	public Response updateGRNNumer(@Context HttpServletRequest request, String jsonString) {
 		try {
 			String response = lotService.updateGRNNumer(jsonString, request);
 			return Response.ok().entity(response).build();

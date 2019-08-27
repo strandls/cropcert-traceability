@@ -46,7 +46,7 @@ public class BatchApi {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get the batch by id", response = Batch.class)
-	public Response find(@PathParam("id") Long id, @Context HttpServletRequest request) {
+	public Response find(@Context HttpServletRequest request, @PathParam("id") Long id) {
 		Batch batchProduction = batchService.findById(id);
 		return Response.status(Status.CREATED).entity(batchProduction).build();
 	}
@@ -70,7 +70,8 @@ public class BatchApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of batches by cc codes", response = Batch.class, responseContainer = "List")
-	public Response getByCcCodes(@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
+	public Response getByCcCodes(@Context HttpServletRequest request, 
+			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
 			@DefaultValue("false") @QueryParam("isLotDone") Boolean isLotDone,
 			@DefaultValue("true") @QueryParam("isReadyForLot") Boolean isReadyForLot,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
@@ -88,7 +89,7 @@ public class BatchApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
-	public Response save(String jsonString, @Context HttpServletRequest request) {
+	public Response save(@Context HttpServletRequest request, String jsonString) {
 		Batch batchProduction;
 		try {
 			batchProduction = batchService.save(jsonString, request);

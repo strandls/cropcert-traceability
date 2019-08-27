@@ -45,7 +45,7 @@ public class ActivityApi {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get the activity by id", response = Activity.class)
-	public Response find(@PathParam("id") Long id) {
+	public Response find(@Context HttpServletRequest request, @PathParam("id") Long id) {
 		Activity activity = activityService.findById(id);
 		return Response.status(Status.CREATED).entity(activity).build();
 	}
@@ -54,7 +54,7 @@ public class ActivityApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of the activities", response = Activity.class, responseContainer = "List")
-	public Response findAll(@DefaultValue("-1") @QueryParam("limit") Integer limit,
+	public Response findAll(@Context HttpServletRequest request, @DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		List<Activity> activities;
 		if (limit == -1 || offset == -1)
@@ -68,7 +68,7 @@ public class ActivityApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of the activities by batch ID", response = Activity.class, responseContainer = "List")
-	public Response getByBatchId(@DefaultValue("-1") @QueryParam("batchId") Long batchId,
+	public Response getByBatchId(@Context HttpServletRequest request, @DefaultValue("-1") @QueryParam("batchId") Long batchId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 
@@ -89,7 +89,8 @@ public class ActivityApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of the activities by Lot ID", response = Activity.class, responseContainer = "List")
-	public Response getByLotId(@DefaultValue("-1") @QueryParam("lotId") Long lotId,
+	public Response getByLotId(@Context HttpServletRequest request, 
+			@DefaultValue("-1") @QueryParam("lotId") Long lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		List<Activity> activities;
@@ -109,9 +110,10 @@ public class ActivityApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of the activities by User ID", response = Activity.class, responseContainer = "List")
-	public Response getByUserId(@DefaultValue("") @QueryParam("userId") String userId,
+	public Response getByUserId(@Context HttpServletRequest request, 
+			@DefaultValue("") @QueryParam("userId") String userId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset, @Context HttpServletRequest request) {
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		if ("".equals(userId) || userId == null)
 			userId = UserUtil.getUserDetails(request).getUsername();
 
@@ -126,10 +128,11 @@ public class ActivityApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of the activities by lot and user ID", response = Activity.class, responseContainer = "List")
-	public Response getByLotAndUserId(@DefaultValue("-1") @QueryParam("lotId") Long lotId,
+	public Response getByLotAndUserId(@Context HttpServletRequest request, 
+			@DefaultValue("-1") @QueryParam("lotId") Long lotId,
 			@DefaultValue("") @QueryParam("userId") String userId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset, @Context HttpServletRequest request) {
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 
 		if ("".equals(userId) || userId == null)
 			userId = UserUtil.getUserDetails(request).getUsername();
@@ -151,10 +154,11 @@ public class ActivityApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of the activities by batch and user ID", response = Activity.class, responseContainer = "List")
-	public Response getByBatchAndUserId(@DefaultValue("-1") @QueryParam("batchId") Long batchId,
+	public Response getByBatchAndUserId(@Context HttpServletRequest request, 
+			@DefaultValue("-1") @QueryParam("batchId") Long batchId,
 			@DefaultValue("") @QueryParam("userId") String userId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
-			@DefaultValue("-1") @QueryParam("offset") Integer offset, @Context HttpServletRequest request) {
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		if ("".equals(userId) || userId == null)
 			userId = UserUtil.getUserDetails(request).getUsername();
 
@@ -175,7 +179,7 @@ public class ActivityApi {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Save the activity", response = Activity.class)
-	public Response save(String jsonString) {
+	public Response save(@Context HttpServletRequest request, String jsonString) {
 		Activity activity;
 		try {
 			activity = activityService.save(jsonString);

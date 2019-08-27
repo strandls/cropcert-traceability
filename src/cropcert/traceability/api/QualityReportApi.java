@@ -3,6 +3,7 @@ package cropcert.traceability.api;
 import java.io.IOException;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -11,6 +12,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -44,7 +46,7 @@ public class QualityReportApi {
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get the report by id", response = QualityReport.class)
-	public Response find(@PathParam("id") Long id) {
+	public Response find(@Context HttpServletRequest request, @PathParam("id") Long id) {
 		QualityReport qualityReport = qualityReportService.findById(id);
 		return Response.status(Status.CREATED).entity(qualityReport).build();
 	}
@@ -53,7 +55,7 @@ public class QualityReportApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of all the reports", response = QualityReport.class, responseContainer = "List")
-	public Response findAll(@DefaultValue("-1") @QueryParam("limit") Integer limit,
+	public Response findAll(@Context HttpServletRequest request, @DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		List<QualityReport> qualityReports;
 		if (limit == -1 || offset == -1)
@@ -70,7 +72,7 @@ public class QualityReportApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
-	public Response save(String jsonString) {
+	public Response save(@Context HttpServletRequest request, String jsonString) {
 		QualityReport qualityReport;
 		try {
 			qualityReport = qualityReportService.save(jsonString);
