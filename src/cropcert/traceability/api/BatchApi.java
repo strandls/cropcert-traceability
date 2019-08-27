@@ -17,16 +17,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.json.JSONException;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
+import cropcert.traceability.filter.Permissions;
+import cropcert.traceability.filter.TokenAndUserAuthenticated;
 import cropcert.traceability.model.Batch;
 import cropcert.traceability.service.BatchService;
-import cropcert.traceability.util.UserUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -34,96 +32,70 @@ import io.swagger.annotations.ApiOperation;
 
 @Path("batch")
 @Api("Batch")
-@ApiImplicitParams({
-    @ApiImplicitParam(name = "Authorization", value = "Authorization token", 
-                      required = true, dataType = "string", paramType = "header") })
 public class BatchApi {
 
-	
 	private BatchService batchService;
-	
+
 	@Inject
 	public BatchApi(BatchService batchProductionService) {
 		this.batchService = batchProductionService;
 	}
-	
+
 	@Path("{id}")
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get the batch by id",
-			response = Batch.class)
+	@ApiOperation(value = "Get the batch by id", response = Batch.class)
 	public Response find(@PathParam("id") Long id, @Context HttpServletRequest request) {
 		Batch batchProduction = batchService.findById(id);
-		String user = UserUtil.getUserDetails(request);
-		System.out.println(user);
 		return Response.status(Status.CREATED).entity(batchProduction).build();
 	}
-	
+
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get all the batches",
-			response = Batch.class,
-			responseContainer = "List")
-	public Response findAll(
-			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+	@ApiOperation(value = "Get all the batches", response = Batch.class, responseContainer = "List")
+	public Response findAll(@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		
+
 		List<Batch> batches;
-		if(limit==-1 || offset ==-1)
+		if (limit == -1 || offset == -1)
 			batches = batchService.findAll();
 		else
 			batches = batchService.findAll(limit, offset);
 		return Response.ok().entity(batches).build();
 	}
-	
+
 	@Path("cc")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get list of batches by cc codes",
-			response = Batch.class,
-			responseContainer = "List")
-	public Response getByCcCodes(
-			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
+	@ApiOperation(value = "Get list of batches by cc codes", response = Batch.class, responseContainer = "List")
+	public Response getByCcCodes(@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
 			@DefaultValue("false") @QueryParam("isLotDone") Boolean isLotDone,
 			@DefaultValue("true") @QueryParam("isReadyForLot") Boolean isReadyForLot,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		
-		List<Batch> batches = batchService.getByPropertyfromArray("ccCode", ccCodes, isLotDone, isReadyForLot, limit, offset);
+
+		List<Batch> batches = batchService.getByPropertyfromArray("ccCode", ccCodes, isLotDone, isReadyForLot, limit,
+				offset);
 		return Response.ok().entity(batches).build();
 	}
-	
+
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Save the batch",
-			response = Batch.class)
-	public Response save(String  jsonString, @Context HttpServletRequest request) {
+	@ApiOperation(value = "Save the batch", response = Batch.class)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
+	public Response save(String jsonString, @Context HttpServletRequest request) {
+		Batch batchProduction;
 		try {
-			Batch batchProduction = batchService.save(jsonString, request);
+			batchProduction = batchService.save(jsonString, request);
 			return Response.status(Status.CREATED).entity(batchProduction).build();
-		} catch(ConstraintViolationException e) {
-			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
-		}
-		catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return Response.status(Status.NO_CONTENT).entity("Batch creation failed").build();
 	}
 }

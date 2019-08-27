@@ -17,11 +17,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.json.JSONException;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
 import cropcert.traceability.model.Activity;
@@ -30,14 +27,10 @@ import cropcert.traceability.model.Lot;
 import cropcert.traceability.service.ActivityService;
 import cropcert.traceability.util.UserUtil;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
 @Path("activity")
 @Api("Activity")
-@ApiImplicitParams({
-		@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 public class ActivityApi {
 
 	private ActivityService activityService;
@@ -120,7 +113,7 @@ public class ActivityApi {
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset, @Context HttpServletRequest request) {
 		if ("".equals(userId) || userId == null)
-			userId = UserUtil.getUserDetails(request);
+			userId = UserUtil.getUserDetails(request).getUsername();
 
 		String[] properties = { "userId" };
 		Object[] values = { userId };
@@ -139,7 +132,7 @@ public class ActivityApi {
 			@DefaultValue("-1") @QueryParam("offset") Integer offset, @Context HttpServletRequest request) {
 
 		if ("".equals(userId) || userId == null)
-			userId = UserUtil.getUserDetails(request);
+			userId = UserUtil.getUserDetails(request).getUsername();
 
 		List<Activity> activities;
 		if (lotId == -1) {
@@ -163,7 +156,7 @@ public class ActivityApi {
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset, @Context HttpServletRequest request) {
 		if ("".equals(userId) || userId == null)
-			userId = UserUtil.getUserDetails(request);
+			userId = UserUtil.getUserDetails(request).getUsername();
 
 		List<Activity> activities;
 		if (batchId == -1) {
@@ -183,24 +176,14 @@ public class ActivityApi {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Save the activity", response = Activity.class)
 	public Response save(String jsonString) {
+		Activity activity;
 		try {
-			Activity activity = activityService.save(jsonString);
+			activity = activityService.save(jsonString);
 			return Response.status(Status.CREATED).entity(activity).build();
-		} catch (ConstraintViolationException e) {
-			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
-		return null;
+
+		return Response.status(Status.NO_CONTENT).entity("Activity creation failed").build();
 	}
 }

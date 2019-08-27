@@ -6,6 +6,7 @@ public class Constants {
 	public static final String LOT     = "lot";
 	public static final String CUPPING = "cupping";
 	
+	public static final String BATCH_CREATION  = "batchCreation";
 	public static final String LOT_CREATION    = "lotCreation";
 	public static final String TIME_TO_FACTORY = "timeToFactory";
 	public static final String MILLING_TIME    = "millingTime";

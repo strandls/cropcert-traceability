@@ -67,7 +67,7 @@ public class LotService extends AbstractService<Lot> {
 		lot.setLotName(lotName);
 		update(lot);
 		
-		String userId = UserUtil.getUserDetails(request);
+		String userId = UserUtil.getUserDetails(request).getUsername();
 		
 		// Add traceability for the lot creation.
 		for(int i=0; i<jsonArray.length(); i++) {
@@ -120,7 +120,7 @@ public class LotService extends AbstractService<Lot> {
             lot.setLotStatus(LotStatus.AT_FACTORY);
             lot = update(lot);
 
-            String userId = UserUtil.getUserDetails(request);
+            String userId = UserUtil.getUserDetails(request).getUsername();
             Timestamp timestamp = new Timestamp(new Date().getTime());
             Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
                     timestamp, Constants.TIME_TO_FACTORY, timeToFactory.toString());
@@ -141,7 +141,7 @@ public class LotService extends AbstractService<Lot> {
         lot.setLotStatus(LotStatus.AT_FACTORY);
         lot = update(lot);
 
-        String userId = UserUtil.getUserDetails(request);
+        String userId = UserUtil.getUserDetails(request).getUsername();
         Timestamp timestamp = new Timestamp(new Date().getTime());
         Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
                 timestamp, Constants.MILLING_TIME, millingTime.toString());
@@ -163,7 +163,7 @@ public class LotService extends AbstractService<Lot> {
         lot.setLotStatus(LotStatus.AT_FACTORY);
         lot = update(lot);
 
-        String userId = UserUtil.getUserDetails(request);
+        String userId = UserUtil.getUserDetails(request).getUsername();
         Timestamp timestamp = new Timestamp(new Date().getTime());
         Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
                 timestamp, Constants.OUT_TURN, outTurn.toString());
@@ -186,7 +186,7 @@ public class LotService extends AbstractService<Lot> {
             lot.setLotStatus(LotStatus.AT_UNION);
             lot = update(lot);
 
-            String userId = UserUtil.getUserDetails(request);
+            String userId = UserUtil.getUserDetails(request).getUsername();
             Timestamp timestamp = new Timestamp(new Date().getTime());
             Activity activity = new Activity(lot.getClass().getSimpleName(), lotId, userId,
                     timestamp, Constants.DISPATCH_TIME, dispatchTime.toString());
@@ -208,7 +208,7 @@ public class LotService extends AbstractService<Lot> {
         lot.setLotStatus(LotStatus.AT_UNION);
         lot = update(lot);
 
-        String userId = UserUtil.getUserDetails(request);
+        String userId = UserUtil.getUserDetails(request).getUsername();
         Timestamp timestamp = new Timestamp(new Date().getTime());
         Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
                 timestamp, Constants.GRN_NUMBER, grnNumber);

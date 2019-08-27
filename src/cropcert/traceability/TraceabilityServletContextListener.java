@@ -18,6 +18,7 @@ import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 
 import cropcert.traceability.api.APIModule;
 import cropcert.traceability.dao.DaoModule;
+import cropcert.traceability.filter.FilterModule;
 import cropcert.traceability.service.ServiceModule;
 import cropcert.traceability.util.Utility;
 
@@ -52,7 +53,7 @@ public class TraceabilityServletContextListener extends GuiceServletContextListe
 				
 				serve("/api/*").with(GuiceContainer.class, props);
 			}
-		}, new DaoModule(), new APIModule(), new ServiceModule());
+		}, new DaoModule(), new APIModule(), new ServiceModule(), new FilterModule());
 		
 		return injector; 
 	}

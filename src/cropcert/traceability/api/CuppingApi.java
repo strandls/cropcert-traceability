@@ -15,13 +15,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.json.JSONException;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.inject.Inject;
 
+import cropcert.traceability.filter.Permissions;
+import cropcert.traceability.filter.TokenAndUserAuthenticated;
 import cropcert.traceability.model.Cupping;
 import cropcert.traceability.service.CuppingService;
 import io.swagger.annotations.Api;
@@ -31,74 +30,54 @@ import io.swagger.annotations.ApiOperation;
 
 @Path("cupping")
 @Api("Cupping")
-@ApiImplicitParams({
-    @ApiImplicitParam(name = "Authorization", value = "Authorization token", 
-                      required = true, dataType = "string", paramType = "header") })
 public class CuppingApi {
 
 	private CuppingService cuppingService;
-	
+
 	@Inject
 	public CuppingApi(CuppingService batchProductionService) {
 		this.cuppingService = batchProductionService;
 	}
-	
+
 	@Path("{id}")
 	@GET
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get the Cupping by id",
-			response = Cupping.class)
+	@ApiOperation(value = "Get the Cupping by id", response = Cupping.class)
 	public Response find(@PathParam("id") Long id) {
 		Cupping cupping = cuppingService.findById(id);
 		return Response.status(Status.CREATED).entity(cupping).build();
 	}
-	
+
 	@Path("all")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Get list of all the Cuppings",
-			response = Cupping.class,
-			responseContainer = "List")
-	public Response findAll(
-			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+	@ApiOperation(value = "Get list of all the Cuppings", response = Cupping.class, responseContainer = "List")
+	public Response findAll(@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		List<Cupping> cuppings;
-		if(limit==-1 || offset ==-1)
+		if (limit == -1 || offset == -1)
 			cuppings = cuppingService.findAll();
 		else
 			cuppings = cuppingService.findAll(limit, offset);
 		return Response.ok().entity(cuppings).build();
 	}
-	
+
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(
-			value = "Save the Cupping",
-			response = Cupping.class)
-	public Response save(String  jsonString) {
+	@ApiOperation(value = "Save the Cupping", response = Cupping.class)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
+	public Response save(String jsonString) {
+		Cupping cupping;
 		try {
-			Cupping cupping = cuppingService.save(jsonString);
+			cupping = cuppingService.save(jsonString);
 			return Response.status(Status.CREATED).entity(cupping).build();
-		} catch(ConstraintViolationException e) {
-			return Response.status(Status.CONFLICT).tag("Dublicate key").build();
-		}
-		catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
+		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
-		return null;
+		return Response.status(Status.NO_CONTENT).entity("Cupping report failed").build();
 	}
 }
