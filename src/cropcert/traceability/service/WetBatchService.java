@@ -59,7 +59,7 @@ public class WetBatchService extends AbstractService<WetBatch> {
         /**
          * save the activity here.
          */
-        String userId = UserUtil.getUserDetails(request).getUsername();
+        String userId = UserUtil.getUserDetails(request).getId();
         Timestamp timestamp = transferTimestamp = new Timestamp(new Date().getTime());
         Activity activity = new Activity(batch.getClass().getSimpleName(), batch.getBatchId(), userId,
                 timestamp, Constants.BATCH, batch.getBatchName());
