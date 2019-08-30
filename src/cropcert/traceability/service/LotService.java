@@ -131,7 +131,7 @@ public class LotService extends AbstractService<Lot> {
         return "Updated succesfully";
     }
 
-    public String updateMillingTime(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
+    public Lot updateMillingTime(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
         JSONObject jsonObject = new JSONObject(jsonString);
 
         Long id = jsonObject.getLong("id");
@@ -149,10 +149,10 @@ public class LotService extends AbstractService<Lot> {
                 timestamp, Constants.MILLING_TIME, millingTime.toString());
         activity = activityService.save(activity);
 
-        return "Updated succesfully";
+        return lot;
     }
 
-    public String updateOutTurn(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
+    public Lot updateOutTurn(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
         JSONObject jsonObject = new JSONObject(jsonString);
 
         Long id = jsonObject.getLong("id");
@@ -171,7 +171,7 @@ public class LotService extends AbstractService<Lot> {
                 timestamp, Constants.OUT_TURN, outTurn.toString());
         activity = activityService.save(activity);
 
-        return "Updated succesfully";
+        return lot;
     }
 
     public String dispatchToUnion(String jsonString, HttpServletRequest request)
@@ -197,7 +197,7 @@ public class LotService extends AbstractService<Lot> {
         return "Dispatched to union succesful";
     }
 
-    public String updateGRNNumer(String jsonString, HttpServletRequest request)
+    public Lot updateGRNNumer(String jsonString, HttpServletRequest request)
             throws JsonProcessingException, JSONException, IOException {
         JSONObject jsonObject = new JSONObject(jsonString);
 
@@ -216,7 +216,7 @@ public class LotService extends AbstractService<Lot> {
                 timestamp, Constants.GRN_NUMBER, grnNumber);
         activity = activityService.save(activity);
 
-        return "GRN number added successfully";
+        return lot;
     }
 
     public List<Lot> getByStatusAndUnion(String lotStatusString, String coCodes, Integer limit, Integer offset) {

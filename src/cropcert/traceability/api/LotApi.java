@@ -148,7 +148,7 @@ public class LotApi {
 	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
 	public Response updateMillingTime(@Context HttpServletRequest request, String jsonString) {
 		try {
-			String response = lotService.updateMillingTime(jsonString, request);
+			Lot response = lotService.updateMillingTime(jsonString, request);
 			return Response.ok().entity(response).build();
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
@@ -166,7 +166,7 @@ public class LotApi {
 	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
 	public Response updateOutTurn(@Context HttpServletRequest request, String jsonString) {
 		try {
-			String response = lotService.updateOutTurn(jsonString, request);
+			Lot response = lotService.updateOutTurn(jsonString, request);
 			return Response.ok().entity(response).build();
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
@@ -202,7 +202,7 @@ public class LotApi {
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
 	public Response updateGRNNumer(@Context HttpServletRequest request, String jsonString) {
 		try {
-			String response = lotService.updateGRNNumer(jsonString, request);
+			Lot response = lotService.updateGRNNumer(jsonString, request);
 			return Response.ok().entity(response).build();
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
