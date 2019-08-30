@@ -23,7 +23,6 @@ import com.google.inject.Inject;
 
 import cropcert.traceability.filter.Permissions;
 import cropcert.traceability.filter.TokenAndUserAuthenticated;
-import cropcert.traceability.model.Cupping;
 import cropcert.traceability.model.QualityReport;
 import cropcert.traceability.service.QualityReportService;
 import io.swagger.annotations.Api;
@@ -69,7 +68,7 @@ public class QualityReportApi {
 	@Path("lot/{lotId}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Get list of all the Quality report by lot Id", response = Cupping.class, responseContainer = "List")
+	@ApiOperation(value = "Get list of all the Quality report by lot Id", response = QualityReport.class, responseContainer = "List")
 	public Response getByLotId(@Context HttpServletRequest request,
 			@DefaultValue("-1") @PathParam("lotId") Long lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
