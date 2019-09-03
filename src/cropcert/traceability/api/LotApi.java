@@ -202,6 +202,8 @@ public class LotApi {
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
 	public Response updateGRNNumer(@Context HttpServletRequest request, String jsonString) {
 		try {
+			if(lotService.checkForDuplicate(jsonString))
+				return Response.status(Status.PRECONDITION_FAILED).entity("Duplicate GRN Number").build();
 			Lot response = lotService.updateGRNNumer(jsonString, request);
 			return Response.ok().entity(response).build();
 		} catch (JSONException | IOException e) {

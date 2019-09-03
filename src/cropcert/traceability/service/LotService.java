@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONArray;
@@ -217,6 +218,18 @@ public class LotService extends AbstractService<Lot> {
         activity = activityService.save(activity);
 
         return lot;
+    }
+    
+    public boolean checkForDuplicate(String jsonString) throws JSONException {
+    	JSONObject jsonObject = new JSONObject(jsonString);
+        String grnNumber = jsonObject.get(Constants.GRN_NUMBER).toString();
+        try {
+        	findByPropertyWithCondtion("grnNumber", grnNumber, "=");
+        }
+        catch (NoResultException e) {
+        	return false;
+		}
+        return true;
     }
 
     public List<Lot> getByStatusAndUnion(String lotStatusString, String coCodes, Integer limit, Integer offset) {
