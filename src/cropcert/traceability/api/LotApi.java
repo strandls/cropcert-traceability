@@ -1,6 +1,7 @@
 package cropcert.traceability.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -117,7 +118,8 @@ public class LotApi {
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
-		return Response.status(Status.NO_CONTENT).entity("Lot creation failed").build();
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Lot creation failed")).build();
 	}
 
 	@PUT
@@ -135,7 +137,8 @@ public class LotApi {
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
 		}
-		return Response.status(Status.NO_CONTENT).entity("Time to factory updation failed").build();
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Time to factory updation failed")).build();
 	}
 
 	@PUT
@@ -153,7 +156,8 @@ public class LotApi {
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
 		}
-		return Response.status(Status.NO_CONTENT).entity("Milling time updation failed").build();
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Milling time updation failed")).build();
 	}
 
 	@PUT
@@ -171,7 +175,8 @@ public class LotApi {
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
 		}
-		return Response.status(Status.NO_CONTENT).entity("Updation of outturn failed").build();
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Updation of outturn failed")).build();
 	}
 
 	@PUT
@@ -189,7 +194,9 @@ public class LotApi {
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
 		}
-		return Response.status(Status.NO_CONTENT).entity("Time to dispatch from factory updation failed").build();
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Time to dispatch from factory updation failed"))
+				.build();
 	}
 
 	@PUT
@@ -202,13 +209,14 @@ public class LotApi {
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
 	public Response updateGRNNumer(@Context HttpServletRequest request, String jsonString) {
 		try {
-			if(lotService.checkForDuplicate(jsonString))
+			if (lotService.checkForDuplicate(jsonString))
 				return Response.status(Status.PRECONDITION_FAILED).entity("Duplicate GRN Number").build();
 			Lot response = lotService.updateGRNNumer(jsonString, request);
 			return Response.ok().entity(response).build();
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
 		}
-		return Response.status(Status.NO_CONTENT).entity("GNR updation for lot has failed").build();
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "GNR updation for lot has failed")).build();
 	}
 }

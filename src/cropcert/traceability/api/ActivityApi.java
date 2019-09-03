@@ -1,6 +1,7 @@
 package cropcert.traceability.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,7 +69,8 @@ public class ActivityApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of the activities by batch ID", response = Activity.class, responseContainer = "List")
-	public Response getByBatchId(@Context HttpServletRequest request, @DefaultValue("-1") @QueryParam("batchId") Long batchId,
+	public Response getByBatchId(@Context HttpServletRequest request,
+			@DefaultValue("-1") @QueryParam("batchId") Long batchId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 
@@ -89,8 +91,7 @@ public class ActivityApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of the activities by Lot ID", response = Activity.class, responseContainer = "List")
-	public Response getByLotId(@Context HttpServletRequest request, 
-			@DefaultValue("-1") @QueryParam("lotId") Long lotId,
+	public Response getByLotId(@Context HttpServletRequest request, @DefaultValue("-1") @QueryParam("lotId") Long lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		List<Activity> activities;
@@ -110,7 +111,7 @@ public class ActivityApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of the activities by User ID", response = Activity.class, responseContainer = "List")
-	public Response getByUserId(@Context HttpServletRequest request, 
+	public Response getByUserId(@Context HttpServletRequest request,
 			@DefaultValue("") @QueryParam("userId") String userId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
@@ -128,9 +129,8 @@ public class ActivityApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of the activities by lot and user ID", response = Activity.class, responseContainer = "List")
-	public Response getByLotAndUserId(@Context HttpServletRequest request, 
-			@DefaultValue("-1") @QueryParam("lotId") Long lotId,
-			@DefaultValue("") @QueryParam("userId") String userId,
+	public Response getByLotAndUserId(@Context HttpServletRequest request,
+			@DefaultValue("-1") @QueryParam("lotId") Long lotId, @DefaultValue("") @QueryParam("userId") String userId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 
@@ -154,7 +154,7 @@ public class ActivityApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of the activities by batch and user ID", response = Activity.class, responseContainer = "List")
-	public Response getByBatchAndUserId(@Context HttpServletRequest request, 
+	public Response getByBatchAndUserId(@Context HttpServletRequest request,
 			@DefaultValue("-1") @QueryParam("batchId") Long batchId,
 			@DefaultValue("") @QueryParam("userId") String userId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
@@ -188,6 +188,7 @@ public class ActivityApi {
 			e.printStackTrace();
 		}
 
-		return Response.status(Status.NO_CONTENT).entity("Activity creation failed").build();
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Activity creation failed")).build();
 	}
 }

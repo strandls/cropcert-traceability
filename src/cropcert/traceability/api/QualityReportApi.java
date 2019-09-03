@@ -1,6 +1,7 @@
 package cropcert.traceability.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -64,16 +65,16 @@ public class QualityReportApi {
 			qualityReports = qualityReportService.findAll(limit, offset);
 		return Response.ok().entity(qualityReports).build();
 	}
-	
+
 	@Path("lot/{lotId}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of all the Quality report by lot Id", response = QualityReport.class, responseContainer = "List")
-	public Response getByLotId(@Context HttpServletRequest request,
-			@DefaultValue("-1") @PathParam("lotId") Long lotId,
+	public Response getByLotId(@Context HttpServletRequest request, @DefaultValue("-1") @PathParam("lotId") Long lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		List<QualityReport> qualityReports = qualityReportService.getByPropertyWithCondtion("lotId", lotId, "=", limit, offset);
+		List<QualityReport> qualityReports = qualityReportService.getByPropertyWithCondtion("lotId", lotId, "=", limit,
+				offset);
 		return Response.ok().entity(qualityReports).build();
 	}
 
@@ -92,6 +93,7 @@ public class QualityReportApi {
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
-		return Response.status(Status.NO_CONTENT).entity("Quality report save failed").build();
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Quality report save failed")).build();
 	}
 }

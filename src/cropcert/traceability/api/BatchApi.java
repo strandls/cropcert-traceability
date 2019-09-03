@@ -1,6 +1,7 @@
 package cropcert.traceability.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +71,7 @@ public class BatchApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of batches by cc codes", response = Batch.class, responseContainer = "List")
-	public Response getByCcCodes(@Context HttpServletRequest request, 
+	public Response getByCcCodes(@Context HttpServletRequest request,
 			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
 			@DefaultValue("false") @QueryParam("isLotDone") Boolean isLotDone,
 			@DefaultValue("true") @QueryParam("isReadyForLot") Boolean isReadyForLot,
@@ -97,6 +98,7 @@ public class BatchApi {
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
-		return Response.status(Status.NO_CONTENT).entity("Batch creation failed").build();
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Batch creation failed")).build();
 	}
 }

@@ -1,6 +1,7 @@
 package cropcert.traceability.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -69,11 +70,11 @@ public class CuppingApi {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get list of all the Cuppings by lot Id", response = Cupping.class, responseContainer = "List")
-	public Response getByLotId(@Context HttpServletRequest request,
-			@DefaultValue("-1") @PathParam("lotId") Long lotId,
+	public Response getByLotId(@Context HttpServletRequest request, @DefaultValue("-1") @PathParam("lotId") Long lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		List<Cupping> cuppings = cuppingService.getByPropertyWithCondtion("lotId", lotId, "=", limit, offset);;
+		List<Cupping> cuppings = cuppingService.getByPropertyWithCondtion("lotId", lotId, "=", limit, offset);
+		;
 		return Response.ok().entity(cuppings).build();
 	}
 
@@ -92,6 +93,7 @@ public class CuppingApi {
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
-		return Response.status(Status.NO_CONTENT).entity("Cupping report failed").build();
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Cupping report failed")).build();
 	}
 }
