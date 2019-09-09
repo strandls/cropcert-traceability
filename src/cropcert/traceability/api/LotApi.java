@@ -38,191 +38,190 @@ import org.json.JSONObject;
 @Api("Lot")
 public class LotApi {
 
-    private LotService lotService;
+	private LotService lotService;
 
-    @Inject
-    public LotApi(LotService batchProductionService) {
-        this.lotService = batchProductionService;
-    }
+	@Inject
+	public LotApi(LotService batchProductionService) {
+		this.lotService = batchProductionService;
+	}
 
-    @Path("{id}")
-    @GET
-    @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(response = Lot.class, value = "Find the lot by its id")
-    public Response find(@Context HttpServletRequest request, @PathParam("id") Long id) {
-        Lot lot = lotService.findById(id);
-        return Response.status(Status.CREATED).entity(lot).build();
-    }
+	@Path("{id}")
+	@GET
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "Find the lot by its id")
+	public Response find(@Context HttpServletRequest request, @PathParam("id") Long id) {
+		Lot lot = lotService.findById(id);
+		return Response.status(Status.CREATED).entity(lot).build();
+	}
 
-    @Path("all")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get all the Lots", response = Lot.class, responseContainer = "List")
-    public Response findAll(@Context HttpServletRequest request, @DefaultValue("-1") @QueryParam("limit") Integer limit,
-            @DefaultValue("-1") @QueryParam("offset") Integer offset) {
-        List<Lot> lots;
-        if (limit == -1 || offset == -1) {
-            lots = lotService.findAll();
-        } else {
-            lots = lotService.findAll(limit, offset);
-        }
-        return Response.ok().entity(lots).build();
-    }
+	@Path("all")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Get all the Lots", response = Lot.class, responseContainer = "List")
+	public Response findAll(@Context HttpServletRequest request, @DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		List<Lot> lots;
+		if (limit == -1 || offset == -1) {
+			lots = lotService.findAll();
+		} else {
+			lots = lotService.findAll(limit, offset);
+		}
+		return Response.ok().entity(lots).build();
+	}
 
-    @Path("all/{lotStatus}")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get all the Lots by the status", response = Lot.class, responseContainer = "List")
-    public Response getAllByStatus(@Context HttpServletRequest request,
-            @DefaultValue("-1") @PathParam("lotStatus") String lotStatusString,
-            @DefaultValue("-1") @QueryParam("coCodes") String coCodes,
-            @DefaultValue("-1") @QueryParam("limit") Integer limit,
-            @DefaultValue("-1") @QueryParam("offset") Integer offset) {
-        List<Lot> lots = lotService.getByStatusAndUnion(lotStatusString, coCodes, limit, offset);
-        return Response.ok().entity(lots).build();
-    }
+	@Path("all/{lotStatus}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Get all the Lots by the status", response = Lot.class, responseContainer = "List")
+	public Response getAllByStatus(@Context HttpServletRequest request,
+			@DefaultValue("-1") @PathParam("lotStatus") String lotStatusString,
+			@DefaultValue("-1") @QueryParam("coCodes") String coCodes,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		List<Lot> lots = lotService.getByStatusAndUnion(lotStatusString, coCodes, limit, offset);
+		return Response.ok().entity(lots).build();
+	}
 
-    @Path("origin")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Collection center ids of the lot creation", response = Long.class, responseContainer = "List")
-    public Response getLotOrigins(@Context HttpServletRequest request,
-            @DefaultValue("-1") @QueryParam("lotId") String lotId) {
-        List<Long> origins = lotService.getLotOrigins(lotId);
-        return Response.ok().entity(origins).build();
-    }
+	@Path("origin")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Collection center ids of the lot creation", response = Long.class, responseContainer = "List")
+	public Response getLotOrigins(@Context HttpServletRequest request,
+			@DefaultValue("-1") @QueryParam("lotId") String lotId) {
+		List<Long> origins = lotService.getLotOrigins(lotId);
+		return Response.ok().entity(origins).build();
+	}
 
-    @Path("batches")
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
-    @ApiOperation(value = "Get list of all the lot creation entries, whoes lot id is given", response = Batch.class, responseContainer = "List")
-    public Response getBylotId(@Context HttpServletRequest request,
-            @DefaultValue("-1") @QueryParam("lotId") String lotId,
-            @DefaultValue("-1") @QueryParam("limit") Integer limit,
-            @DefaultValue("-1") @QueryParam("offset") Integer offset) {
-        List<Batch> batches = lotService.getByLotId(lotId, limit, offset);
-        return Response.ok().entity(batches).build();
-    }
+	@Path("batches")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Get list of all the lot creation entries, whoes lot id is given", response = Batch.class, responseContainer = "List")
+	public Response getBylotId(@Context HttpServletRequest request,
+			@DefaultValue("-1") @QueryParam("lotId") String lotId,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		List<Batch> batches = lotService.getByLotId(lotId, limit, offset);
+		return Response.ok().entity(batches).build();
+	}
 
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(response = Lot.class, value = "save the lot")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header")})
-    @TokenAndUserAuthenticated(permissions = {Permissions.CO_PERSON})
-    public Response save(@Context HttpServletRequest request, String jsonString) {
-        Lot lot;
-        try {
-            lot = lotService.saveInBulk(jsonString, request);
-            return Response.status(Status.CREATED).entity(lot).build();
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-        return Response.status(Status.NO_CONTENT)
-                .entity(new HashMap<String, String>().put("error", "Lot creation failed")).build();
-    }
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "save the lot")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
+	public Response save(@Context HttpServletRequest request, String jsonString) {
+		Lot lot;
+		try {
+			lot = lotService.saveInBulk(jsonString, request);
+			return Response.status(Status.CREATED).entity(lot).build();
+		} catch (IOException | JSONException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Lot creation failed")).build();
+	}
 
-    @PUT
-    @Path("dispatch/factory")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(response = Lot.class, value = "update time to factory")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header")})
-    @TokenAndUserAuthenticated(permissions = {Permissions.CO_PERSON})
-    public Response updateTimeToFactory(@Context HttpServletRequest request, String jsonString) {
-        try {
-            String response = lotService.updateTimeToFactory(jsonString, request);
-            return Response.ok().entity(response).build();
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-        return Response.status(Status.NO_CONTENT)
-                .entity(new HashMap<String, String>().put("error", "Time to factory updation failed")).build();
-    }
+	@PUT
+	@Path("dispatch/factory")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "update time to factory")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
+	public Response updateTimeToFactory(@Context HttpServletRequest request, String jsonString) {
+		try {
+			String response = lotService.updateTimeToFactory(jsonString, request);
+			return Response.ok().entity(response).build();
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Time to factory updation failed")).build();
+	}
 
-    @PUT
-    @Path("millingTime")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(response = Lot.class, value = "update time for milling")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header")})
-    @TokenAndUserAuthenticated(permissions = {Permissions.FACTORY})
-    public Response updateMillingTime(@Context HttpServletRequest request, String jsonString) {
-        try {
-            Lot response = lotService.updateMillingTime(jsonString, request);
-            return Response.ok().entity(response).build();
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-        return Response.status(Status.NO_CONTENT)
-                .entity(new HashMap<String, String>().put("error", "Milling time updation failed")).build();
-    }
+	@PUT
+	@Path("millingTime")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "update time for milling")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
+	public Response updateMillingTime(@Context HttpServletRequest request, String jsonString) {
+		try {
+			Lot response = lotService.updateMillingTime(jsonString, request);
+			return Response.ok().entity(response).build();
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Milling time updation failed")).build();
+	}
 
-    @PUT
-    @Path("outTurn")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(response = Lot.class, value = "update out turn time")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header")})
-    @TokenAndUserAuthenticated(permissions = {Permissions.FACTORY})
-    public Response updateOutTurn(@Context HttpServletRequest request, String jsonString) {
-        try {
-            Lot response = lotService.updateOutTurn(jsonString, request);
-            return Response.ok().entity(response).build();
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-        return Response.status(Status.NO_CONTENT)
-                .entity(new HashMap<String, String>().put("error", "Updation of outturn failed")).build();
-    }
+	@PUT
+	@Path("outTurn")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "update out turn time")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
+	public Response updateOutTurn(@Context HttpServletRequest request, String jsonString) {
+		try {
+			Lot response = lotService.updateOutTurn(jsonString, request);
+			return Response.ok().entity(response).build();
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Updation of outturn failed")).build();
+	}
 
-    @PUT
-    @Path("dispatch/union")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(response = Lot.class, value = "update time to dispatch")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header")})
-    @TokenAndUserAuthenticated(permissions = {Permissions.FACTORY})
-    public Response dispatchToUnion(@Context HttpServletRequest request, String jsonString) {
-        try {
-            String response = lotService.dispatchToUnion(jsonString, request);
-            return Response.ok().entity(response).build();
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-        return Response.status(Status.NO_CONTENT)
-                .entity(new HashMap<String, String>().put("error", "Time to dispatch from factory updation failed"))
-                .build();
-    }
+	@PUT
+	@Path("dispatch/union")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "update time to dispatch")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
+	public Response dispatchToUnion(@Context HttpServletRequest request, String jsonString) {
+		try {
+			String response = lotService.dispatchToUnion(jsonString, request);
+			return Response.ok().entity(response).build();
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Time to dispatch from factory updation failed"))
+				.build();
+	}
 
-    @PUT
-    @Path("grnNumber")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @ApiOperation(response = Lot.class, value = "update grnNumber to factory")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header")})
-    @TokenAndUserAuthenticated(permissions = {Permissions.UNION})
-    public Response updateGRNNumer(@Context HttpServletRequest request, String jsonString) {
-        try {
-            if (lotService.checkForDuplicate(jsonString)) {
-                JSONObject jo = new JSONObject();
-                jo.put("error", "Duplicate GRN Number");
-                return Response.status(Status.PRECONDITION_FAILED)
-                        .entity(jo.toString()).build();
-            }
-            Lot response = lotService.updateGRNNumer(jsonString, request);
-            return Response.ok().entity(response).build();
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-        return Response.status(Status.NO_CONTENT)
-                .entity(new HashMap<String, String>().put("error", "GNR updation for lot has failed")).build();
-    }
+	@PUT
+	@Path("grnNumber")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "update grnNumber to factory")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
+	public Response updateGRNNumer(@Context HttpServletRequest request, String jsonString) {
+		try {
+			if (lotService.checkForDuplicate(jsonString)) {
+				JSONObject jo = new JSONObject();
+				jo.put("error", "Duplicate GRN Number");
+				return Response.status(Status.PRECONDITION_FAILED).entity(jo.toString()).build();
+			}
+			Lot response = lotService.updateGRNNumer(jsonString, request);
+			return Response.ok().entity(response).build();
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "GNR updation for lot has failed")).build();
+	}
 }
