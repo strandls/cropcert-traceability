@@ -5,7 +5,7 @@ public class Constants {
 	public static final String BATCH   = "batch";
 	public static final String LOT     = "lot";
 	public static final String CUPPING = "cupping";
-	
+
 	public static final String BATCH_CREATION  = "batchCreation";
 	public static final String LOT_CREATION    = "lotCreation";
 	public static final String TIME_TO_FACTORY = "timeToFactory";
@@ -14,7 +14,8 @@ public class Constants {
 	public static final String GREEN_ANALYSIS  = "greenAnalysis";
 	public static final String DISPATCH_TIME   = "dispatchTime";
 	public static final String GRN_NUMBER 	   = "grnNumber";
-	
+	public static final String GRN_TIME 	   = "grnTimestamp";
+
 	// coffee type
 	public static final String DRY = "DRY";
 	public static final String WET = "WET";
