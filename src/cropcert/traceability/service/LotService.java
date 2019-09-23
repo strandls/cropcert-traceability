@@ -35,10 +35,10 @@ public class LotService extends AbstractService<Lot> {
 
     @Inject
     private ActivityService activityService;
-    
+
     @Inject
     private BatchService batchService;
-    
+
     @Inject
     private LotCreationService lotCreationService;
 
@@ -46,60 +46,60 @@ public class LotService extends AbstractService<Lot> {
     public LotService(LotDao dao) {
         super(dao);
     }
-    
-	public Lot saveInBulk(String jsonString, HttpServletRequest request)
-			throws JsonParseException, JsonMappingException, IOException, JSONException {
-		JSONObject jsonObject = new JSONObject(jsonString);
-		
-		
-		JSONArray jsonArray = (JSONArray) jsonObject.remove("batchIds");
-		
-		Lot lot = objectMappper.readValue(jsonObject.toString(), Lot.class);
-		lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
-		
-		lot = save(lot);
-		
-		Timestamp timestamp = lot.getCreatedOn();
-		
-		Long lotId = lot.getId();
-		
-		// update the name, by appending the lot id to name
-		String lotName = lot.getLotName() + "_" + lotId;
-		lot.setLotName(lotName);
-		update(lot);
-		
-		String userId = UserUtil.getUserDetails(request).getId();
-		
-		// Add traceability for the lot creation.
-		for(int i=0; i<jsonArray.length(); i++) {
-			Long batchId = jsonArray.getLong(i);
-			
-			LotCreation lotCreation = new LotCreation();
-			lotCreation.setBatchId(batchId);
-			lotCreation.setLotId(lotId);
-			lotCreation.setUserId(userId);
-			lotCreation.setTimestamp(timestamp);
-			lotCreation.setNote("");
-			
-			// update the batch activity..
-			Batch batch = batchService.findById(batchId);
-			if (batch == null) {
-				throw new JSONException("Invalid batch id found");
-			}
-			batch.setLotDone(true);
-			batchService.update(batch);
-			lotCreationService.save(lotCreation);
-		}
-		
-		// Add activity of lot creation.
-		if(timestamp == null)
-			timestamp = new Timestamp(new Date().getTime());
+
+    public Lot saveInBulk(String jsonString, HttpServletRequest request)
+            throws JsonParseException, JsonMappingException, IOException, JSONException {
+        JSONObject jsonObject = new JSONObject(jsonString);
+
+        JSONArray jsonArray = (JSONArray) jsonObject.remove("batchIds");
+
+        Lot lot = objectMappper.readValue(jsonObject.toString(), Lot.class);
+        lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
+
+        lot = save(lot);
+
+        Timestamp timestamp = lot.getCreatedOn();
+
+        Long lotId = lot.getId();
+
+        // update the name, by appending the lot id to name
+        String lotName = lot.getLotName() + "_" + lotId;
+        lot.setLotName(lotName);
+        update(lot);
+
+        String userId = UserUtil.getUserDetails(request).getId();
+
+        // Add traceability for the lot creation.
+        for (int i = 0; i < jsonArray.length(); i++) {
+            Long batchId = jsonArray.getLong(i);
+
+            LotCreation lotCreation = new LotCreation();
+            lotCreation.setBatchId(batchId);
+            lotCreation.setLotId(lotId);
+            lotCreation.setUserId(userId);
+            lotCreation.setTimestamp(timestamp);
+            lotCreation.setNote("");
+
+            // update the batch activity..
+            Batch batch = batchService.findById(batchId);
+            if (batch == null) {
+                throw new JSONException("Invalid batch id found");
+            }
+            batch.setLotDone(true);
+            batchService.update(batch);
+            lotCreationService.save(lotCreation);
+        }
+
+        // Add activity of lot creation.
+        if (timestamp == null) {
+            timestamp = new Timestamp(new Date().getTime());
+        }
         Activity activity = new Activity(lot.getClass().getSimpleName(), lotId, userId,
                 timestamp, Constants.LOT_CREATION, lot.getLotName());
         activity = activityService.save(activity);
-		
-		return lot;
-	}
+
+        return lot;
+    }
 
     public Lot update(String jsonString) throws JSONException, JsonProcessingException, IOException {
         Long id = new JSONObject(jsonString).getLong("id");
@@ -206,10 +206,10 @@ public class LotService extends AbstractService<Lot> {
         Lot lot = findById(id);
 
         String grnNumber = jsonObject.get(Constants.GRN_NUMBER).toString();
+        Timestamp grnTimestamp = new Timestamp((Long) jsonObject.get(Constants.GRN_TIME));
 
         lot.setGrnNumber(grnNumber);
         lot.setLotStatus(LotStatus.AT_UNION);
-        Timestamp grnTimestamp = new Timestamp(new Date().getTime());
         lot.setGrnTimestamp(grnTimestamp);
         lot = update(lot);
 
@@ -221,16 +221,15 @@ public class LotService extends AbstractService<Lot> {
 
         return lot;
     }
-    
+
     public boolean checkForDuplicate(String jsonString) throws JSONException {
-    	JSONObject jsonObject = new JSONObject(jsonString);
+        JSONObject jsonObject = new JSONObject(jsonString);
         String grnNumber = jsonObject.get(Constants.GRN_NUMBER).toString();
         try {
-        	findByPropertyWithCondtion("grnNumber", grnNumber, "=");
+            findByPropertyWithCondtion("grnNumber", grnNumber, "=");
+        } catch (NoResultException e) {
+            return false;
         }
-        catch (NoResultException e) {
-        	return false;
-		}
         return true;
     }
 
@@ -244,11 +243,11 @@ public class LotService extends AbstractService<Lot> {
         return ((LotDao) dao).getByPropertyfromArray("coCode", longValues, lotStatus, limit, offset);
     }
 
-	public List<Long> getLotOrigins(String lotId) {
-		return lotCreationService.getLotOrigins(lotId);
-	}
+    public List<Long> getLotOrigins(String lotId) {
+        return lotCreationService.getLotOrigins(lotId);
+    }
 
-	public List<Batch> getByLotId(String lotId, Integer limit, Integer offset) {
-		return lotCreationService.getByLotId(lotId, limit, offset);
-	}
+    public List<Batch> getByLotId(String lotId, Integer limit, Integer offset) {
+        return lotCreationService.getByLotId(lotId, limit, offset);
+    }
 }
