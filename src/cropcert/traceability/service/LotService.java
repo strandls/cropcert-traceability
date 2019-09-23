@@ -209,6 +209,8 @@ public class LotService extends AbstractService<Lot> {
 
         lot.setGrnNumber(grnNumber);
         lot.setLotStatus(LotStatus.AT_UNION);
+        Timestamp grnTimestamp = new Timestamp(new Date().getTime());
+        lot.setGrnTimestamp(grnTimestamp);
         lot = update(lot);
 
         String userId = UserUtil.getUserDetails(request).getId();

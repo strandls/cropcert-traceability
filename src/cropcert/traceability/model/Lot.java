@@ -62,6 +62,9 @@ public class Lot implements Serializable {
 	@Column(name = "grn_number")
 	private String grnNumber;
 	
+	@Column(name = "grn_timestamp")
+	private Timestamp grnTimestamp;
+	
 	@Column(name = "green_analysis_id")
 	private Long greenAnalysisId;
 	
@@ -74,7 +77,6 @@ public class Lot implements Serializable {
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -82,7 +84,6 @@ public class Lot implements Serializable {
 	public String getLotName() {
 		return lotName;
 	}
-
 	public void setLotName(String lotName) {
 		this.lotName = lotName;
 	}
@@ -90,7 +91,6 @@ public class Lot implements Serializable {
 	public Long getCoCode() {
 		return coCode;
 	}
-	
 	public void setCoCode(Long coCode) {
 		this.coCode = coCode;
 	}
@@ -98,7 +98,6 @@ public class Lot implements Serializable {
 	public float getQuantity() {
 		return quantity;
 	}
-
 	public void setQuantity(float quantity) {
 		this.quantity = quantity;
 	}
@@ -106,7 +105,6 @@ public class Lot implements Serializable {
 	public String getType() {
 		return type;
 	}
-
 	public void setType(String type) {
 		this.type = type;
 	}
@@ -114,7 +112,6 @@ public class Lot implements Serializable {
 	public Timestamp getCreatedOn() {
 		return createdOn;
 	}
-
 	public void setCreatedOn(Timestamp createdOn) {
 		this.createdOn = createdOn;
 	}
@@ -122,7 +119,6 @@ public class Lot implements Serializable {
 	public Timestamp getTimeToFactory() {
 		return timeToFactory;
 	}
-
 	public void setTimeToFactory(Timestamp timeToFactory) {
 		this.timeToFactory = timeToFactory;
 	}
@@ -130,7 +126,6 @@ public class Lot implements Serializable {
 	public Timestamp getMillingTime() {
 		return millingTime;
 	}
-
 	public void setMillingTime(Timestamp millingTime) {
 		this.millingTime = millingTime;
 	}
@@ -138,7 +133,6 @@ public class Lot implements Serializable {
 	public float getOutTurn() {
 		return outTurn;
 	}
-
 	public void setOutTurn(float outTurn) {
 		this.outTurn = outTurn;
 	}
@@ -146,15 +140,20 @@ public class Lot implements Serializable {
 	public String getGrnNumber() {
 		return grnNumber;
 	}
-
 	public void setGrnNumber(String grnNumber) {
 		this.grnNumber = grnNumber;
+	}
+	
+	public Timestamp getGrnTimestamp() {
+		return grnTimestamp;
+	}
+	public void setGrnTimestamp(Timestamp grnTimestamp) {
+		this.grnTimestamp = grnTimestamp;
 	}
 	
 	public Long getGreenAnalysisId() {
 		return greenAnalysisId;
 	}
-	
 	public void setGreenAnalysisId(Long greenAnalysisId) {
 		this.greenAnalysisId = greenAnalysisId;
 	}
@@ -162,7 +161,6 @@ public class Lot implements Serializable {
 	public LotStatus getLotStatus() {
 		return lotStatus;
 	}
-	
 	public void setLotStatus(LotStatus lotStatus) {
 		this.lotStatus = lotStatus;
 	}
@@ -170,7 +168,6 @@ public class Lot implements Serializable {
 	public Boolean isDeleted() {
 		return isDeleted;
 	}
-
 	public void setDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}

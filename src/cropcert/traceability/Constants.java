@@ -14,4 +14,8 @@ public class Constants {
 	public static final String GREEN_ANALYSIS  = "greenAnalysis";
 	public static final String DISPATCH_TIME   = "dispatchTime";
 	public static final String GRN_NUMBER 	   = "grnNumber";
+	
+	// coffee type
+	public static final String DRY = "DRY";
+	public static final String WET = "WET";
 }

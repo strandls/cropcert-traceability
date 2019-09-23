@@ -35,7 +35,7 @@ public class QualityReport implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
     
-    @Column(name = "lot_id")
+    @Column(name = "lot_id", unique = true, nullable = false)
     private Long lotId;
     
     @Column(name = "lot_name")
