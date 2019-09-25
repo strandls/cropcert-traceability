@@ -56,7 +56,7 @@ public class Batch implements Serializable {
     private float quantity;
 
     @Column(name = "date")
-    private Date date;
+    private Timestamp date;
 
     @Column(name = "created_on")
     private Timestamp createdOn;
@@ -105,11 +105,11 @@ public class Batch implements Serializable {
         this.quantity = quantity;
     }
 
-    public Date getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 
