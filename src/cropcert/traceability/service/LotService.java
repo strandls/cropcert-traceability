@@ -2,8 +2,11 @@ package cropcert.traceability.service;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +27,7 @@ import cropcert.traceability.LotStatus;
 import cropcert.traceability.dao.LotDao;
 import cropcert.traceability.model.Activity;
 import cropcert.traceability.model.Batch;
+import cropcert.traceability.model.Cupping;
 import cropcert.traceability.model.Lot;
 import cropcert.traceability.model.LotCreation;
 import cropcert.traceability.util.UserUtil;
@@ -41,6 +45,9 @@ public class LotService extends AbstractService<Lot> {
 
     @Inject
     private LotCreationService lotCreationService;
+    
+    @Inject
+    private CuppingService cuppingService;
 
     @Inject
     public LotService(LotDao dao) {
@@ -250,4 +257,22 @@ public class LotService extends AbstractService<Lot> {
     public List<Batch> getByLotId(String lotId, Integer limit, Integer offset) {
         return lotCreationService.getByLotId(lotId, limit, offset);
     }
+
+	public List<Map<String, Object>> getAllWithCupping(Integer limit, Integer offset) {
+		List<Lot> lots;
+		if(limit == -1 || offset == -1)
+			lots = findAll();
+		else
+			lots = findAll(limit, offset);
+		
+		List<Map<String, Object>> lotWithCuppings = new ArrayList<Map<String, Object>>();
+		for(Lot lot : lots) {
+			Map<String, Object> lotWithCupping = new HashMap<String, Object>();
+			List<Cupping> cuppings = cuppingService.getByPropertyWithCondtion("lotId", lot.getId(), "=", -1, -1);
+			lotWithCupping.put("lot", lot);
+			lotWithCupping.put("cuppings", cuppings);
+			lotWithCuppings.add(lotWithCupping);
+		}
+		return lotWithCuppings;
+	}
 }

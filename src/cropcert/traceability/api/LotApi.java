@@ -3,6 +3,7 @@ package cropcert.traceability.api;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -20,6 +21,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.inject.Inject;
 
@@ -32,7 +34,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.json.JSONObject;
 
 @Path("lot")
 @Api("Lot")
@@ -67,6 +68,16 @@ public class LotApi {
 		} else {
 			lots = lotService.findAll(limit, offset);
 		}
+		return Response.ok().entity(lots).build();
+	}
+	
+	@Path("all/cupping")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Get all the Lots", response = Lot.class, responseContainer = "List")
+	public Response findAllWithCupping(@Context HttpServletRequest request, @DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		List<Map<String, Object>> lots = lotService.getAllWithCupping(limit, offset);
 		return Response.ok().entity(lots).build();
 	}
 
