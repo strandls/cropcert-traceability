@@ -47,4 +47,10 @@ public class CuppingService extends AbstractService<Cupping> {
         
 		return save(cupping);
 	}
+
+    public Cupping update(String jsonString) throws JsonParseException, JsonMappingException, IOException {
+		Cupping cupping = objectMappper.readValue(jsonString, Cupping.class);
+		cupping = update(cupping);
+		return cupping;
+	}
 }

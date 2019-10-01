@@ -30,6 +30,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import javax.ws.rs.PUT;
 
 @Path("cupping")
 @Api("Cupping")
@@ -94,5 +95,24 @@ public class CuppingApi {
 		}
 		return Response.status(Status.NO_CONTENT)
 				.entity(new HashMap<String, String>().put("error", "Cupping report failed")).build();
+	}
+        
+    @PUT
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Update the report", response = Cupping.class)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
+	public Response update(@Context HttpServletRequest request, String jsonString) {
+		Cupping cuppingReport;
+		try {
+			cuppingReport = cuppingService.update(jsonString);
+			return Response.status(Status.ACCEPTED).entity(cuppingReport).build();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Cupping report save failed")).build();
 	}
 }
