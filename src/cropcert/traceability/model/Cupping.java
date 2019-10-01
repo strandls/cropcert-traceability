@@ -53,7 +53,7 @@ public class Cupping implements Serializable {
 	@Column(name = "cc_name")
 	private String ccName;
 
-	@Column(name = "cupper")
+	@Column(name = "cupper", unique = true, nullable = false)
 	private String cupper;
 	
 	@Column(name = "sample_type")

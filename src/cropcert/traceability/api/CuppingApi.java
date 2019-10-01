@@ -73,8 +73,7 @@ public class CuppingApi {
 	public Response getByLotId(@Context HttpServletRequest request, @DefaultValue("-1") @PathParam("lotId") Long lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		List<Cupping> cuppings = cuppingService.getByPropertyWithCondtion("lotId", lotId, "=", limit, offset);
-		;
+		List<Cupping> cuppings = cuppingService.getByPropertyWithCondtion("lotId", lotId, "=", limit, offset);;
 		return Response.ok().entity(cuppings).build();
 	}
 
@@ -88,7 +87,7 @@ public class CuppingApi {
 	public Response save(@Context HttpServletRequest request, String jsonString) {
 		Cupping cupping;
 		try {
-			cupping = cuppingService.save(jsonString);
+			cupping = cuppingService.save(request, jsonString);
 			return Response.status(Status.CREATED).entity(cupping).build();
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();

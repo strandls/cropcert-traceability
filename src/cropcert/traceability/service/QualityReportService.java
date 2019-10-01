@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.json.JSONException;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -13,8 +15,10 @@ import com.google.inject.Inject;
 
 import cropcert.traceability.Constants;
 import cropcert.traceability.dao.QualityReportDao;
+import cropcert.traceability.model.Activity;
 import cropcert.traceability.model.Lot;
 import cropcert.traceability.model.QualityReport;
+import cropcert.traceability.util.UserUtil;
 import cropcert.traceability.util.ValidationException;
 
 public class QualityReportService extends AbstractService<QualityReport> {
@@ -24,13 +28,16 @@ public class QualityReportService extends AbstractService<QualityReport> {
 
 	@Inject
 	private LotService lotService;
+	
+	@Inject
+	private ActivityService activityService;
 
 	@Inject
 	public QualityReportService(QualityReportDao dao) {
 		super(dao);
 	}
 
-	public QualityReport save(String jsonString)
+	public QualityReport save(HttpServletRequest request, String jsonString)
 			throws JsonParseException, JsonMappingException, IOException, JSONException, ValidationException {
 		QualityReport qualityReport = objectMappper.readValue(jsonString, QualityReport.class);
 
@@ -41,6 +48,15 @@ public class QualityReportService extends AbstractService<QualityReport> {
 		Lot lot = lotService.findById(lotId);
 		lot.setGreenAnalysisId(qualityReport.getId());
 		lotService.update(lot);
+		
+		 /**
+         * save the activity here.
+         */
+        String userId = UserUtil.getUserDetails(request).getId();
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        Activity activity = new Activity(qualityReport.getClass().getSimpleName(), qualityReport.getId(), userId,
+                timestamp, Constants.GREEN_ANALYSIS, qualityReport.getLotId().toString());
+        activity = activityService.save(activity);
 
 		return qualityReport;
 	}

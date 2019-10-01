@@ -90,7 +90,7 @@ public class QualityReportApi {
 	public Response save(@Context HttpServletRequest request, String jsonString) {
 		QualityReport qualityReport;
 		try {
-			qualityReport = qualityReportService.save(jsonString);
+			qualityReport = qualityReportService.save(request, jsonString);
 			return Response.status(Status.CREATED).entity(qualityReport).build();
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
