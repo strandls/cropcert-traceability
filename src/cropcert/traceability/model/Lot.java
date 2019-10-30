@@ -53,8 +53,26 @@ public class Lot implements Serializable {
 	@Column(name = "time_to_factory")
 	private Timestamp timeToFactory;
 	
+	@Column(name = "weight_leaving_cooperative")
+	private float weightLeavingCooperative;
+	
+	@Column(name = "mc_leaving_cooperative")
+	private float mcLeavingCooperative;
+	
+	@Column(name = "weight_arriving_factory")
+	private float weightArrivingFactory;
+	
+	@Column(name = "mc_arriving_factory")
+	private float mcArrivingFactory;
+	
 	@Column(name = "milling_time")
 	private Timestamp millingTime;
+
+	@Column(name = "weight_Leaving_factory")
+	private float weightLeavingFactory;
+	
+	@Column(name = "mc_Leaving_factory")
+	private float mcLeavingFactory;
 	
 	@Column(name = "out_turn")
 	private float outTurn;
@@ -122,12 +140,54 @@ public class Lot implements Serializable {
 	public void setTimeToFactory(Timestamp timeToFactory) {
 		this.timeToFactory = timeToFactory;
 	}
+	
+	public float getWeightLeavingCooperative() {
+		return weightLeavingCooperative;
+	}
+	public void setWeightLeavingCooperative(float weightLeavingCooperative) {
+		this.weightLeavingCooperative = weightLeavingCooperative;
+	}
+	
+	public float getMcLeavingCooperative() {
+		return mcLeavingCooperative;
+	}
+	public void setMcLeavingCooperative(float mcLeavingCooperative) {
+		this.mcLeavingCooperative = mcLeavingCooperative;
+	}
+	
+	public float getWeightArrivingFactory() {
+		return weightArrivingFactory;
+	}
+	public void setWeightArrivingFactory(float weightArrivingFactory) {
+		this.weightArrivingFactory = weightArrivingFactory;
+	}
+	
+	public float getMcArrivingFactory() {
+		return mcArrivingFactory;
+	}
+	public void setMcArrivingFactory(float mcArrivingFactory) {
+		this.mcArrivingFactory = mcArrivingFactory;
+	}
 
 	public Timestamp getMillingTime() {
 		return millingTime;
 	}
 	public void setMillingTime(Timestamp millingTime) {
 		this.millingTime = millingTime;
+	}
+	
+	public float getWeightLeavingFactory() {
+		return weightLeavingFactory;
+	}
+	public void setWeightLeavingFactory(float weightLeavingFactory) {
+		this.weightLeavingFactory = weightLeavingFactory;
+	}
+	
+	public float getMcLeavingFactory() {
+		return mcLeavingFactory;
+	}
+	public void setMcLeavingFactory(float mcLeavingFactory) {
+		this.mcLeavingFactory = mcLeavingFactory;
 	}
 
 	public float getOutTurn() {

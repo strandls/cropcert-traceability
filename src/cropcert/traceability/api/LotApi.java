@@ -155,6 +155,82 @@ public class LotApi {
 	}
 
 	@PUT
+	@Path("weight/leaving/cooperative")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "update the weight of lot while leaving the cooperative")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
+	public Response updateWeightLeavingCooperative(@Context HttpServletRequest request, String jsonString) {
+		try {
+			Lot response = lotService.updateWeightLeavingCooperative(jsonString, request);
+			return Response.ok().entity(response).build();
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Weight updation failed at the cooperative")).build();
+	}
+	
+	@PUT
+	@Path("mc/leaving/cooperative")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "update the moisture content of lot while leaving the cooperative")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
+	public Response updateMCLeavingCooperative(@Context HttpServletRequest request, String jsonString) {
+		try {
+			Lot response = lotService.updateMCLeavingCooperative(jsonString, request);
+			return Response.ok().entity(response).build();
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Moisture content updation failed at the cooperative")).build();
+	}
+	
+	@PUT
+	@Path("weight/arriving/factory")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "update the weight of lot while arriving at the factory")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
+	public Response updateWeightArrivingFactory(@Context HttpServletRequest request, String jsonString) {
+		try {
+			Lot response = lotService.updateWeightArrivingFactory(jsonString, request);
+			return Response.ok().entity(response).build();
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Weight updation failed at the factory")).build();
+	}
+	
+	@PUT
+	@Path("mc/arriving/factory")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "update the moisture content of lot while arriving at the factory")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
+	public Response updateMCArrivingFactory(@Context HttpServletRequest request, String jsonString) {
+		try {
+			Lot response = lotService.updateMCArrivingFactory(jsonString, request);
+			return Response.ok().entity(response).build();
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Moisture content updation failed at the factory")).build();
+	}
+	
+	@PUT
 	@Path("millingTime")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -171,6 +247,44 @@ public class LotApi {
 		}
 		return Response.status(Status.NO_CONTENT)
 				.entity(new HashMap<String, String>().put("error", "Milling time updation failed")).build();
+	}
+	
+	@PUT
+	@Path("weight/leaving/factory")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "update the weight of lot while leaving the factory")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
+	public Response updateWeightLeavingFactory(@Context HttpServletRequest request, String jsonString) {
+		try {
+			Lot response = lotService.updateWeightLeavingFactory(jsonString, request);
+			return Response.ok().entity(response).build();
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Weight updation failed at the factory")).build();
+	}
+	
+	@PUT
+	@Path("mc/leaving/factory")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "update the moisture content of lot while leaving the factory")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
+	public Response updateMCLeavingFactory(@Context HttpServletRequest request, String jsonString) {
+		try {
+			Lot response = lotService.updateMCLeavingFactory(jsonString, request);
+			return Response.ok().entity(response).build();
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		return Response.status(Status.NO_CONTENT)
+				.entity(new HashMap<String, String>().put("error", "Moisture content updation failed at the factory")).build();
 	}
 
 	@PUT

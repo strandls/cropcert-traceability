@@ -59,6 +59,7 @@ public class LotService extends AbstractService<Lot> {
         JSONObject jsonObject = new JSONObject(jsonString);
 
         JSONArray jsonArray = (JSONArray) jsonObject.remove("batchIds");
+        if(jsonArray.length() <= 0) throw new JSONException("Should content batch ids");
 
         Lot lot = objectMappper.readValue(jsonObject.toString(), Lot.class);
         lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
@@ -114,6 +115,132 @@ public class LotService extends AbstractService<Lot> {
         ObjectReader objectReader = objectMappper.readerForUpdating(lot);
         lot = objectReader.readValue(jsonString);
         lot = update(lot);
+        return lot;
+    }
+    
+    public Lot updateWeightLeavingCooperative(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
+        JSONObject jsonObject = new JSONObject(jsonString);
+
+        Long id = jsonObject.getLong("id");
+        Lot lot = findById(id);
+
+        float weightLeavingCooperative = Float.parseFloat( (String) jsonObject.get(Constants.WEIGHT_LEAVING_COOPERATIVE));
+
+        lot.setWeightLeavingCooperative(weightLeavingCooperative);
+        lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
+        lot = update(lot);
+
+        String userId = UserUtil.getUserDetails(request).getId();
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+                timestamp, Constants.WEIGHT_LEAVING_COOPERATIVE, weightLeavingCooperative+"");
+        activity = activityService.save(activity);
+
+        return lot;
+    }
+    
+    public Lot updateMCLeavingCooperative(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
+        JSONObject jsonObject = new JSONObject(jsonString);
+
+        Long id = jsonObject.getLong("id");
+        Lot lot = findById(id);
+
+        float mcLeavingCooperative = Float.parseFloat( (String) jsonObject.get(Constants.MC_LEAVING_COOPERATIVE));
+
+        lot.setMcLeavingCooperative(mcLeavingCooperative);
+        lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
+        lot = update(lot);
+
+        String userId = UserUtil.getUserDetails(request).getId();
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+                timestamp, Constants.MC_LEAVING_COOPERATIVE, mcLeavingCooperative+"");
+        activity = activityService.save(activity);
+
+        return lot;
+    }
+    
+    public Lot updateWeightArrivingFactory(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
+        JSONObject jsonObject = new JSONObject(jsonString);
+
+        Long id = jsonObject.getLong("id");
+        Lot lot = findById(id);
+
+        float weightArrivingFactory = Float.parseFloat( (String) jsonObject.get(Constants.WEIGHT_ARRIVING_FACTORY));
+
+        lot.setWeightArrivingFactory(weightArrivingFactory);
+        lot.setLotStatus(LotStatus.AT_FACTORY);
+        lot = update(lot);
+
+        String userId = UserUtil.getUserDetails(request).getId();
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+                timestamp, Constants.WEIGHT_LEAVING_COOPERATIVE, weightArrivingFactory+"");
+        activity = activityService.save(activity);
+
+        return lot;
+    }
+    
+    public Lot updateMCArrivingFactory(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
+        JSONObject jsonObject = new JSONObject(jsonString);
+
+        Long id = jsonObject.getLong("id");
+        Lot lot = findById(id);
+
+        float mcArrivingFactory = Float.parseFloat( (String) jsonObject.get(Constants.MC_ARRIVING_FACTORY));
+
+        lot.setMcArrivingFactory(mcArrivingFactory);
+        lot.setLotStatus(LotStatus.AT_FACTORY);
+        lot = update(lot);
+
+        String userId = UserUtil.getUserDetails(request).getId();
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+                timestamp, Constants.MC_ARRIVING_FACTORY, mcArrivingFactory+"");
+        activity = activityService.save(activity);
+
+        return lot;
+    }
+    
+    public Lot updateWeightLeavingFactory(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
+        JSONObject jsonObject = new JSONObject(jsonString);
+
+        Long id = jsonObject.getLong("id");
+        Lot lot = findById(id);
+
+        float weightLeavingFactory = Float.parseFloat( (String) jsonObject.get(Constants.WEIGHT_LEAVING_FACTORY));
+
+        lot.setWeightLeavingFactory(weightLeavingFactory);
+        lot.setLotStatus(LotStatus.AT_FACTORY);
+        lot = update(lot);
+
+        String userId = UserUtil.getUserDetails(request).getId();
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+                timestamp, Constants.WEIGHT_LEAVING_FACTORY, weightLeavingFactory+"");
+        activity = activityService.save(activity);
+
+        return lot;
+    }
+    
+    public Lot updateMCLeavingFactory(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
+        JSONObject jsonObject = new JSONObject(jsonString);
+
+        Long id = jsonObject.getLong("id");
+        Lot lot = findById(id);
+
+        float mcLeavingFactory = Float.parseFloat( (String) jsonObject.get(Constants.MC_LEAVING_FACTORY));
+
+        lot.setMcLeavingFactory(mcLeavingFactory);
+        lot.setLotStatus(LotStatus.AT_FACTORY);
+        lot = update(lot);
+
+        String userId = UserUtil.getUserDetails(request).getId();
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+                timestamp, Constants.MC_LEAVING_FACTORY, mcLeavingFactory+"");
+        activity = activityService.save(activity);
+
         return lot;
     }
 
