@@ -83,6 +83,9 @@ public class Lot implements Serializable {
 	@Column(name = "grn_timestamp")
 	private Timestamp grnTimestamp;
 	
+	@Column(name = "factory_report_id")
+	private Long factoryReportId;
+	
 	@Column(name = "green_analysis_id")
 	private Long greenAnalysisId;
 	
@@ -209,6 +212,13 @@ public class Lot implements Serializable {
 	}
 	public void setGrnTimestamp(Timestamp grnTimestamp) {
 		this.grnTimestamp = grnTimestamp;
+	}
+	
+	public Long getFactoryReportId() {
+		return factoryReportId;
+	}
+	public void setFactoryReportId(Long factoryReportId) {
+		this.factoryReportId = factoryReportId;
 	}
 	
 	public Long getGreenAnalysisId() {

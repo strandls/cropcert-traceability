@@ -155,7 +155,7 @@ public class LotApi {
 	}
 
 	@PUT
-	@Path("weight/leaving/cooperative")
+	@Path("weightLeavingCooperative")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(response = Lot.class, value = "update the weight of lot while leaving the cooperative")
@@ -174,7 +174,7 @@ public class LotApi {
 	}
 	
 	@PUT
-	@Path("mc/leaving/cooperative")
+	@Path("mcLeavingCooperative")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(response = Lot.class, value = "update the moisture content of lot while leaving the cooperative")
@@ -193,7 +193,7 @@ public class LotApi {
 	}
 	
 	@PUT
-	@Path("weight/arriving/factory")
+	@Path("weightArrivingFactory")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(response = Lot.class, value = "update the weight of lot while arriving at the factory")
@@ -212,7 +212,7 @@ public class LotApi {
 	}
 	
 	@PUT
-	@Path("mc/arriving/factory")
+	@Path("mcArrivingFactory")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(response = Lot.class, value = "update the moisture content of lot while arriving at the factory")
@@ -250,7 +250,7 @@ public class LotApi {
 	}
 	
 	@PUT
-	@Path("weight/leaving/factory")
+	@Path("weightLeavingFactory")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(response = Lot.class, value = "update the weight of lot while leaving the factory")
@@ -269,7 +269,7 @@ public class LotApi {
 	}
 	
 	@PUT
-	@Path("mc/leaving/factory")
+	@Path("mcLeavingFactory")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(response = Lot.class, value = "update the moisture content of lot while leaving the factory")
