@@ -124,7 +124,7 @@ public class LotService extends AbstractService<Lot> {
         Long id = jsonObject.getLong("id");
         Lot lot = findById(id);
 
-        float weightLeavingCooperative = Float.parseFloat( (String) jsonObject.get(Constants.WEIGHT_LEAVING_COOPERATIVE));
+        float weightLeavingCooperative = Float.parseFloat(jsonObject.get(Constants.WEIGHT_LEAVING_COOPERATIVE).toString());
 
         lot.setWeightLeavingCooperative(weightLeavingCooperative);
         lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
@@ -145,7 +145,7 @@ public class LotService extends AbstractService<Lot> {
         Long id = jsonObject.getLong("id");
         Lot lot = findById(id);
 
-        float mcLeavingCooperative = Float.parseFloat( (String) jsonObject.get(Constants.MC_LEAVING_COOPERATIVE));
+        float mcLeavingCooperative = Float.parseFloat(jsonObject.get(Constants.MC_LEAVING_COOPERATIVE).toString());
 
         lot.setMcLeavingCooperative(mcLeavingCooperative);
         lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
@@ -166,7 +166,7 @@ public class LotService extends AbstractService<Lot> {
         Long id = jsonObject.getLong("id");
         Lot lot = findById(id);
 
-        float weightArrivingFactory = Float.parseFloat( (String) jsonObject.get(Constants.WEIGHT_ARRIVING_FACTORY));
+        float weightArrivingFactory = Float.parseFloat( jsonObject.get(Constants.WEIGHT_ARRIVING_FACTORY).toString());
 
         lot.setWeightArrivingFactory(weightArrivingFactory);
         lot.setLotStatus(LotStatus.AT_FACTORY);
@@ -187,7 +187,7 @@ public class LotService extends AbstractService<Lot> {
         Long id = jsonObject.getLong("id");
         Lot lot = findById(id);
 
-        float mcArrivingFactory = Float.parseFloat( (String) jsonObject.get(Constants.MC_ARRIVING_FACTORY));
+        float mcArrivingFactory = Float.parseFloat(jsonObject.get(Constants.MC_ARRIVING_FACTORY).toString());
 
         lot.setMcArrivingFactory(mcArrivingFactory);
         lot.setLotStatus(LotStatus.AT_FACTORY);
@@ -208,7 +208,7 @@ public class LotService extends AbstractService<Lot> {
         Long id = jsonObject.getLong("id");
         Lot lot = findById(id);
 
-        float weightLeavingFactory = Float.parseFloat( (String) jsonObject.get(Constants.WEIGHT_LEAVING_FACTORY));
+        float weightLeavingFactory = Float.parseFloat(jsonObject.get(Constants.WEIGHT_LEAVING_FACTORY).toString());
 
         lot.setWeightLeavingFactory(weightLeavingFactory);
         lot.setLotStatus(LotStatus.AT_FACTORY);
@@ -229,7 +229,7 @@ public class LotService extends AbstractService<Lot> {
         Long id = jsonObject.getLong("id");
         Lot lot = findById(id);
 
-        float mcLeavingFactory = Float.parseFloat( (String) jsonObject.get(Constants.MC_LEAVING_FACTORY));
+        float mcLeavingFactory = Float.parseFloat(jsonObject.get(Constants.MC_LEAVING_FACTORY).toString());
 
         lot.setMcLeavingFactory(mcLeavingFactory);
         lot.setLotStatus(LotStatus.AT_FACTORY);
