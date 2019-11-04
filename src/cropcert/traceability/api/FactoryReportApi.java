@@ -73,9 +73,8 @@ public class FactoryReportApi {
 	public Response getByLotId(@Context HttpServletRequest request, @DefaultValue("-1") @PathParam("lotId") Long lotId,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		List<FactoryReport> factoryReports = factoryReportService.getByPropertyWithCondtion("lotId", lotId, "=", limit,
-				offset);
-		return Response.ok().entity(factoryReports).build();
+		FactoryReport factoryReport = factoryReportService.findByPropertyWithCondtion("lotId", lotId.toString(), "=");
+		return Response.ok().entity(factoryReport).build();
 	}
 
 	@POST
