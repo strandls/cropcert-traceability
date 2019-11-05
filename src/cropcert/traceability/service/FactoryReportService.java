@@ -60,4 +60,10 @@ public class FactoryReportService extends AbstractService<FactoryReport> {
 
 		return factoryReport;
 	}
+	
+	public FactoryReport update(String jsonString) throws JsonParseException, JsonMappingException, IOException, ValidationException {
+		FactoryReport factoryReport = objectMappper.readValue(jsonString, FactoryReport.class);
+		factoryReport = update(factoryReport);
+		return factoryReport;
+	}
 }
