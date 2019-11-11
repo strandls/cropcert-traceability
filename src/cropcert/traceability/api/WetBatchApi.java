@@ -1,6 +1,7 @@
 package cropcert.traceability.api;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +27,7 @@ import cropcert.traceability.filter.Permissions;
 import cropcert.traceability.filter.TokenAndUserAuthenticated;
 import cropcert.traceability.model.WetBatch;
 import cropcert.traceability.service.WetBatchService;
+import cropcert.traceability.util.ValidationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -97,8 +99,12 @@ public class WetBatchApi {
 			return Response.status(Status.CREATED).entity(wetBatch).build();
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
+			return Response.status(Status.NO_CONTENT)
+					.entity(new HashMap<String, String>().put("error", e.getMessage())).build();
+		} catch (ValidationException e) {
+			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+					.build();
 		}
-		return Response.status(Status.NO_CONTENT).entity("Wet batch creation failed").build();
 	}
 
 	@PUT

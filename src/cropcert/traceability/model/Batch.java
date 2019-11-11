@@ -1,7 +1,6 @@
 package cropcert.traceability.model;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
@@ -45,10 +44,10 @@ public class Batch implements Serializable {
     @Column(name = "id", updatable = false, nullable = false)
     private Long id;
 
-    @Column(name = "batch_name")
+    @Column(name = "batch_name", nullable = false)
     private String batchName;
 
-    @Column(name = "cc_code")
+    @Column(name = "cc_code", nullable = false)
     private Long ccCode;
 
     @Column(name = "quantity")
