@@ -50,7 +50,8 @@ public class WetBatchService extends AbstractService<WetBatch> {
 
 		WetBatch batch = objectMappper.readValue(jsonObject.toString(), WetBatch.class);
 
-		batchValidation(batch, farmerContributions);
+		if(farmerContributions != null && farmerContributions.length() > 0)
+			batchValidation(batch, farmerContributions);
 		// update the transfer time stamp
 		Timestamp transferTimestamp = batch.getCreatedOn();
 		if (transferTimestamp == null) {

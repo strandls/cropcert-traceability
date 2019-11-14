@@ -48,7 +48,8 @@ public class BatchService extends AbstractService<Batch> {
 
 		Batch batch = objectMappper.readValue(jsonObject.toString(), Batch.class);
 
-		batchValidation(batch, farmerContributions);
+		if(farmerContributions != null && farmerContributions.length() > 0)
+			batchValidation(batch, farmerContributions);
 
 		// update the transfer time stamp
 		Timestamp createdOn = batch.getCreatedOn();
@@ -107,7 +108,7 @@ public class BatchService extends AbstractService<Batch> {
 	 * This object list is the comma separated value.
 	 */
 	public List<Batch> getByPropertyfromArray(String property, String objectList, Boolean isLotDone,
-			Boolean isReadyForLot, int limit, int offset) {
+			Boolean isReadyForLot, int limit, int offset) throws NumberFormatException{
 		Object[] values = objectList.split(",");
 		Long[] longValues = new Long[values.length];
 		for (int i = 0; i < values.length; i++) {
