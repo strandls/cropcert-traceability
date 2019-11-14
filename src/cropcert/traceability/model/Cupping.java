@@ -16,9 +16,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import io.swagger.annotations.ApiModel;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "report_cupping")
+@Table(name = "report_cupping", uniqueConstraints = @UniqueConstraint(columnNames = {"lot_id", "cupper"}))
 @XmlRootElement
 @JsonIgnoreProperties
 @ApiModel("Cupping")
@@ -53,7 +54,7 @@ public class Cupping implements Serializable {
 	@Column(name = "cc_name")
 	private String ccName;
 
-	@Column(name = "cupper", unique = true, nullable = false)
+	@Column(name = "cupper", nullable = false)
 	private String cupper;
 	
 	@Column(name = "sample_type")
