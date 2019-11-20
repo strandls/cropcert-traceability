@@ -129,6 +129,9 @@ public class FactoryReport {
 	
 	@Column(name = "other_loss_sub_total")
 	private float otherLossSubTotal;
+	
+	@Column(name = "is_deleted")
+	private Boolean isDeleted;
 
 	public Long getId() {
 		return id;
@@ -367,5 +370,13 @@ public class FactoryReport {
 
 	public void setOtherLossSubTotal(float otherLossSubTotal) {
 		this.otherLossSubTotal = otherLossSubTotal;
+	}
+
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
 	}
 }

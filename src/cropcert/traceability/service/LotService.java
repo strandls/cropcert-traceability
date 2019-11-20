@@ -63,6 +63,7 @@ public class LotService extends AbstractService<Lot> {
 
         Lot lot = objectMappper.readValue(jsonObject.toString(), Lot.class);
         lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
+        lot.setDeleted(false);
 
         lot = save(lot);
 
@@ -87,6 +88,7 @@ public class LotService extends AbstractService<Lot> {
             lotCreation.setUserId(userId);
             lotCreation.setTimestamp(timestamp);
             lotCreation.setNote("");
+            lotCreation.setIsDeleted(false);
 
             // update the batch activity..
             Batch batch = batchService.findById(batchId);

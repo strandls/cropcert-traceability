@@ -47,8 +47,9 @@ public class BatchService extends AbstractService<Batch> {
 		JSONArray farmerContributions = (JSONArray) jsonObject.remove("farmerContributions");
 
 		Batch batch = objectMappper.readValue(jsonObject.toString(), Batch.class);
+		batch.setDeleted(false);
 
-		if(farmerContributions != null && farmerContributions.length() > 0)
+		if (farmerContributions != null && farmerContributions.length() > 0)
 			batchValidation(batch, farmerContributions);
 
 		// update the transfer time stamp
@@ -108,12 +109,22 @@ public class BatchService extends AbstractService<Batch> {
 	 * This object list is the comma separated value.
 	 */
 	public List<Batch> getByPropertyfromArray(String property, String objectList, Boolean isLotDone,
-			Boolean isReadyForLot, int limit, int offset) throws NumberFormatException{
+			Boolean isReadyForLot, int limit, int offset) throws NumberFormatException {
 		Object[] values = objectList.split(",");
 		Long[] longValues = new Long[values.length];
 		for (int i = 0; i < values.length; i++) {
 			longValues[i] = Long.parseLong(values[i].toString());
 		}
 		return ((BatchDao) dao).getByPropertyfromArray(property, longValues, isLotDone, isReadyForLot, limit, offset);
+	}
+
+	public List<Batch> getByPropertyfromArray(String property, String objectList, int limit, int offset)
+			throws NumberFormatException {
+		Object[] values = objectList.split(",");
+		Long[] longValues = new Long[values.length];
+		for (int i = 0; i < values.length; i++) {
+			longValues[i] = Long.parseLong(values[i].toString());
+		}
+		return dao.getByPropertyfromArray(property, longValues, limit, offset);
 	}
 }

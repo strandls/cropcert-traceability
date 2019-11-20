@@ -68,6 +68,19 @@ public class BatchApi {
 		return Response.ok().entity(batches).build();
 	}
 
+	@Path("all/cc")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Get list of batches by cc codes", response = Batch.class, responseContainer = "List")
+	public Response getAllByCcCodes(@Context HttpServletRequest request,
+			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+
+		List<Batch> batches = batchService.getByPropertyfromArray("ccCode", ccCodes, limit, offset);
+		return Response.ok().entity(batches).build();
+	}
+
 	@Path("cc")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -97,11 +110,11 @@ public class BatchApi {
 			batchProduction = batchService.save(jsonString, request);
 			return Response.status(Status.CREATED).entity(batchProduction).build();
 		} catch (IOException | JSONException e) {
-			return Response.status(Status.NO_CONTENT)
-					.entity(new HashMap<String, String>().put("error", e.getMessage())).build();
+			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+					.build();
 		} catch (ValidationException e) {
-			return Response.status(Status.NO_CONTENT)
-					.entity(new HashMap<String, String>().put("error", e.getMessage())).build();
+			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+					.build();
 		}
 	}
 }

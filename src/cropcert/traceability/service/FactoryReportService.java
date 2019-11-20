@@ -40,6 +40,7 @@ public class FactoryReportService extends AbstractService<FactoryReport> {
 	public FactoryReport save(HttpServletRequest request, String jsonString)
 			throws JsonParseException, JsonMappingException, IOException, JSONException, ValidationException {
 		FactoryReport factoryReport = objectMappper.readValue(jsonString, FactoryReport.class);
+		factoryReport.setIsDeleted(false);
 
 
 		Long lotId = factoryReport.getLotId();

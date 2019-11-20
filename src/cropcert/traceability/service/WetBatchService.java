@@ -49,6 +49,7 @@ public class WetBatchService extends AbstractService<WetBatch> {
 		JSONArray farmerContributions = (JSONArray) jsonObject.remove("farmerContributions");
 
 		WetBatch batch = objectMappper.readValue(jsonObject.toString(), WetBatch.class);
+		batch.setDeleted(false);
 
 		if(farmerContributions != null && farmerContributions.length() > 0)
 			batchValidation(batch, farmerContributions);

@@ -27,6 +27,7 @@ public class ActivityService extends AbstractService<Activity> {
 	public Activity save(String jsonString)
 			throws JsonParseException, JsonMappingException, IOException, JSONException {
 		Activity batch = objectMappper.readValue(jsonString, Activity.class);
+		batch.setIsDeleted(false);
 		
 		// update the transfer time stamp
 		Timestamp transferTimestamp = batch.getTimestamp();

@@ -45,6 +45,9 @@ public class BatchCreation {
     
     @Column(name = "notes")
     private String notes;
+    
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
 
 	public Long getId() {
 		return id;
@@ -101,4 +104,13 @@ public class BatchCreation {
 	public void setNotes(String notes) {
 		this.notes = notes;
 	}
+
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+	
 }

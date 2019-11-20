@@ -140,7 +140,8 @@ public abstract class AbstractDao<T, K extends Serializable> {
 	public List<T> getByPropertyfromArray(String property, Object[] values, int limit, int offset) {
 		String queryStr = "" +
 			    "from "+daoType.getSimpleName()+" t " +
-			    "where t."+property+" in (:values)" +
+			    "where t."+property+" in (:values) and " +
+			    "isDeleted is null or isDeleted = " + false +
 			    " order by id";
 		Session session = sessionFactory.openSession();
 		Query query = session.createQuery(queryStr);

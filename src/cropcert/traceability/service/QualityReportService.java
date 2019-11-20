@@ -40,6 +40,7 @@ public class QualityReportService extends AbstractService<QualityReport> {
 	public QualityReport save(HttpServletRequest request, String jsonString)
 			throws JsonParseException, JsonMappingException, IOException, JSONException, ValidationException {
 		QualityReport qualityReport = objectMappper.readValue(jsonString, QualityReport.class);
+		qualityReport.setIsDeleted(false);
 
 		validationCheck(qualityReport);
 

@@ -48,6 +48,9 @@ public class LotCreation implements Serializable {
 	
 	@Column(name = "note")
 	private String note;
+	
+	@Column(name = "is_deleted")
+	private Boolean isDeleted;
 
 	public Long getId() {
 		return id;
@@ -97,6 +100,12 @@ public class LotCreation implements Serializable {
 		this.note = note;
 	}
 
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
 
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 
 }

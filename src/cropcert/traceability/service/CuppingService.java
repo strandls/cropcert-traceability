@@ -35,6 +35,7 @@ public class CuppingService extends AbstractService<Cupping> {
 	public Cupping save(HttpServletRequest request, String jsonString)
 			throws JsonParseException, JsonMappingException, IOException, JSONException {
 		Cupping cupping = objectMappper.readValue(jsonString, Cupping.class);
+		cupping.setIsDeleted(false);
 		
 		 /**
          * save the activity here.
