@@ -156,6 +156,17 @@ public class WetBatchService extends AbstractService<WetBatch> {
 		return wetBatch;
 	}
 
+	public void updateReadyForLot(String jsonString) throws JSONException {
+		JSONArray jsonArray = new JSONObject(jsonString).getJSONArray("batchIds");
+		for (int i = 0; i < jsonArray.length(); i++) {
+			Long batchId = jsonArray.getLong(i);
+			WetBatch batch = dao.findById(batchId);
+			batch.setReadyForLot(true);
+			dao.update(batch);
+		}
+
+	}
+	
 	public List<WetBatch> getByPropertyfromArray(String property, String ccCodes, Boolean isLotDone,
 			Boolean isReadyForLot, Integer limit, Integer offset) {
 		Object[] values = ccCodes.split(",");
@@ -166,15 +177,14 @@ public class WetBatchService extends AbstractService<WetBatch> {
 		return ((WetBatchDao) dao).getByPropertyfromArray(property, longValues, isLotDone, isReadyForLot, limit,
 				offset);
 	}
-
-	public void updateReadyForLot(String jsonString) throws JSONException {
-		JSONArray jsonArray = new JSONObject(jsonString).getJSONArray("batchIds");
-		for (int i = 0; i < jsonArray.length(); i++) {
-			Long batchId = jsonArray.getLong(i);
-			WetBatch batch = dao.findById(batchId);
-			batch.setReadyForLot(true);
-			dao.update(batch);
+	
+	public List<WetBatch> getByPropertyfromArray(String property, String objectList, int limit, int offset)
+			throws NumberFormatException {
+		Object[] values = objectList.split(",");
+		Long[] longValues = new Long[values.length];
+		for (int i = 0; i < values.length; i++) {
+			longValues[i] = Long.parseLong(values[i].toString());
 		}
-
+		return dao.getByPropertyfromArray(property, longValues, limit, offset);
 	}
 }

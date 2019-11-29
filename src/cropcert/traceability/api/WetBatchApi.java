@@ -69,6 +69,19 @@ public class WetBatchApi {
 		return Response.ok().entity(wetBatches).build();
 	}
 
+	@Path("all/cc")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Get list of batches by cc codes", response = WetBatch.class, responseContainer = "List")
+	public Response getAllByCcCodes(@Context HttpServletRequest request,
+			@DefaultValue("-1") @QueryParam("ccCodes") String ccCodes,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+
+		List<WetBatch> batches = wetbatchService.getByPropertyfromArray("ccCode", ccCodes, limit, offset);
+		return Response.ok().entity(batches).build();
+	}
+
 	@Path("cc")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -99,8 +112,8 @@ public class WetBatchApi {
 			return Response.status(Status.CREATED).entity(wetBatch).build();
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
-			return Response.status(Status.NO_CONTENT)
-					.entity(new HashMap<String, String>().put("error", e.getMessage())).build();
+			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+					.build();
 		} catch (ValidationException e) {
 			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
 					.build();
