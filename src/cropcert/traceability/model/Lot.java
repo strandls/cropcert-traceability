@@ -42,7 +42,7 @@ public class Lot implements Serializable {
 	private Long coCode;
 	
 	@Column(name = "quantity")
-	private float quantity;
+	private Float quantity;
 	
 	@Column(name = "type")
 	private String type;
@@ -54,28 +54,32 @@ public class Lot implements Serializable {
 	private Timestamp timeToFactory;
 	
 	@Column(name = "weight_leaving_cooperative")
-	private float weightLeavingCooperative;
+	private Float weightLeavingCooperative;
 	
 	@Column(name = "mc_leaving_cooperative")
-	private float mcLeavingCooperative;
+	private Float mcLeavingCooperative;
+	
+	private ActionStatus coopStatus;
 	
 	@Column(name = "weight_arriving_factory")
-	private float weightArrivingFactory;
+	private Float weightArrivingFactory;
 	
 	@Column(name = "mc_arriving_factory")
-	private float mcArrivingFactory;
+	private Float mcArrivingFactory;
 	
 	@Column(name = "milling_time")
 	private Timestamp millingTime;
 
 	@Column(name = "weight_Leaving_factory")
-	private float weightLeavingFactory;
+	private Float weightLeavingFactory;
 	
 	@Column(name = "mc_Leaving_factory")
-	private float mcLeavingFactory;
+	private Float mcLeavingFactory;
 	
 	@Column(name = "out_turn")
-	private float outTurn;
+	private Float outTurn;
+	
+	private ActionStatus millingStatus;
 	
 	@Column(name = "grn_number")
 	private String grnNumber;
@@ -86,8 +90,12 @@ public class Lot implements Serializable {
 	@Column(name = "factory_report_id")
 	private Long factoryReportId;
 	
+	private ActionStatus factoryStatus;
+	
 	@Column(name = "green_analysis_id")
 	private Long greenAnalysisId;
+	
+	private ActionStatus greenAnalysisStatus;
 	
 	@Column(name = "lot_status")
 	private LotStatus lotStatus;
@@ -116,10 +124,10 @@ public class Lot implements Serializable {
 		this.coCode = coCode;
 	}
 	
-	public float getQuantity() {
+	public Float getQuantity() {
 		return quantity;
 	}
-	public void setQuantity(float quantity) {
+	public void setQuantity(Float quantity) {
 		this.quantity = quantity;
 	}
 
@@ -144,31 +152,50 @@ public class Lot implements Serializable {
 		this.timeToFactory = timeToFactory;
 	}
 	
-	public float getWeightLeavingCooperative() {
+	public Float getWeightLeavingCooperative() {
 		return weightLeavingCooperative;
 	}
-	public void setWeightLeavingCooperative(float weightLeavingCooperative) {
+	public void setWeightLeavingCooperative(Float weightLeavingCooperative) {
 		this.weightLeavingCooperative = weightLeavingCooperative;
 	}
 	
-	public float getMcLeavingCooperative() {
+	public Float getMcLeavingCooperative() {
 		return mcLeavingCooperative;
 	}
-	public void setMcLeavingCooperative(float mcLeavingCooperative) {
+	public void setMcLeavingCooperative(Float mcLeavingCooperative) {
 		this.mcLeavingCooperative = mcLeavingCooperative;
 	}
 	
-	public float getWeightArrivingFactory() {
+	public ActionStatus getCoopStatus() {
+		if(coopStatus == null) 
+			coopStatus = ActionStatus.NOTDONE;
+		if(this.timeToFactory == null && 
+				this.weightLeavingCooperative == null && 
+				this.mcLeavingCooperative == null) 
+			coopStatus = ActionStatus.ADD;
+		else if(coopStatus != ActionStatus.DONE) 
+			coopStatus = ActionStatus.EDIT;
+		else coopStatus = ActionStatus.DONE;
+		return coopStatus;
+	}
+	public void setCoopStatus(ActionStatus coopStatus) {
+		this.coopStatus = coopStatus;
+	}
+	
+	/*
+	 * Factory action
+	 */
+	public Float getWeightArrivingFactory() {
 		return weightArrivingFactory;
 	}
-	public void setWeightArrivingFactory(float weightArrivingFactory) {
+	public void setWeightArrivingFactory(Float weightArrivingFactory) {
 		this.weightArrivingFactory = weightArrivingFactory;
 	}
 	
-	public float getMcArrivingFactory() {
+	public Float getMcArrivingFactory() {
 		return mcArrivingFactory;
 	}
-	public void setMcArrivingFactory(float mcArrivingFactory) {
+	public void setMcArrivingFactory(Float mcArrivingFactory) {
 		this.mcArrivingFactory = mcArrivingFactory;
 	}
 
@@ -179,27 +206,49 @@ public class Lot implements Serializable {
 		this.millingTime = millingTime;
 	}
 	
-	public float getWeightLeavingFactory() {
+	public Float getWeightLeavingFactory() {
 		return weightLeavingFactory;
 	}
-	public void setWeightLeavingFactory(float weightLeavingFactory) {
+	public void setWeightLeavingFactory(Float weightLeavingFactory) {
 		this.weightLeavingFactory = weightLeavingFactory;
 	}
 	
-	public float getMcLeavingFactory() {
+	public Float getMcLeavingFactory() {
 		return mcLeavingFactory;
 	}
-	public void setMcLeavingFactory(float mcLeavingFactory) {
+	public void setMcLeavingFactory(Float mcLeavingFactory) {
 		this.mcLeavingFactory = mcLeavingFactory;
 	}
 
-	public float getOutTurn() {
+	public Float getOutTurn() {
 		return outTurn;
 	}
-	public void setOutTurn(float outTurn) {
+	public void setOutTurn(Float outTurn) {
 		this.outTurn = outTurn;
 	}
-
+	
+	public ActionStatus getMillingStatus() {
+		if(coopStatus != ActionStatus.DONE || millingStatus == null) 
+			millingStatus =  ActionStatus.NOTDONE;
+		else if(weightArrivingFactory == null &&
+				weightLeavingFactory == null &&
+				mcArrivingFactory == null &&
+				mcLeavingFactory == null &&
+				millingTime == null) 
+			millingStatus = ActionStatus.ADD;
+		else if(millingStatus != ActionStatus.DONE) 
+			millingStatus = ActionStatus.EDIT;
+		else 
+			millingStatus = ActionStatus.DONE;
+		return millingStatus;
+	}
+	public void setMillingStatus(ActionStatus millingStatus) {
+		this.millingStatus = millingStatus;
+	}
+	
+	/*
+	 * Action  at union factory
+	 */
 	public String getGrnNumber() {
 		return grnNumber;
 	}
@@ -220,12 +269,49 @@ public class Lot implements Serializable {
 	public void setFactoryReportId(Long factoryReportId) {
 		this.factoryReportId = factoryReportId;
 	}
+
+	public ActionStatus getFactoryStatus() {
+		
+		if(millingStatus != ActionStatus.DONE || factoryStatus == null)
+			factoryStatus = ActionStatus.NOTDONE;
+		else if(factoryReportId == null)
+			factoryStatus = ActionStatus.ADD;
+		else if(factoryStatus != ActionStatus.DONE)
+			factoryStatus = ActionStatus.EDIT;
+		else 
+			factoryStatus = ActionStatus.DONE;
+		
+		return factoryStatus;
+	}
+	public void setFactoryStatus(ActionStatus factoryStatus) {
+		this.factoryStatus = factoryStatus;
+	}
+
 	
+	/*
+	 * Quality report
+	 */
 	public Long getGreenAnalysisId() {
 		return greenAnalysisId;
 	}
 	public void setGreenAnalysisId(Long greenAnalysisId) {
 		this.greenAnalysisId = greenAnalysisId;
+	}
+
+	public ActionStatus getGreenAnalysisStatus() {
+		if(factoryStatus != ActionStatus.DONE || greenAnalysisStatus == null) 
+			greenAnalysisStatus = ActionStatus.NOTDONE;
+		else if(greenAnalysisId == null)
+			greenAnalysisStatus = ActionStatus.ADD;
+		else if(greenAnalysisStatus != ActionStatus.DONE)
+			greenAnalysisStatus = ActionStatus.EDIT;
+		else
+			greenAnalysisStatus = ActionStatus.DONE;
+		
+		return greenAnalysisStatus;
+	}
+	public void setGreenAnalysisStatus(ActionStatus greenAnalysisStatus) {
+		this.greenAnalysisStatus = greenAnalysisStatus;
 	}
 
 	public LotStatus getLotStatus() {

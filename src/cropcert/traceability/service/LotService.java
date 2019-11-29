@@ -10,6 +10,8 @@ import java.util.Map;
 
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +27,7 @@ import com.google.inject.Inject;
 import cropcert.traceability.Constants;
 import cropcert.traceability.LotStatus;
 import cropcert.traceability.dao.LotDao;
+import cropcert.traceability.model.ActionStatus;
 import cropcert.traceability.model.Activity;
 import cropcert.traceability.model.Batch;
 import cropcert.traceability.model.Cupping;
@@ -250,8 +253,14 @@ public class LotService extends AbstractService<Lot> {
         JSONObject jsonObject = new JSONObject(jsonString);
         JSONArray jsonArray = jsonObject.getJSONArray("ids");
 
-        Timestamp timeToFactory = new Timestamp((Long) jsonObject.get(Constants.TIME_TO_FACTORY));
+        Timestamp timestamp = new Timestamp(new Date().getTime());
 
+        Timestamp timeToFactory;
+        if(jsonObject.has(Constants.TIME_TO_FACTORY))
+        	timeToFactory = new Timestamp((Long) jsonObject.get(Constants.TIME_TO_FACTORY));
+        else
+        	timeToFactory = new Timestamp(new Date().getTime());
+        
         for (int i = 0; i < jsonArray.length(); i++) {
             Long id = jsonArray.getLong(i);
             Lot lot = findById(id);
@@ -260,7 +269,6 @@ public class LotService extends AbstractService<Lot> {
             lot = update(lot);
 
             String userId = UserUtil.getUserDetails(request).getId();
-            Timestamp timestamp = new Timestamp(new Date().getTime());
             Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
                     timestamp, Constants.TIME_TO_FACTORY, timeToFactory.toString());
             activity = activityService.save(activity);
@@ -403,5 +411,59 @@ public class LotService extends AbstractService<Lot> {
 			lotWithCuppings.add(lotWithCupping);
 		}
 		return lotWithCuppings;
+	}
+
+	public Response finalizeCoopActions(Long id) {
+		Lot lot = findById(id);
+		if (lot != null) {
+			if(lot.getTimeToFactory() == null ||
+					lot.getWeightLeavingCooperative() == null ||
+					lot.getMcLeavingCooperative() == null)
+				return Response.status(Status.NO_CONTENT).entity(
+						new HashMap<String, String>().put("error", "Update all the fields first"))
+						.build();
+				
+			lot.setCoopStatus(ActionStatus.DONE);
+			return Response.ok().entity(lot).build();
+		}
+		return Response.status(Status.NO_CONTENT).entity(
+				new HashMap<String, String>().put("error", "Error in finalizing the cooperative action"))
+				.build();
+	}
+	
+	public Response finalizeMillingActions(Long id) {
+		Lot lot = findById(id);
+		if (lot != null) {
+			if(lot.getWeightArrivingFactory() == null ||
+					lot.getWeightLeavingFactory() == null ||
+					lot.getMcArrivingFactory() == null ||
+					lot.getMcLeavingFactory() == null ||
+					lot.getMillingTime() == null)
+				return Response.status(Status.NO_CONTENT).entity(
+						new HashMap<String, String>().put("error", "Update all the fields first"))
+						.build();
+				
+			lot.setMillingStatus(ActionStatus.DONE);
+			return Response.ok().entity(lot).build();
+		}
+		return Response.status(Status.NO_CONTENT).entity(
+				new HashMap<String, String>().put("error", "Error in finalizing the Milling action"))
+				.build();
+	}
+	
+	public Response finalizeFactoryActions(Long id) {
+		Lot lot = findById(id);
+		if (lot != null) {
+			if(lot.getFactoryReportId() == null)
+				return Response.status(Status.NO_CONTENT).entity(
+						new HashMap<String, String>().put("error", "Update all the fields first"))
+						.build();
+				
+			lot.setFactoryStatus(ActionStatus.DONE);
+			return Response.ok().entity(lot).build();
+		}
+		return Response.status(Status.NO_CONTENT).entity(
+				new HashMap<String, String>().put("error", "Error in finalizing the Milling action"))
+				.build();
 	}
 }

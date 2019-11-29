@@ -70,12 +70,13 @@ public class LotApi {
 		}
 		return Response.ok().entity(lots).build();
 	}
-	
+
 	@Path("all/cupping")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@ApiOperation(value = "Get all the Lots", response = Lot.class, responseContainer = "List")
-	public Response findAllWithCupping(@Context HttpServletRequest request, @DefaultValue("-1") @QueryParam("limit") Integer limit,
+	public Response findAllWithCupping(@Context HttpServletRequest request,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 		List<Map<String, Object>> lots = lotService.getAllWithCupping(limit, offset);
 		return Response.ok().entity(lots).build();
@@ -170,9 +171,10 @@ public class LotApi {
 			e.printStackTrace();
 		}
 		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "Weight updation failed at the cooperative")).build();
+				.entity(new HashMap<String, String>().put("error", "Weight updation failed at the cooperative"))
+				.build();
 	}
-	
+
 	@PUT
 	@Path("mcLeavingCooperative")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -188,10 +190,11 @@ public class LotApi {
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
 		}
-		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "Moisture content updation failed at the cooperative")).build();
+		return Response.status(Status.NO_CONTENT).entity(
+				new HashMap<String, String>().put("error", "Moisture content updation failed at the cooperative"))
+				.build();
 	}
-	
+
 	@PUT
 	@Path("weightArrivingFactory")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -210,7 +213,7 @@ public class LotApi {
 		return Response.status(Status.NO_CONTENT)
 				.entity(new HashMap<String, String>().put("error", "Weight updation failed at the factory")).build();
 	}
-	
+
 	@PUT
 	@Path("mcArrivingFactory")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -227,9 +230,10 @@ public class LotApi {
 			e.printStackTrace();
 		}
 		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "Moisture content updation failed at the factory")).build();
+				.entity(new HashMap<String, String>().put("error", "Moisture content updation failed at the factory"))
+				.build();
 	}
-	
+
 	@PUT
 	@Path("millingTime")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -248,7 +252,7 @@ public class LotApi {
 		return Response.status(Status.NO_CONTENT)
 				.entity(new HashMap<String, String>().put("error", "Milling time updation failed")).build();
 	}
-	
+
 	@PUT
 	@Path("weightLeavingFactory")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -267,7 +271,7 @@ public class LotApi {
 		return Response.status(Status.NO_CONTENT)
 				.entity(new HashMap<String, String>().put("error", "Weight updation failed at the factory")).build();
 	}
-	
+
 	@PUT
 	@Path("mcLeavingFactory")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -284,7 +288,8 @@ public class LotApi {
 			e.printStackTrace();
 		}
 		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "Moisture content updation failed at the factory")).build();
+				.entity(new HashMap<String, String>().put("error", "Moisture content updation failed at the factory"))
+				.build();
 	}
 
 	@PUT
@@ -349,4 +354,42 @@ public class LotApi {
 		return Response.status(Status.NO_CONTENT)
 				.entity(new HashMap<String, String>().put("error", "GNR updation for lot has failed")).build();
 	}
+	
+	@PUT
+	@Path("finalizeCoopAction/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "Finalize the cooperative actions")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
+	public Response finalizeCoopActions(@Context HttpServletRequest request, @PathParam("id") Long id) {
+		return lotService.finalizeCoopActions(id);
+	}
+	
+	@PUT
+	@Path("finalizeMillingAction/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "Finalize the milling actions")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
+	public Response finalizeMillingActions(@Context HttpServletRequest request, @PathParam("id") Long id) {
+		return lotService.finalizeMillingActions(id);
+	}
+	
+	@PUT
+	@Path("finalizeFactoryAction/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "Finalize the factory actions")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
+	public Response finalizeFactoryActions(@Context HttpServletRequest request, @PathParam("id") Long id) {
+		return lotService.finalizeFactoryActions(id);
+	}
+	
+	
 }
