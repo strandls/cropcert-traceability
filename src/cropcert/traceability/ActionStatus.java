@@ -1,4 +1,4 @@
-package cropcert.traceability.model;
+package cropcert.traceability;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;

@@ -24,10 +24,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.inject.Inject;
 
+import cropcert.traceability.ActionStatus;
 import cropcert.traceability.Constants;
 import cropcert.traceability.LotStatus;
 import cropcert.traceability.dao.LotDao;
-import cropcert.traceability.model.ActionStatus;
 import cropcert.traceability.model.Activity;
 import cropcert.traceability.model.Batch;
 import cropcert.traceability.model.Cupping;
@@ -98,7 +98,7 @@ public class LotService extends AbstractService<Lot> {
             if (batch == null) {
                 throw new JSONException("Invalid batch id found");
             }
-            batch.setLotDone(true);
+            batch.setIsLotDone(true);
             batchService.update(batch);
             lotCreationService.save(lotCreation);
         }

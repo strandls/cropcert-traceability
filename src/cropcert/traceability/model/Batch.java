@@ -4,15 +4,10 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -21,15 +16,13 @@ import org.hibernate.annotations.ColumnDefault;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import cropcert.traceability.BatchType;
 import io.swagger.annotations.ApiModel;
 
 @Entity
 @Table(name = "batch")
 @XmlRootElement
 @JsonIgnoreProperties
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "type", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue(value = "DRY")
 @ApiModel("Batch")
 public class Batch implements Serializable {
 
@@ -49,10 +42,13 @@ public class Batch implements Serializable {
 
     @Column(name = "cc_code", nullable = false)
     private Long ccCode;
+    
+    @Column(name = "batch_type", nullable = false)
+    private BatchType type;
 
     @Column(name = "quantity")
     @ColumnDefault("0.0")
-    private float quantity;
+    private Float quantity;
 
     @Column(name = "date")
     private Timestamp date;
@@ -63,8 +59,17 @@ public class Batch implements Serializable {
     @Column(name = "note")
     private String note;
     
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
+    @Column( name = "start_time")
+	private Timestamp startTime;
+	
+	@Column( name = "fermentation_end_time")
+	private Timestamp fermentationEndTime;
+	
+	@Column( name = "drying_end_time")
+	private Timestamp dryingEndTime;
+	
+	@Column( name = "perchment_quantity")
+	private Float perchmentQuantity;
     
     @Column(name = "is_ready_for_lot")
     private Boolean isReadyForLot;
@@ -72,89 +77,111 @@ public class Batch implements Serializable {
     @Column(name = "is_lot_Done")
     private Boolean isLotDone;
 
-    public Long getBatchId() {
-        return id;
-    }
+    @Column(name = "is_deleted")
+    private Boolean isDeleted;
 
-    public void setBatchId(Long batchId) {
-        this.id = batchId;
-    }
-
-    public Long getCcCode() {
-        return ccCode;
-    }
-
-    public void setBatchName(String batchName) {
-        this.batchName = batchName;
-    }
-
-    public String getBatchName() {
-        return batchName;
-    }
-
-    public void setCcCode(Long ccCode) {
-        this.ccCode = ccCode;
-    }
-
-    public float getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(float quantity) {
-        this.quantity = quantity;
-    }
-
-    public Timestamp getDate() {
-        return date;
-    }
-
-    public void setDate(Timestamp date) {
-        this.date = date;
-    }
-
-    public Timestamp getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(Timestamp createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public String getNote() {
-        return note;
-    }
-
-    public void setNote(String note) {
-        this.note = note;
-    }
-
-    public String getType() {
-        DiscriminatorValue value = this.getClass().getAnnotation(DiscriminatorValue.class);
-        return value == null ? null : value.value();
-    }
-
-	public Boolean isDeleted() {
-		return isDeleted;
+    public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
 	}
 
-	public void setDeleted(Boolean isDeleted) {
-		this.isDeleted = isDeleted;
+	public String getBatchName() {
+		return batchName;
+	}
+	public void setBatchName(String batchName) {
+		this.batchName = batchName;
+	}
+
+	public Long getCcCode() {
+		return ccCode;
+	}
+	public void setCcCode(Long ccCode) {
+		this.ccCode = ccCode;
 	}
 	
-	public Boolean isReadyForLot() {
+	public BatchType getType() {
+		return type;
+	}
+	public void setType(BatchType type) {
+		this.type = type;
+	}
+
+	public Float getQuantity() {
+		return quantity;
+	}
+	public void setQuantity(Float quantity) {
+		this.quantity = quantity;
+	}
+
+	public Timestamp getDate() {
+		return date;
+	}
+	public void setDate(Timestamp date) {
+		this.date = date;
+	}
+
+	public Timestamp getCreatedOn() {
+		return createdOn;
+	}
+	public void setCreatedOn(Timestamp createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	public String getNote() {
+		return note;
+	}
+	public void setNote(String note) {
+		this.note = note;
+	}
+
+	public Timestamp getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(Timestamp startTime) {
+		this.startTime = startTime;
+	}
+
+	public Timestamp getFermentationEndTime() {
+		return fermentationEndTime;
+	}
+	public void setFermentationEndTime(Timestamp fermentationEndTime) {
+		this.fermentationEndTime = fermentationEndTime;
+	}
+
+	public Timestamp getDryingEndTime() {
+		return dryingEndTime;
+	}
+	public void setDryingEndTime(Timestamp dryingEndTime) {
+		this.dryingEndTime = dryingEndTime;
+	}
+
+	public Float getPerchmentQuantity() {
+		return perchmentQuantity;
+	}
+	public void setPerchmentQuantity(Float perchmentQuantity) {
+		this.perchmentQuantity = perchmentQuantity;
+	}
+
+	public Boolean getIsReadyForLot() {
 		return isReadyForLot;
 	}
-	
-	public void setReadyForLot(Boolean isReadyForLot) {
+	public void setIsReadyForLot(Boolean isReadyForLot) {
 		this.isReadyForLot = isReadyForLot;
 	}
 
-	public Boolean isLotDone() {
+	public Boolean getIsLotDone() {
 		return isLotDone;
 	}
-
-	public void setLotDone(Boolean isLotDone) {
+	public void setIsLotDone(Boolean isLotDone) {
 		this.isLotDone = isLotDone;
 	}
 
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 }

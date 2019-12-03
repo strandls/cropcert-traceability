@@ -12,10 +12,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.inject.Inject;
 
+import cropcert.traceability.BatchType;
 import cropcert.traceability.Constants;
 import cropcert.traceability.dao.BatchDao;
 import cropcert.traceability.model.Activity;
@@ -47,7 +50,7 @@ public class BatchService extends AbstractService<Batch> {
 		JSONArray farmerContributions = (JSONArray) jsonObject.remove("farmerContributions");
 
 		Batch batch = objectMappper.readValue(jsonObject.toString(), Batch.class);
-		batch.setDeleted(false);
+		batch.setIsDeleted(false);
 
 		if (farmerContributions != null && farmerContributions.length() > 0)
 			batchValidation(batch, farmerContributions);
@@ -58,8 +61,8 @@ public class BatchService extends AbstractService<Batch> {
 			createdOn = new Timestamp(new Date().getTime());
 			batch.setCreatedOn(createdOn);
 		}
-		batch.setReadyForLot(true);
-		batch.setLotDone(false);
+		batch.setIsReadyForLot(true);
+		batch.setIsLotDone(false);
 		batch = save(batch);
 
 		String userId = UserUtil.getUserDetails(request).getId();
@@ -68,7 +71,7 @@ public class BatchService extends AbstractService<Batch> {
 			for (int i = 0; i < farmerContributions.length(); i++) {
 				jsonObject = farmerContributions.getJSONObject(i);
 				BatchCreation batchCreation = objectMappper.readValue(jsonObject.toString(), BatchCreation.class);
-				batchCreation.setBatchId(batch.getBatchId());
+				batchCreation.setBatchId(batch.getId());
 				batchCreation.setUserId(userId);
 				if (batchCreation.getTimestamp() == null) {
 					batchCreation.setTimestamp(createdOn);
@@ -77,14 +80,14 @@ public class BatchService extends AbstractService<Batch> {
 			}
 
 		// Update the batch name, with batch id as well
-		String batchName = batch.getBatchName() + "_" + batch.getBatchId();
+		String batchName = batch.getBatchName() + "_" + batch.getId();
 		batch.setBatchName(batchName);
 		update(batch);
 
 		/**
 		 * save the activity here.
 		 */
-		Activity activity = new Activity(batch.getClass().getSimpleName(), batch.getBatchId(), userId, createdOn,
+		Activity activity = new Activity(batch.getClass().getSimpleName(), batch.getId(), userId, createdOn,
 				Constants.BATCH_CREATION, batch.getBatchName());
 		activity = activityService.save(activity);
 
@@ -103,6 +106,74 @@ public class BatchService extends AbstractService<Batch> {
 		if (batchWeight != contributionWeight) {
 			throw new ValidationException("Farmer contribution and the batch weight are not matching");
 		}
+	}
+	
+	public Batch updateStartTime(String jsoString) throws JSONException, ValidationException {
+		JSONObject jsonObject = new JSONObject(jsoString);
+		Long id = jsonObject.getLong("id");
+		Timestamp startTime = new Timestamp((Long) jsonObject.get("startTime"));
+
+		Batch wetBatch = findById(id);
+		if(BatchType.DRY.equals(wetBatch.getType()))
+			throw new ValidationException("Found dry batch");
+		wetBatch.setStartTime(startTime);
+		return update(wetBatch);
+	}
+
+	public Batch updateFermentationEndTime(String jsoString) throws JSONException, ValidationException {
+		JSONObject jsonObject = new JSONObject(jsoString);
+		Long id = jsonObject.getLong("id");
+		Timestamp fermentationEndTime = new Timestamp((Long) jsonObject.get("fermentationEndTime"));
+
+		Batch wetBatch = findById(id);
+		if(BatchType.DRY.equals(wetBatch.getType()))
+			throw new ValidationException("Found dry batch");
+		wetBatch.setFermentationEndTime(fermentationEndTime);
+		return update(wetBatch);
+	}
+
+	public Batch updateDryingEndTime(String jsoString) throws JSONException, ValidationException {
+		JSONObject jsonObject = new JSONObject(jsoString);
+		Long id = jsonObject.getLong("id");
+		Timestamp dryingEndTime = new Timestamp((Long) jsonObject.get("dryingEndTime"));
+
+		Batch wetBatch = findById(id);
+		if(BatchType.DRY.equals(wetBatch.getType()))
+			throw new ValidationException("Found dry batch");
+		wetBatch.setDryingEndTime(dryingEndTime);
+		return update(wetBatch);
+	}
+
+	public Batch updatePerchmentQuantity(String jsoString) throws JSONException, ValidationException {
+		JSONObject jsonObject = new JSONObject(jsoString);
+		Long id = jsonObject.getLong("id");
+		float perchmentQuantity = Float.parseFloat(jsonObject.get("perchmentQuantity").toString());
+
+		Batch wetBatch = findById(id);
+		if(BatchType.DRY.equals(wetBatch.getType()))
+			throw new ValidationException("Found dry batch");
+		wetBatch.setPerchmentQuantity(perchmentQuantity);
+		return update(wetBatch);
+	}
+
+	public Batch update(String jsonString) throws JSONException, JsonProcessingException, IOException {
+		Long id = new JSONObject(jsonString).getLong("id");
+		Batch wetBatch = findById(id);
+		ObjectReader objectReader = objectMappper.readerForUpdating(wetBatch);
+		wetBatch = objectReader.readValue(jsonString);
+		wetBatch = update(wetBatch);
+		return wetBatch;
+	}
+
+	public void updateReadyForLot(String jsonString) throws JSONException {
+		JSONArray jsonArray = new JSONObject(jsonString).getJSONArray("batchIds");
+		for (int i = 0; i < jsonArray.length(); i++) {
+			Long batchId = jsonArray.getLong(i);
+			Batch batch = dao.findById(batchId);
+			batch.setIsReadyForLot(true);
+			dao.update(batch);
+		}
+
 	}
 
 	/*

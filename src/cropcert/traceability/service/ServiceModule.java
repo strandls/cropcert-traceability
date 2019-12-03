@@ -13,6 +13,5 @@ public class ServiceModule extends AbstractModule {
 		bind(LotCreationService.class).in(Scopes.SINGLETON);
 		bind(LotService.class).in(Scopes.SINGLETON);
 		bind(QualityReportService.class).in(Scopes.SINGLETON);
-		bind(WetBatchService.class).in(Scopes.SINGLETON);
 	}
 }

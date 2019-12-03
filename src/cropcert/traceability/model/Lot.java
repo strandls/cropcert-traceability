@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import cropcert.traceability.ActionStatus;
 import cropcert.traceability.LotStatus;
 import io.swagger.annotations.ApiModel;
 

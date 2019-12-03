@@ -13,6 +13,5 @@ public class DaoModule extends AbstractModule {
 		bind(LotCreationDao.class).in(Scopes.SINGLETON);
 		bind(LotDao.class).in(Scopes.SINGLETON);
 		bind(QualityReportDao.class).in(Scopes.SINGLETON);
-		bind(WetBatchDao.class).in(Scopes.SINGLETON);
 	}
 }

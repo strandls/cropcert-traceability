@@ -9,6 +9,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -112,6 +113,92 @@ public class BatchApi {
 		} catch (IOException | JSONException e) {
 			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
 					.build();
+		} catch (ValidationException e) {
+			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+					.build();
+		}
+	}
+
+	@PUT
+	@Path("readyForLot")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "update the wet batch for lot creation", response = Batch.class)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
+	public Response updateReadyForLot(@Context HttpServletRequest request, String jsonString) throws JSONException {
+		batchService.updateReadyForLot(jsonString);
+		return Response.status(Status.OK).build();
+	}
+
+	@PUT
+	@Path("startTime")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "update the wet batch for start time", response = Batch.class)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
+	public Response updateStartTime(@Context HttpServletRequest request, String jsonString) throws JSONException {
+		try {
+			Batch wetBatch = batchService.updateStartTime(jsonString);
+			return Response.ok().entity(wetBatch).build();
+		} catch (ValidationException e) {
+			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+					.build();
+		}
+	}
+
+	@PUT
+	@Path("fermentationEndTime")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "update the wet batch for fermentation time", response = Batch.class)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
+	public Response updateFermentationEndTime(@Context HttpServletRequest request, String jsonString)
+			throws JSONException {
+		try {
+			Batch wetBatch = batchService.updateFermentationEndTime(jsonString);
+			return Response.ok().entity(wetBatch).build();
+		} catch (ValidationException e) {
+			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+					.build();
+		}
+	}
+
+	@PUT
+	@Path("dryingEndTime")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "update the wet batch for drying time", response = Batch.class)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
+	public Response updateDryingEndTime(@Context HttpServletRequest request, String jsonString) throws JSONException {
+		try {
+			Batch wetBatch = batchService.updateDryingEndTime(jsonString);
+			return Response.ok().entity(wetBatch).build();
+		} catch (ValidationException e) {
+			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+					.build();
+		}
+	}
+
+	@PUT
+	@Path("perchmentQuantity")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "update the wet batch for perchment quantity", response = Batch.class)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
+	public Response updatePerchmentQuantity(@Context HttpServletRequest request, String jsonString)
+			throws JSONException {
+		try {
+			Batch wetBatch = batchService.updatePerchmentQuantity(jsonString);
+			return Response.ok().entity(wetBatch).build();
 		} catch (ValidationException e) {
 			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
 					.build();
