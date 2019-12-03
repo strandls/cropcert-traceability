@@ -82,6 +82,18 @@ public class LotApi {
 		return Response.ok().entity(lots).build();
 	}
 
+	@Path("all/coCodes")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "Get all the Lots by the status", response = Lot.class, responseContainer = "List")
+	public Response getAllByCoCodes(@Context HttpServletRequest request,
+			@DefaultValue("-1") @QueryParam("coCodes") String coCodes,
+			@DefaultValue("-1") @QueryParam("limit") Integer limit,
+			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
+		List<Lot> lots = lotService.getByCoCodes(coCodes, limit, offset);
+		return Response.ok().entity(lots).build();
+	}
+	
 	@Path("all/{lotStatus}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

@@ -377,6 +377,16 @@ public class LotService extends AbstractService<Lot> {
         return true;
     }
 
+    public List<Lot> getByCoCodes(String coCodes, Integer limit, Integer offset) {
+        Object[] values = coCodes.split(",");
+        Long[] longValues = new Long[values.length];
+        for (int i = 0; i < values.length; i++) {
+            longValues[i] = Long.parseLong(values[i].toString());
+        }
+        return dao.getByPropertyfromArray("coCode", longValues, limit, offset);
+        //return ((LotDao) dao).getByPropertyfromArray("coCode", longValues, lotStatus, limit, offset);
+    }
+
     public List<Lot> getByStatusAndUnion(String lotStatusString, String coCodes, Integer limit, Integer offset) {
         LotStatus lotStatus = LotStatus.fromValue(lotStatusString);
         Object[] values = coCodes.split(",");
