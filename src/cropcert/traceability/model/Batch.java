@@ -16,6 +16,7 @@ import org.hibernate.annotations.ColumnDefault;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import cropcert.traceability.ActionStatus;
 import cropcert.traceability.BatchType;
 import io.swagger.annotations.ApiModel;
 
@@ -26,63 +27,66 @@ import io.swagger.annotations.ApiModel;
 @ApiModel("Batch")
 public class Batch implements Serializable {
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -6287810889323128536L;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -6287810889323128536L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "batch_id_generator")
-    @SequenceGenerator(name = "batch_id_generator", sequenceName = "batch_id_seq", allocationSize = 50)
-    @Column(name = "id", updatable = false, nullable = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "batch_id_generator")
+	@SequenceGenerator(name = "batch_id_generator", sequenceName = "batch_id_seq", allocationSize = 50)
+	@Column(name = "id", updatable = false, nullable = false)
+	private Long id;
 
-    @Column(name = "batch_name", nullable = false)
-    private String batchName;
+	@Column(name = "batch_name", nullable = false)
+	private String batchName;
 
-    @Column(name = "cc_code", nullable = false)
-    private Long ccCode;
-    
-    @Column(name = "batch_type", nullable = false)
-    private BatchType type;
+	@Column(name = "cc_code", nullable = false)
+	private Long ccCode;
 
-    @Column(name = "quantity")
-    @ColumnDefault("0.0")
-    private Float quantity;
+	@Column(name = "batch_type", nullable = false)
+	private BatchType type;
 
-    @Column(name = "date")
-    private Timestamp date;
+	@Column(name = "quantity")
+	@ColumnDefault("0.0")
+	private Float quantity;
 
-    @Column(name = "created_on")
-    private Timestamp createdOn;
+	@Column(name = "date")
+	private Timestamp date;
 
-    @Column(name = "note")
-    private String note;
-    
-    @Column( name = "start_time")
+	@Column(name = "created_on")
+	private Timestamp createdOn;
+
+	@Column(name = "note")
+	private String note;
+
+	@Column(name = "start_time")
 	private Timestamp startTime;
-	
-	@Column( name = "fermentation_end_time")
+
+	@Column(name = "fermentation_end_time")
 	private Timestamp fermentationEndTime;
-	
-	@Column( name = "drying_end_time")
+
+	@Column(name = "drying_end_time")
 	private Timestamp dryingEndTime;
-	
-	@Column( name = "perchment_quantity")
+
+	@Column(name = "perchment_quantity")
 	private Float perchmentQuantity;
-    
-    @Column(name = "is_ready_for_lot")
-    private Boolean isReadyForLot;
-    
-    @Column(name = "is_lot_Done")
-    private Boolean isLotDone;
 
-    @Column(name = "is_deleted")
-    private Boolean isDeleted;
+	@Column(name = "is_ready_for_lot")
+	private Boolean isReadyForLot;
 
-    public Long getId() {
+	@Column(name = "lot_id")
+	private Long lotId;
+	
+	private ActionStatus batchStatus;
+
+	@Column(name = "is_deleted")
+	private Boolean isDeleted;
+
+	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -90,6 +94,7 @@ public class Batch implements Serializable {
 	public String getBatchName() {
 		return batchName;
 	}
+
 	public void setBatchName(String batchName) {
 		this.batchName = batchName;
 	}
@@ -97,13 +102,15 @@ public class Batch implements Serializable {
 	public Long getCcCode() {
 		return ccCode;
 	}
+
 	public void setCcCode(Long ccCode) {
 		this.ccCode = ccCode;
 	}
-	
+
 	public BatchType getType() {
 		return type;
 	}
+
 	public void setType(BatchType type) {
 		this.type = type;
 	}
@@ -111,6 +118,7 @@ public class Batch implements Serializable {
 	public Float getQuantity() {
 		return quantity;
 	}
+
 	public void setQuantity(Float quantity) {
 		this.quantity = quantity;
 	}
@@ -118,6 +126,7 @@ public class Batch implements Serializable {
 	public Timestamp getDate() {
 		return date;
 	}
+
 	public void setDate(Timestamp date) {
 		this.date = date;
 	}
@@ -125,6 +134,7 @@ public class Batch implements Serializable {
 	public Timestamp getCreatedOn() {
 		return createdOn;
 	}
+
 	public void setCreatedOn(Timestamp createdOn) {
 		this.createdOn = createdOn;
 	}
@@ -132,6 +142,7 @@ public class Batch implements Serializable {
 	public String getNote() {
 		return note;
 	}
+
 	public void setNote(String note) {
 		this.note = note;
 	}
@@ -139,6 +150,7 @@ public class Batch implements Serializable {
 	public Timestamp getStartTime() {
 		return startTime;
 	}
+
 	public void setStartTime(Timestamp startTime) {
 		this.startTime = startTime;
 	}
@@ -146,6 +158,7 @@ public class Batch implements Serializable {
 	public Timestamp getFermentationEndTime() {
 		return fermentationEndTime;
 	}
+
 	public void setFermentationEndTime(Timestamp fermentationEndTime) {
 		this.fermentationEndTime = fermentationEndTime;
 	}
@@ -153,6 +166,7 @@ public class Batch implements Serializable {
 	public Timestamp getDryingEndTime() {
 		return dryingEndTime;
 	}
+
 	public void setDryingEndTime(Timestamp dryingEndTime) {
 		this.dryingEndTime = dryingEndTime;
 	}
@@ -160,6 +174,7 @@ public class Batch implements Serializable {
 	public Float getPerchmentQuantity() {
 		return perchmentQuantity;
 	}
+
 	public void setPerchmentQuantity(Float perchmentQuantity) {
 		this.perchmentQuantity = perchmentQuantity;
 	}
@@ -167,20 +182,48 @@ public class Batch implements Serializable {
 	public Boolean getIsReadyForLot() {
 		return isReadyForLot;
 	}
+
 	public void setIsReadyForLot(Boolean isReadyForLot) {
 		this.isReadyForLot = isReadyForLot;
 	}
 
-	public Boolean getIsLotDone() {
-		return isLotDone;
+	public Long getLotId() {
+		return lotId;
 	}
-	public void setIsLotDone(Boolean isLotDone) {
-		this.isLotDone = isLotDone;
+
+	public void setLotId(Long lotId) {
+		this.lotId = lotId;
+	}
+	
+	public ActionStatus getBatchStatus() {
+		if(batchStatus == null) {
+			batchStatus = ActionStatus.NOTDONE;
+		}
+		if(BatchType.DRY.equals(type)) {
+			if(batchStatus != ActionStatus.DONE)
+				batchStatus = ActionStatus.EDIT;
+		} else {
+			if(startTime == null&&
+					fermentationEndTime == null &&
+					dryingEndTime == null &&
+					perchmentQuantity == null)
+				batchStatus = ActionStatus.ADD;
+			else if(batchStatus != ActionStatus.DONE)
+				batchStatus = ActionStatus.EDIT;
+			else 
+				batchStatus = ActionStatus.DONE;
+		}
+		return batchStatus;
+	}
+	
+	public void setBatchStatus(ActionStatus batchStatus) {
+		this.batchStatus = batchStatus;
 	}
 
 	public Boolean getIsDeleted() {
 		return isDeleted;
 	}
+
 	public void setIsDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}

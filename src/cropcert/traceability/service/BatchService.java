@@ -62,7 +62,6 @@ public class BatchService extends AbstractService<Batch> {
 			batch.setCreatedOn(createdOn);
 		}
 		batch.setIsReadyForLot(true);
-		batch.setIsLotDone(false);
 		batch = save(batch);
 
 		String userId = UserUtil.getUserDetails(request).getId();
