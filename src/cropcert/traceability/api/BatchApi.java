@@ -204,4 +204,16 @@ public class BatchApi {
 					.build();
 		}
 	}
+	
+	@PUT
+	@Path("finalizeBatch/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Batch.class, value = "Finalize batch update")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
+	public Response finalizeWetBatch(@Context HttpServletRequest request, @PathParam("id") Long id) {
+		return batchService.finalizeWetBatch(id);
+	}
 }

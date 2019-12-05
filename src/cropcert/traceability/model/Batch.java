@@ -200,8 +200,7 @@ public class Batch implements Serializable {
 			batchStatus = ActionStatus.NOTDONE;
 		}
 		if(BatchType.DRY.equals(type)) {
-			if(batchStatus != ActionStatus.DONE)
-				batchStatus = ActionStatus.EDIT;
+			batchStatus = ActionStatus.DONE;
 		} else {
 			if(startTime == null&&
 					fermentationEndTime == null &&

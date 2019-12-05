@@ -3,9 +3,12 @@ package cropcert.traceability.service;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.inject.Inject;
 
+import cropcert.traceability.ActionStatus;
 import cropcert.traceability.BatchType;
 import cropcert.traceability.Constants;
 import cropcert.traceability.dao.BatchDao;
@@ -61,7 +65,10 @@ public class BatchService extends AbstractService<Batch> {
 			createdOn = new Timestamp(new Date().getTime());
 			batch.setCreatedOn(createdOn);
 		}
-		batch.setIsReadyForLot(true);
+		if(BatchType.DRY.equals(batch.getType()))
+			batch.setIsReadyForLot(true);
+		else
+			batch.setIsReadyForLot(false);
 		batch = save(batch);
 
 		String userId = UserUtil.getUserDetails(request).getId();
@@ -173,6 +180,28 @@ public class BatchService extends AbstractService<Batch> {
 			dao.update(batch);
 		}
 
+	}
+	
+	public Response finalizeWetBatch(Long id) {
+		Batch batch = findById(id);
+		
+		if(batch == null || BatchType.DRY.equals(batch.getType()))
+			return Response.status(Status.NO_CONTENT).entity(
+					new HashMap<String, String>().put("error", "Batch Not found"))
+					.build();
+			
+		if(batch.getStartTime() == null || 
+				batch.getFermentationEndTime() == null ||
+				batch.getDryingEndTime() == null ||
+				batch.getPerchmentQuantity() == null) {
+			Response.status(Status.NO_CONTENT).entity(
+					new HashMap<String, String>().put("error", "Update the batch first"))
+					.build();
+		}
+		
+		batch.setIsReadyForLot(true);
+		batch.setBatchStatus(ActionStatus.DONE);
+		return Response.ok().entity(batch).build();
 	}
 
 	/*
