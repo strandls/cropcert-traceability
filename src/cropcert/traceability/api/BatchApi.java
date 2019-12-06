@@ -206,6 +206,25 @@ public class BatchApi {
 	}
 	
 	@PUT
+	@Path("wetBatch")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(value = "update the wet batch", response = Batch.class)
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.CC_PERSON })
+	public Response updateWetBatch(@Context HttpServletRequest request, String jsonString)
+			throws JSONException {
+		try {
+			Batch wetBatch = batchService.updateWetBatch(jsonString);
+			return Response.ok().entity(wetBatch).build();
+		} catch (ValidationException e) {
+			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+					.build();
+		}
+	}
+	
+	@PUT
 	@Path("finalizeBatch/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)

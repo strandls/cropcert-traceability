@@ -117,7 +117,11 @@ public class BatchService extends AbstractService<Batch> {
 	public Batch updateStartTime(String jsoString) throws JSONException, ValidationException {
 		JSONObject jsonObject = new JSONObject(jsoString);
 		Long id = jsonObject.getLong("id");
-		Timestamp startTime = new Timestamp((Long) jsonObject.get("startTime"));
+		Timestamp startTime = null;
+		if(!jsonObject.has(Constants.START_TIME))
+			throw new ValidationException("Start time missing");
+		if(!jsonObject.isNull(Constants.START_TIME))
+			startTime = new Timestamp((Long) jsonObject.get(Constants.START_TIME));
 
 		Batch wetBatch = findById(id);
 		if(BatchType.DRY.equals(wetBatch.getType()))
@@ -129,7 +133,11 @@ public class BatchService extends AbstractService<Batch> {
 	public Batch updateFermentationEndTime(String jsoString) throws JSONException, ValidationException {
 		JSONObject jsonObject = new JSONObject(jsoString);
 		Long id = jsonObject.getLong("id");
-		Timestamp fermentationEndTime = new Timestamp((Long) jsonObject.get("fermentationEndTime"));
+		Timestamp fermentationEndTime = null;
+		if(!jsonObject.has(Constants.FERMENTATION_END_TIME))
+			throw new ValidationException("fermentation end time missing");
+		if(!jsonObject.isNull(Constants.FERMENTATION_END_TIME))
+			fermentationEndTime = new Timestamp((Long) jsonObject.get(Constants.FERMENTATION_END_TIME));
 
 		Batch wetBatch = findById(id);
 		if(BatchType.DRY.equals(wetBatch.getType()))
@@ -141,7 +149,11 @@ public class BatchService extends AbstractService<Batch> {
 	public Batch updateDryingEndTime(String jsoString) throws JSONException, ValidationException {
 		JSONObject jsonObject = new JSONObject(jsoString);
 		Long id = jsonObject.getLong("id");
-		Timestamp dryingEndTime = new Timestamp((Long) jsonObject.get("dryingEndTime"));
+		Timestamp dryingEndTime = null;
+		if(!jsonObject.has(Constants.DRYING_END_TIME))
+			throw new ValidationException("drying end time missing");
+		if(!jsonObject.isNull(Constants.DRYING_END_TIME))
+			dryingEndTime = new Timestamp((Long) jsonObject.get(Constants.DRYING_END_TIME));
 
 		Batch wetBatch = findById(id);
 		if(BatchType.DRY.equals(wetBatch.getType()))
@@ -153,14 +165,60 @@ public class BatchService extends AbstractService<Batch> {
 	public Batch updatePerchmentQuantity(String jsoString) throws JSONException, ValidationException {
 		JSONObject jsonObject = new JSONObject(jsoString);
 		Long id = jsonObject.getLong("id");
-		float perchmentQuantity = Float.parseFloat(jsonObject.get("perchmentQuantity").toString());
-
+		
+		Float perchmentQuantity = null;
+		if(!jsonObject.has(Constants.PERCHMENT_QUANTITY))
+			throw new ValidationException("perchment quantity missing");
+		if(!jsonObject.isNull(Constants.PERCHMENT_QUANTITY))
+			perchmentQuantity = Float.parseFloat(jsonObject.get(Constants.PERCHMENT_QUANTITY).toString());
+		
 		Batch wetBatch = findById(id);
 		if(BatchType.DRY.equals(wetBatch.getType()))
 			throw new ValidationException("Found dry batch");
 		wetBatch.setPerchmentQuantity(perchmentQuantity);
 		return update(wetBatch);
 	}
+	
+	public Batch updateWetBatch(String jsonString) throws JSONException, ValidationException {
+		JSONObject jsonObject = new JSONObject(jsonString);
+		Long id = jsonObject.getLong("id");
+		
+		Timestamp startTime = null;
+		if(!jsonObject.has(Constants.START_TIME))
+			throw new ValidationException("Start time missing");
+		if(!jsonObject.isNull(Constants.START_TIME))
+			startTime = new Timestamp((Long) jsonObject.get(Constants.START_TIME));
+		
+		Timestamp fermentationEndTime = null;
+		if(!jsonObject.has(Constants.FERMENTATION_END_TIME))
+			throw new ValidationException("fermentation end time missing");
+		if(!jsonObject.isNull(Constants.FERMENTATION_END_TIME))
+			fermentationEndTime = new Timestamp((Long) jsonObject.get(Constants.FERMENTATION_END_TIME));
+		
+		Timestamp dryingEndTime = null;
+		if(!jsonObject.has(Constants.DRYING_END_TIME))
+			throw new ValidationException("drying end time missing");
+		if(!jsonObject.isNull(Constants.DRYING_END_TIME))
+			dryingEndTime = new Timestamp((Long) jsonObject.get(Constants.DRYING_END_TIME));
+		
+		Float perchmentQuantity = null;
+		if(!jsonObject.has(Constants.PERCHMENT_QUANTITY))
+			throw new ValidationException("perchment quantity missing");
+		if(!jsonObject.isNull(Constants.PERCHMENT_QUANTITY))
+			perchmentQuantity = Float.parseFloat(jsonObject.get(Constants.PERCHMENT_QUANTITY).toString());
+		
+		Batch wetBatch = findById(id);
+		if(BatchType.DRY.equals(wetBatch.getType()))
+			throw new ValidationException("Found dry batch");
+		
+		wetBatch.setStartTime(startTime);
+		wetBatch.setFermentationEndTime(fermentationEndTime);
+		wetBatch.setDryingEndTime(dryingEndTime);
+		wetBatch.setPerchmentQuantity(perchmentQuantity);
+		
+		return update(wetBatch);
+	}
+	
 
 	public Batch update(String jsonString) throws JSONException, JsonProcessingException, IOException {
 		Long id = new JSONObject(jsonString).getLong("id");

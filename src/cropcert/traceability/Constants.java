@@ -30,4 +30,10 @@ public class Constants {
 	// coffee type
 	public static final String DRY = "DRY";
 	public static final String WET = "WET";
+	
+	public static final String START_TIME = "startTime";
+	public static final String FERMENTATION_END_TIME = "fermentationEndTime";
+	public static final String DRYING_END_TIME = "dryingEndTime";
+	public static final String PERCHMENT_QUANTITY = "perchmentQuantity";
+	
 }
