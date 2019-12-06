@@ -259,6 +259,7 @@ public class BatchService extends AbstractService<Batch> {
 		
 		batch.setIsReadyForLot(true);
 		batch.setBatchStatus(ActionStatus.DONE);
+		update(batch);
 		return Response.ok().entity(batch).build();
 	}
 
