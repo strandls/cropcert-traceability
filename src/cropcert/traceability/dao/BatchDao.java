@@ -44,7 +44,8 @@ public class BatchDao extends AbstractDao<Batch, Long>{
 			    "from "+daoType.getSimpleName()+" t " +
 			    "where t."+property+" in (:values) and "
 			    		+ " isLotDone = " + isLotDone + " and "
-			    		+ " isReadyForLot = " + isReadyForLot 
+			    		+ " isReadyForLot = " + isReadyForLot + " and "
+						+ " ( isDeleted is null or isDeleted = " + false + " ) "
 			    		+ " order by id";
 		Session session = sessionFactory.openSession();
 		Query query = session.createQuery(queryStr);

@@ -38,8 +38,9 @@ public class LotDao extends AbstractDao<Lot, Long>{
 	public List<Lot> getByPropertyfromArray(String property, Object[] values, LotStatus lotStatus, int limit, int offset) {
 		String queryStr = "" +
 			    "from "+daoType.getSimpleName()+" t " +
-			    "where t."+property+" in (:values) and " +
-			    " t.lotStatus = :lotStatus" +
+			    "where t."+property+" in (:values) and " + 
+			    " t.lotStatus = :lotStatus" + " and " +
+				" ( isDeleted is null or isDeleted = " + false + " ) " +
 			    " order by id";
 		Session session = sessionFactory.openSession();
 		Query query = session.createQuery(queryStr);

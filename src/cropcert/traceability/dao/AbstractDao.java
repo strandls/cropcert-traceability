@@ -141,7 +141,7 @@ public abstract class AbstractDao<T, K extends Serializable> {
 		String queryStr = "" +
 			    "from "+daoType.getSimpleName()+" t " +
 			    "where t."+property+" in (:values) and " +
-			    "isDeleted is null or isDeleted = " + false +
+			    " ( isDeleted is null or isDeleted = " + false + " ) " +
 			    " order by id";
 		Session session = sessionFactory.openSession();
 		Query query = session.createQuery(queryStr);
