@@ -111,10 +111,10 @@ public class BatchApi {
 			batchProduction = batchService.save(jsonString, request);
 			return Response.status(Status.CREATED).entity(batchProduction).build();
 		} catch (IOException | JSONException e) {
-			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+			return Response.status(Status.BAD_REQUEST).entity(new HashMap<String, String>().put("error", e.getMessage()))
 					.build();
 		} catch (ValidationException e) {
-			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+			return Response.status(Status.BAD_REQUEST).entity(new HashMap<String, String>().put("error", e.getMessage()))
 					.build();
 		}
 	}
@@ -144,7 +144,7 @@ public class BatchApi {
 			Batch wetBatch = batchService.updateStartTime(jsonString);
 			return Response.ok().entity(wetBatch).build();
 		} catch (ValidationException e) {
-			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+			return Response.status(Status.BAD_REQUEST).entity(new HashMap<String, String>().put("error", e.getMessage()))
 					.build();
 		}
 	}
@@ -163,7 +163,7 @@ public class BatchApi {
 			Batch wetBatch = batchService.updateFermentationEndTime(jsonString);
 			return Response.ok().entity(wetBatch).build();
 		} catch (ValidationException e) {
-			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+			return Response.status(Status.BAD_REQUEST).entity(new HashMap<String, String>().put("error", e.getMessage()))
 					.build();
 		}
 	}
@@ -181,7 +181,7 @@ public class BatchApi {
 			Batch wetBatch = batchService.updateDryingEndTime(jsonString);
 			return Response.ok().entity(wetBatch).build();
 		} catch (ValidationException e) {
-			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+			return Response.status(Status.BAD_REQUEST).entity(new HashMap<String, String>().put("error", e.getMessage()))
 					.build();
 		}
 	}
@@ -200,7 +200,7 @@ public class BatchApi {
 			Batch wetBatch = batchService.updatePerchmentQuantity(jsonString);
 			return Response.ok().entity(wetBatch).build();
 		} catch (ValidationException e) {
-			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+			return Response.status(Status.BAD_REQUEST).entity(new HashMap<String, String>().put("error", e.getMessage()))
 					.build();
 		}
 	}
@@ -219,7 +219,7 @@ public class BatchApi {
 			Batch wetBatch = batchService.updateWetBatch(jsonString);
 			return Response.ok().entity(wetBatch).build();
 		} catch (ValidationException e) {
-			return Response.status(Status.NO_CONTENT).entity(new HashMap<String, String>().put("error", e.getMessage()))
+			return Response.status(Status.BAD_REQUEST).entity(new HashMap<String, String>().put("error", e.getMessage()))
 					.build();
 		}
 	}

@@ -8,8 +8,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum ActionStatus {
 
-	@XmlEnumValue("NotDone")
-	NOTDONE("NOTDONE"),
+	@XmlEnumValue("NotApplicable")
+	NOTAPPLICABLE("NOTAPPLICABLE"),
 	@XmlEnumValue("Add")
 	ADD("ADD"),
 	@XmlEnumValue("Edit")

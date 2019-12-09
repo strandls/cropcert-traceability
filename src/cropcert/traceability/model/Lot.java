@@ -169,7 +169,7 @@ public class Lot implements Serializable {
 	
 	public ActionStatus getCoopStatus() {
 		if(coopStatus == null) 
-			coopStatus = ActionStatus.NOTDONE;
+			coopStatus = ActionStatus.NOTAPPLICABLE;
 		if(this.timeToFactory == null && 
 				this.weightLeavingCooperative == null && 
 				this.mcLeavingCooperative == null) 
@@ -230,7 +230,7 @@ public class Lot implements Serializable {
 	
 	public ActionStatus getMillingStatus() {
 		if(coopStatus != ActionStatus.DONE || millingStatus == null) 
-			millingStatus =  ActionStatus.NOTDONE;
+			millingStatus =  ActionStatus.NOTAPPLICABLE;
 		else if(weightArrivingFactory == null &&
 				weightLeavingFactory == null &&
 				mcArrivingFactory == null &&
@@ -274,7 +274,7 @@ public class Lot implements Serializable {
 	public ActionStatus getFactoryStatus() {
 		
 		if(millingStatus != ActionStatus.DONE || factoryStatus == null)
-			factoryStatus = ActionStatus.NOTDONE;
+			factoryStatus = ActionStatus.NOTAPPLICABLE;
 		else if(factoryReportId == null)
 			factoryStatus = ActionStatus.ADD;
 		else if(factoryStatus != ActionStatus.DONE)
@@ -301,7 +301,7 @@ public class Lot implements Serializable {
 
 	public ActionStatus getGreenAnalysisStatus() {
 		if(factoryStatus != ActionStatus.DONE || greenAnalysisStatus == null) 
-			greenAnalysisStatus = ActionStatus.NOTDONE;
+			greenAnalysisStatus = ActionStatus.NOTAPPLICABLE;
 		else if(greenAnalysisId == null)
 			greenAnalysisStatus = ActionStatus.ADD;
 		else if(greenAnalysisStatus != ActionStatus.DONE)

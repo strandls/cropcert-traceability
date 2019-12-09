@@ -197,7 +197,7 @@ public class Batch implements Serializable {
 	
 	public ActionStatus getBatchStatus() {
 		if(batchStatus == null) {
-			batchStatus = ActionStatus.NOTDONE;
+			batchStatus = ActionStatus.NOTAPPLICABLE;
 		}
 		if(BatchType.DRY.equals(type)) {
 			batchStatus = ActionStatus.DONE;
