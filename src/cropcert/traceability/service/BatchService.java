@@ -3,22 +3,17 @@ package cropcert.traceability.service;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.inject.Inject;
 
 import cropcert.traceability.ActionStatus;
@@ -114,71 +109,6 @@ public class BatchService extends AbstractService<Batch> {
 		}
 	}
 
-	public Batch updateStartTime(String jsoString) throws JSONException, ValidationException {
-		JSONObject jsonObject = new JSONObject(jsoString);
-		Long id = jsonObject.getLong("id");
-		Timestamp startTime = null;
-		if (!jsonObject.has(Constants.START_TIME))
-			throw new ValidationException("Start time missing");
-		if (!jsonObject.isNull(Constants.START_TIME))
-			startTime = new Timestamp((Long) jsonObject.get(Constants.START_TIME));
-
-		Batch wetBatch = findById(id);
-		if (BatchType.DRY.equals(wetBatch.getType()))
-			throw new ValidationException("Found dry batch");
-		wetBatch.setStartTime(startTime);
-		return update(wetBatch);
-	}
-
-	public Batch updateFermentationEndTime(String jsoString) throws JSONException, ValidationException {
-		JSONObject jsonObject = new JSONObject(jsoString);
-		Long id = jsonObject.getLong("id");
-		Timestamp fermentationEndTime = null;
-		if (!jsonObject.has(Constants.FERMENTATION_END_TIME))
-			throw new ValidationException("fermentation end time missing");
-		if (!jsonObject.isNull(Constants.FERMENTATION_END_TIME))
-			fermentationEndTime = new Timestamp((Long) jsonObject.get(Constants.FERMENTATION_END_TIME));
-
-		Batch wetBatch = findById(id);
-		if (BatchType.DRY.equals(wetBatch.getType()))
-			throw new ValidationException("Found dry batch");
-		wetBatch.setFermentationEndTime(fermentationEndTime);
-		return update(wetBatch);
-	}
-
-	public Batch updateDryingEndTime(String jsoString) throws JSONException, ValidationException {
-		JSONObject jsonObject = new JSONObject(jsoString);
-		Long id = jsonObject.getLong("id");
-		Timestamp dryingEndTime = null;
-		if (!jsonObject.has(Constants.DRYING_END_TIME))
-			throw new ValidationException("drying end time missing");
-		if (!jsonObject.isNull(Constants.DRYING_END_TIME))
-			dryingEndTime = new Timestamp((Long) jsonObject.get(Constants.DRYING_END_TIME));
-
-		Batch wetBatch = findById(id);
-		if (BatchType.DRY.equals(wetBatch.getType()))
-			throw new ValidationException("Found dry batch");
-		wetBatch.setDryingEndTime(dryingEndTime);
-		return update(wetBatch);
-	}
-
-	public Batch updatePerchmentQuantity(String jsoString) throws JSONException, ValidationException {
-		JSONObject jsonObject = new JSONObject(jsoString);
-		Long id = jsonObject.getLong("id");
-
-		Float perchmentQuantity = null;
-		if (!jsonObject.has(Constants.PERCHMENT_QUANTITY))
-			throw new ValidationException("perchment quantity missing");
-		if (!jsonObject.isNull(Constants.PERCHMENT_QUANTITY))
-			perchmentQuantity = Float.parseFloat(jsonObject.get(Constants.PERCHMENT_QUANTITY).toString());
-
-		Batch wetBatch = findById(id);
-		if (BatchType.DRY.equals(wetBatch.getType()))
-			throw new ValidationException("Found dry batch");
-		wetBatch.setPerchmentQuantity(perchmentQuantity);
-		return update(wetBatch);
-	}
-
 	public Batch updateWetBatch(String jsonString) throws JSONException, ValidationException {
 		JSONObject jsonObject = new JSONObject(jsonString);
 		Long id = jsonObject.getLong("id");
@@ -201,32 +131,46 @@ public class BatchService extends AbstractService<Batch> {
 		if (jsonObject.has(Constants.START_TIME)) {
 			if (jsonObject.isNull(Constants.START_TIME))
 				startTime = null;
-			else {
+			else
 				startTime = new Timestamp(jsonObject.getLong(Constants.START_TIME));
-				if (fermentationEndTime != null && startTime.compareTo(fermentationEndTime) > 0)
-					throw new ValidationException("Start time can't after fermentation time");
-			}
 		}
 
 		if (jsonObject.has(Constants.FERMENTATION_END_TIME)) {
 			if (jsonObject.isNull(Constants.FERMENTATION_END_TIME))
 				fermentationEndTime = null;
-			else {
+			else
 				fermentationEndTime = new Timestamp(jsonObject.getLong(Constants.FERMENTATION_END_TIME));
-				if (startTime == null || fermentationEndTime.compareTo(startTime) < 0)
-					throw new ValidationException("Fermentation time can't be before start time");
-				if (dryingEndTime != null && fermentationEndTime.compareTo(dryingEndTime) > 0)
-					throw new ValidationException("Fermentation time can't after drying time");
-			}
 		}
 
 		if (jsonObject.has(Constants.DRYING_END_TIME)) {
 			if (jsonObject.isNull(Constants.DRYING_END_TIME))
 				dryingEndTime = null;
-			else {
+			else
 				dryingEndTime = new Timestamp(jsonObject.getLong(Constants.DRYING_END_TIME));
-				if (fermentationEndTime == null || dryingEndTime.compareTo(fermentationEndTime) < 0)
-					throw new ValidationException("Drying time can't be before fermentation end time");
+		}
+
+		if (startTime != null) {
+			if (fermentationEndTime != null && startTime.compareTo(fermentationEndTime) > 0) {
+				throw new ValidationException("Start time can't after fermentation time");
+			}
+			if (dryingEndTime != null && startTime.compareTo(dryingEndTime) > 0) {
+				throw new ValidationException("Start time can't after drying time");
+			}
+		}
+		if (fermentationEndTime != null) {
+			if (startTime == null || startTime.compareTo(fermentationEndTime) > 0) {
+				throw new ValidationException("Fermentation time can't be before start time");
+			}
+			if (dryingEndTime != null && fermentationEndTime.compareTo(dryingEndTime) > 0) {
+				throw new ValidationException("Fermentation time can't after drying time");
+			}
+		}
+		if (dryingEndTime != null) {
+			if (startTime == null || startTime.compareTo(dryingEndTime) > 0) {
+				throw new ValidationException("Drying time can't be before start time");
+			}
+			if (fermentationEndTime == null || fermentationEndTime.compareTo(dryingEndTime) > 0) {
+				throw new ValidationException("Drying time can't be before fermentation end time");
 			}
 		}
 
@@ -248,8 +192,8 @@ public class BatchService extends AbstractService<Batch> {
 		if (jsonObject.has(Constants.FINALIZE_BATCH) && jsonObject.getBoolean(Constants.FINALIZE_BATCH) == true) {
 
 			if (batch.getStartTime() == null || batch.getFermentationEndTime() == null
-					|| batch.getDryingEndTime() == null || 
-					(batch.getPerchmentQuantity() == null || batch.getPerchmentQuantity() <= 0)) {
+					|| batch.getDryingEndTime() == null
+					|| (batch.getPerchmentQuantity() == null || batch.getPerchmentQuantity() <= 0)) {
 				throw new ValidationException("Update the batch first");
 			}
 			batch.setIsReadyForLot(true);
@@ -257,58 +201,6 @@ public class BatchService extends AbstractService<Batch> {
 		}
 
 		return update(batch);
-	}
-
-	public Batch update(String jsonString) throws JSONException, JsonProcessingException, IOException {
-		Long id = new JSONObject(jsonString).getLong("id");
-		Batch wetBatch = findById(id);
-		ObjectReader objectReader = objectMappper.readerForUpdating(wetBatch);
-		wetBatch = objectReader.readValue(jsonString);
-		wetBatch = update(wetBatch);
-		return wetBatch;
-	}
-
-	public void updateReadyForLot(String jsonString) throws JSONException {
-		JSONArray jsonArray = new JSONObject(jsonString).getJSONArray("batchIds");
-		for (int i = 0; i < jsonArray.length(); i++) {
-			Long batchId = jsonArray.getLong(i);
-			Batch batch = dao.findById(batchId);
-			batch.setIsReadyForLot(true);
-			dao.update(batch);
-		}
-
-	}
-
-	public Response finalizeWetBatch(Long id) {
-		Batch batch = findById(id);
-
-		if (batch == null || BatchType.DRY.equals(batch.getType()))
-			return Response.status(Status.NO_CONTENT)
-					.entity(new HashMap<String, String>().put("error", "Batch Not found")).build();
-
-		if (batch.getStartTime() == null || batch.getFermentationEndTime() == null || batch.getDryingEndTime() == null
-				|| batch.getPerchmentQuantity() == null) {
-			Response.status(Status.NO_CONTENT)
-					.entity(new HashMap<String, String>().put("error", "Update the batch first")).build();
-		}
-
-		batch.setIsReadyForLot(true);
-		batch.setBatchStatus(ActionStatus.DONE);
-		update(batch);
-		return Response.ok().entity(batch).build();
-	}
-
-	/*
-	 * This object list is the comma separated value.
-	 */
-	public List<Batch> getByPropertyfromArray(String property, String objectList, Boolean isLotDone,
-			Boolean isReadyForLot, int limit, int offset) throws NumberFormatException {
-		Object[] values = objectList.split(",");
-		Long[] longValues = new Long[values.length];
-		for (int i = 0; i < values.length; i++) {
-			longValues[i] = Long.parseLong(values[i].toString());
-		}
-		return ((BatchDao) dao).getByPropertyfromArray(property, longValues, isLotDone, isReadyForLot, limit, offset);
 	}
 
 	public List<Batch> getByPropertyfromArray(String property, String objectList, int limit, int offset)
