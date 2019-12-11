@@ -57,8 +57,10 @@ public class LotService extends AbstractService<Lot> {
         super(dao);
     }
 
-    public Lot saveInBulk(String jsonString, HttpServletRequest request)
+    public Map<String, Object> saveInBulk(String jsonString, HttpServletRequest request)
             throws JsonParseException, JsonMappingException, IOException, JSONException {
+    	
+    	Map<String, Object> result = new HashMap<String, Object>();
         JSONObject jsonObject = new JSONObject(jsonString);
 
         JSONArray jsonArray = (JSONArray) jsonObject.remove("batchIds");
@@ -80,6 +82,8 @@ public class LotService extends AbstractService<Lot> {
         update(lot);
 
         String userId = UserUtil.getUserDetails(request).getId();
+        
+        List<Batch> batches = new ArrayList<Batch>();
 
         // Add traceability for the lot creation.
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -98,6 +102,7 @@ public class LotService extends AbstractService<Lot> {
             if (batch == null) {
                 throw new JSONException("Invalid batch id found");
             }
+            batches.add(batch);
             batch.setLotId(lotId);
             batchService.update(batch);
             lotCreationService.save(lotCreation);
@@ -111,7 +116,10 @@ public class LotService extends AbstractService<Lot> {
                 timestamp, Constants.LOT_CREATION, lot.getLotName());
         activity = activityService.save(activity);
 
-        return lot;
+        
+        result.put("lot", lot);
+        result.put("batches", batches);
+        return result;
     }
 
     public Lot update(String jsonString) throws JSONException, JsonProcessingException, IOException {

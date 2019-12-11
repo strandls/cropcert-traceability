@@ -132,15 +132,14 @@ public class LotApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = Lot.class, value = "save the lot")
+	@ApiOperation(response = Map.class, value = "save the lot")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
 	public Response save(@Context HttpServletRequest request, String jsonString) {
-		Lot lot;
 		try {
-			lot = lotService.saveInBulk(jsonString, request);
-			return Response.status(Status.CREATED).entity(lot).build();
+			Map<String, Object> result = lotService.saveInBulk(jsonString, request);
+			return Response.status(Status.CREATED).entity(result).build();
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
