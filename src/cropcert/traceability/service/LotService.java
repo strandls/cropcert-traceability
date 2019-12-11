@@ -391,7 +391,7 @@ public class LotService extends AbstractService<Lot> {
         for (int i = 0; i < values.length; i++) {
             longValues[i] = Long.parseLong(values[i].toString());
         }
-        return dao.getByPropertyfromArray("coCode", longValues, limit, offset);
+        return dao.getByPropertyfromArray("coCode", longValues, limit, offset, "createdOn");
         //return ((LotDao) dao).getByPropertyfromArray("coCode", longValues, lotStatus, limit, offset);
     }
 

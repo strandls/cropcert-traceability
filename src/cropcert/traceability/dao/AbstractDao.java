@@ -137,12 +137,14 @@ public abstract class AbstractDao<T, K extends Serializable> {
 		return resultList;
 	}
 	
-	public List<T> getByPropertyfromArray(String property, Object[] values, int limit, int offset) {
+	public List<T> getByPropertyfromArray(String property, Object[] values, int limit, int offset, String orderBy) {
+		if(orderBy == null || "".equals(orderBy))
+			orderBy = "id";
 		String queryStr = "" +
 			    "from "+daoType.getSimpleName()+" t " +
 			    "where t."+property+" in (:values) and " +
 			    " ( isDeleted is null or isDeleted = " + false + " ) " +
-			    " order by id";
+			    " order by " + orderBy;
 		Session session = sessionFactory.openSession();
 		Query query = session.createQuery(queryStr);
 		query.setParameterList("values", values);

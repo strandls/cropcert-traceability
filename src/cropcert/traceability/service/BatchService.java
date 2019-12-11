@@ -210,6 +210,6 @@ public class BatchService extends AbstractService<Batch> {
 		for (int i = 0; i < values.length; i++) {
 			longValues[i] = Long.parseLong(values[i].toString());
 		}
-		return dao.getByPropertyfromArray(property, longValues, limit, offset);
+		return dao.getByPropertyfromArray(property, longValues, limit, offset, "createdOn");
 	}
 }
