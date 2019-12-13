@@ -191,7 +191,7 @@ public class LotService extends AbstractService<Lot> {
         }
         if(jsonObject.has(Constants.TIME_TO_FACTORY)) {
         	timeToFactory = new Timestamp(jsonObject.getLong(Constants.TIME_TO_FACTORY));
-        	if(!lot.getTimeToFactory().equals(timeToFactory)) {
+        	if(!timeToFactory.equals(lot.getTimeToFactory())) {
         		lot.setTimeToFactory(timeToFactory);
         		lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
         		
