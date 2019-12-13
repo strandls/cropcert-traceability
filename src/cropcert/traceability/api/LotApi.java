@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ValidationException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
@@ -93,7 +94,7 @@ public class LotApi {
 		List<Lot> lots = lotService.getByCoCodes(coCodes, limit, offset);
 		return Response.ok().entity(lots).build();
 	}
-	
+
 	@Path("all/{lotStatus}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -167,43 +168,23 @@ public class LotApi {
 	}
 
 	@PUT
-	@Path("weightLeavingCooperative")
+	@Path("updateCoopAction")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = Lot.class, value = "update the weight of lot while leaving the cooperative")
+	@ApiOperation(response = Lot.class, value = "Update the cooperative action")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
-	public Response updateWeightLeavingCooperative(@Context HttpServletRequest request, String jsonString) {
+	public Response updateCooperativeAction(@Context HttpServletRequest request, String jsonString) {
+		Lot lot;
 		try {
-			Lot response = lotService.updateWeightLeavingCooperative(jsonString, request);
-			return Response.ok().entity(response).build();
-		} catch (JSONException | IOException e) {
-			e.printStackTrace();
+			lot = lotService.updateCoopAction(jsonString, request);
+			return Response.ok().entity(lot).build();
+		} catch (JSONException | ValidationException e) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					new HashMap<String, String>().put("error", "CoopAction updation failed"))
+					.build();
 		}
-		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "Weight updation failed at the cooperative"))
-				.build();
-	}
-
-	@PUT
-	@Path("mcLeavingCooperative")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = Lot.class, value = "update the moisture content of lot while leaving the cooperative")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
-	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
-	public Response updateMCLeavingCooperative(@Context HttpServletRequest request, String jsonString) {
-		try {
-			Lot response = lotService.updateMCLeavingCooperative(jsonString, request);
-			return Response.ok().entity(response).build();
-		} catch (JSONException | IOException e) {
-			e.printStackTrace();
-		}
-		return Response.status(Status.NO_CONTENT).entity(
-				new HashMap<String, String>().put("error", "Moisture content updation failed at the cooperative"))
-				.build();
 	}
 
 	@PUT
@@ -365,7 +346,7 @@ public class LotApi {
 		return Response.status(Status.NO_CONTENT)
 				.entity(new HashMap<String, String>().put("error", "GNR updation for lot has failed")).build();
 	}
-	
+
 	@PUT
 	@Path("finalizeCoopAction/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -377,7 +358,7 @@ public class LotApi {
 	public Response finalizeCoopActions(@Context HttpServletRequest request, @PathParam("id") Long id) {
 		return lotService.finalizeCoopActions(id);
 	}
-	
+
 	@PUT
 	@Path("finalizeMillingAction/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -389,7 +370,7 @@ public class LotApi {
 	public Response finalizeMillingActions(@Context HttpServletRequest request, @PathParam("id") Long id) {
 		return lotService.finalizeMillingActions(id);
 	}
-	
+
 	@PUT
 	@Path("finalizeFactoryAction/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -401,6 +382,5 @@ public class LotApi {
 	public Response finalizeFactoryActions(@Context HttpServletRequest request, @PathParam("id") Long id) {
 		return lotService.finalizeFactoryActions(id);
 	}
-	
-	
+
 }

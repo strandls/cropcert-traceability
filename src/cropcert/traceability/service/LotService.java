@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ValidationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
@@ -21,7 +22,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.inject.Inject;
 
 import cropcert.traceability.ActionStatus;
@@ -122,54 +122,99 @@ public class LotService extends AbstractService<Lot> {
         return result;
     }
 
-    public Lot update(String jsonString) throws JSONException, JsonProcessingException, IOException {
-        Long id = new JSONObject(jsonString).getLong("id");
-        Lot lot = findById(id);
-        ObjectReader objectReader = objectMappper.readerForUpdating(lot);
-        lot = objectReader.readValue(jsonString);
-        lot = update(lot);
-        return lot;
-    }
-    
-    public Lot updateWeightLeavingCooperative(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
+    public String updateTimeToFactory(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
         JSONObject jsonObject = new JSONObject(jsonString);
+        JSONArray jsonArray = jsonObject.getJSONArray("ids");
+
+        Timestamp timestamp = new Timestamp(new Date().getTime());
+
+        Timestamp timeToFactory;
+        if(jsonObject.has(Constants.TIME_TO_FACTORY))
+        	timeToFactory = new Timestamp((Long) jsonObject.get(Constants.TIME_TO_FACTORY));
+        else
+        	timeToFactory = new Timestamp(new Date().getTime());
+        
+        for (int i = 0; i < jsonArray.length(); i++) {
+            Long id = jsonArray.getLong(i);
+            Lot lot = findById(id);
+            lot.setTimeToFactory(timeToFactory);
+            lot.setLotStatus(LotStatus.AT_FACTORY);
+            lot = update(lot);
+
+            String userId = UserUtil.getUserDetails(request).getId();
+            Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+                    timestamp, Constants.TIME_TO_FACTORY, timeToFactory.toString());
+            activity = activityService.save(activity);
+        }
+        return "Updated succesfully";
+    }
+         
+    public Lot updateCoopAction(String jsonString, HttpServletRequest request) throws JSONException {
+    	JSONObject jsonObject = new JSONObject(jsonString);
 
         Long id = jsonObject.getLong("id");
         Lot lot = findById(id);
-
-        float weightLeavingCooperative = Float.parseFloat(jsonObject.get(Constants.WEIGHT_LEAVING_COOPERATIVE).toString());
-
-        lot.setWeightLeavingCooperative(weightLeavingCooperative);
-        lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
-        lot = update(lot);
-
+        
         String userId = UserUtil.getUserDetails(request).getId();
         Timestamp timestamp = new Timestamp(new Date().getTime());
-        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
-                timestamp, Constants.WEIGHT_LEAVING_COOPERATIVE, weightLeavingCooperative+"");
-        activity = activityService.save(activity);
-
-        return lot;
-    }
-    
-    public Lot updateMCLeavingCooperative(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
-        JSONObject jsonObject = new JSONObject(jsonString);
-
-        Long id = jsonObject.getLong("id");
-        Lot lot = findById(id);
-
-        float mcLeavingCooperative = Float.parseFloat(jsonObject.get(Constants.MC_LEAVING_COOPERATIVE).toString());
-
-        lot.setMcLeavingCooperative(mcLeavingCooperative);
-        lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
-        lot = update(lot);
-
-        String userId = UserUtil.getUserDetails(request).getId();
-        Timestamp timestamp = new Timestamp(new Date().getTime());
-        Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
-                timestamp, Constants.MC_LEAVING_COOPERATIVE, mcLeavingCooperative+"");
-        activity = activityService.save(activity);
-
+        
+        
+        Float weightLeavingCooperative = lot.getWeightLeavingCooperative();
+        Float mcLeavingCooperative = lot.getMcLeavingCooperative();
+        Timestamp timeToFactory = lot.getTimeToFactory();
+        ActionStatus coopStatus = lot.getCoopStatus();
+        
+        
+        if(jsonObject.has(Constants.WEIGHT_LEAVING_COOPERATIVE)) {
+        	weightLeavingCooperative = Float.parseFloat(jsonObject.get(Constants.WEIGHT_LEAVING_COOPERATIVE).toString());
+        	if(lot.getWeightLeavingCooperative() != weightLeavingCooperative) {
+        		lot.setWeightLeavingCooperative(weightLeavingCooperative);
+        		lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
+        		
+        		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+        				timestamp, Constants.WEIGHT_LEAVING_COOPERATIVE, weightLeavingCooperative+"");
+        		activity = activityService.save(activity);
+        	}
+        }
+        if(jsonObject.has(Constants.MC_LEAVING_COOPERATIVE)) {
+        	mcLeavingCooperative = Float.parseFloat(jsonObject.get(Constants.MC_LEAVING_COOPERATIVE).toString());
+        	if(lot.getMcLeavingCooperative() != mcLeavingCooperative) {
+        		lot.setMcLeavingCooperative(mcLeavingCooperative);
+        		lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
+        		
+        		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+        				timestamp, Constants.MC_LEAVING_COOPERATIVE, mcLeavingCooperative+"");
+        		activity = activityService.save(activity);
+        	}
+        }
+        if(jsonObject.has(Constants.TIME_TO_FACTORY)) {
+        	timeToFactory = new Timestamp(jsonObject.getLong(Constants.TIME_TO_FACTORY));
+        	if(!lot.getTimeToFactory().equals(timeToFactory)) {
+        		lot.setTimeToFactory(timeToFactory);
+        		lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
+        		
+        		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+                        timestamp, Constants.TIME_TO_FACTORY, timeToFactory.toString());
+                activity = activityService.save(activity);
+        	}
+        }
+       
+        if(jsonObject.has(Constants.FINALIZE_COOP_STATUS)) {
+        	if(weightLeavingCooperative == null || mcLeavingCooperative == null || timeToFactory == null) {
+        		throw new ValidationException("Update the values first");
+        	}
+        	coopStatus = ActionStatus.fromValue(jsonObject.getString(Constants.FINALIZE_COOP_STATUS));
+        	if(!coopStatus.equals(lot.getCoopStatus())) {
+        		lot.setCoopStatus(ActionStatus.DONE);
+        		lot.setLotStatus(LotStatus.IN_TRANSPORT);
+        		
+        		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+        				timestamp, Constants.FINALIZE_COOP_STATUS, ActionStatus.DONE.toString());
+        		activity = activityService.save(activity);
+        	}
+        }
+        
+        update(lot);
         return lot;
     }
     
@@ -255,33 +300,6 @@ public class LotService extends AbstractService<Lot> {
         activity = activityService.save(activity);
 
         return lot;
-    }
-
-    public String updateTimeToFactory(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {
-        JSONObject jsonObject = new JSONObject(jsonString);
-        JSONArray jsonArray = jsonObject.getJSONArray("ids");
-
-        Timestamp timestamp = new Timestamp(new Date().getTime());
-
-        Timestamp timeToFactory;
-        if(jsonObject.has(Constants.TIME_TO_FACTORY))
-        	timeToFactory = new Timestamp((Long) jsonObject.get(Constants.TIME_TO_FACTORY));
-        else
-        	timeToFactory = new Timestamp(new Date().getTime());
-        
-        for (int i = 0; i < jsonArray.length(); i++) {
-            Long id = jsonArray.getLong(i);
-            Lot lot = findById(id);
-            lot.setTimeToFactory(timeToFactory);
-            lot.setLotStatus(LotStatus.AT_FACTORY);
-            lot = update(lot);
-
-            String userId = UserUtil.getUserDetails(request).getId();
-            Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
-                    timestamp, Constants.TIME_TO_FACTORY, timeToFactory.toString());
-            activity = activityService.save(activity);
-        }
-        return "Updated succesfully";
     }
 
     public Lot updateMillingTime(String jsonString, HttpServletRequest request) throws JsonProcessingException, JSONException, IOException {

@@ -35,6 +35,11 @@ public class Constants {
 	public static final String FERMENTATION_END_TIME = "fermentationEndTime";
 	public static final String DRYING_END_TIME = "dryingEndTime";
 	public static final String PERCHMENT_QUANTITY = "perchmentQuantity";
+	
+	
 	public static final String FINALIZE_BATCH = "finalizeBatch";
+	public static final String FINALIZE_COOP_STATUS = "finalizeCoopStatus";
+	public static final String FINALIZE_MILLING_STATUS = "finalizeMillingStatus";
+	public static final String FINALIZE_FACTORY_STATUS = "finalizeFactoryStatus";
 	
 }

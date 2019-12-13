@@ -60,6 +60,7 @@ public class Lot implements Serializable {
 	@Column(name = "mc_leaving_cooperative")
 	private Float mcLeavingCooperative;
 	
+	@Column(name = "coop_status")
 	private ActionStatus coopStatus;
 	
 	@Column(name = "weight_arriving_factory")
@@ -80,6 +81,7 @@ public class Lot implements Serializable {
 	@Column(name = "out_turn")
 	private Float outTurn;
 	
+	@Column(name = "milling_status")
 	private ActionStatus millingStatus;
 	
 	@Column(name = "grn_number")
@@ -91,11 +93,13 @@ public class Lot implements Serializable {
 	@Column(name = "factory_report_id")
 	private Long factoryReportId;
 	
+	@Column(name = "factory_status")
 	private ActionStatus factoryStatus;
 	
 	@Column(name = "green_analysis_id")
 	private Long greenAnalysisId;
 	
+	@Column(name = "green_analysis_status")
 	private ActionStatus greenAnalysisStatus;
 	
 	@Column(name = "lot_status")
