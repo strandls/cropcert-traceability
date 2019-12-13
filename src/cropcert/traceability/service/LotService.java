@@ -155,6 +155,9 @@ public class LotService extends AbstractService<Lot> {
         Long id = jsonObject.getLong("id");
         Lot lot = findById(id);
         
+        if(lot == null)
+        	throw new ValidationException("Lot not found");
+        
         String userId = UserUtil.getUserDetails(request).getId();
         Timestamp timestamp = new Timestamp(new Date().getTime());
         
@@ -162,7 +165,6 @@ public class LotService extends AbstractService<Lot> {
         Float weightLeavingCooperative = lot.getWeightLeavingCooperative();
         Float mcLeavingCooperative = lot.getMcLeavingCooperative();
         Timestamp timeToFactory = lot.getTimeToFactory();
-        ActionStatus coopStatus = lot.getCoopStatus();
         
         
         if(jsonObject.has(Constants.WEIGHT_LEAVING_COOPERATIVE)) {
@@ -203,8 +205,8 @@ public class LotService extends AbstractService<Lot> {
         	if(weightLeavingCooperative == null || mcLeavingCooperative == null || timeToFactory == null) {
         		throw new ValidationException("Update the values first");
         	}
-        	coopStatus = ActionStatus.fromValue(jsonObject.getString(Constants.FINALIZE_COOP_STATUS));
-        	if(!coopStatus.equals(lot.getCoopStatus())) {
+        	Boolean finalizeCoopStatus = jsonObject.getBoolean(Constants.FINALIZE_COOP_STATUS);
+        	if(finalizeCoopStatus) {
         		lot.setCoopStatus(ActionStatus.DONE);
         		lot.setLotStatus(LotStatus.IN_TRANSPORT);
         		

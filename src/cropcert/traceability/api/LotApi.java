@@ -182,7 +182,7 @@ public class LotApi {
 			return Response.ok().entity(lot).build();
 		} catch (JSONException | ValidationException e) {
 			return Response.status(Status.BAD_REQUEST).entity(
-					new HashMap<String, String>().put("error", "CoopAction updation failed"))
+					new HashMap<String, String>().put("error", e.getMessage()))
 					.build();
 		}
 	}
