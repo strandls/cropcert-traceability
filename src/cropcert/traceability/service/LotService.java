@@ -167,38 +167,46 @@ public class LotService extends AbstractService<Lot> {
         Timestamp timeToFactory = lot.getTimeToFactory();
         
         
+        
         if(jsonObject.has(Constants.WEIGHT_LEAVING_COOPERATIVE)) {
-        	weightLeavingCooperative = Float.parseFloat(jsonObject.get(Constants.WEIGHT_LEAVING_COOPERATIVE).toString());
-        	if(lot.getWeightLeavingCooperative() != weightLeavingCooperative) {
-        		lot.setWeightLeavingCooperative(weightLeavingCooperative);
-        		lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
-        		
-        		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
-        				timestamp, Constants.WEIGHT_LEAVING_COOPERATIVE, weightLeavingCooperative+"");
-        		activity = activityService.save(activity);
-        	}
+        	
+        	if(jsonObject.isNull(Constants.WEIGHT_LEAVING_COOPERATIVE))
+        		weightLeavingCooperative = null;
+        	else
+            	weightLeavingCooperative = Float.parseFloat(jsonObject.get(Constants.WEIGHT_LEAVING_COOPERATIVE).toString());
+        	
+        	lot.setWeightLeavingCooperative(weightLeavingCooperative);
+        	lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
+        	
+        	Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+        			timestamp, Constants.WEIGHT_LEAVING_COOPERATIVE, weightLeavingCooperative+"");
+        	activity = activityService.save(activity);	
         }
         if(jsonObject.has(Constants.MC_LEAVING_COOPERATIVE)) {
-        	mcLeavingCooperative = Float.parseFloat(jsonObject.get(Constants.MC_LEAVING_COOPERATIVE).toString());
-        	if(lot.getMcLeavingCooperative() != mcLeavingCooperative) {
-        		lot.setMcLeavingCooperative(mcLeavingCooperative);
-        		lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
-        		
-        		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
-        				timestamp, Constants.MC_LEAVING_COOPERATIVE, mcLeavingCooperative+"");
-        		activity = activityService.save(activity);
-        	}
+        	if(jsonObject.isNull(Constants.MC_LEAVING_COOPERATIVE))
+        		mcLeavingCooperative = null;
+        	else
+        		mcLeavingCooperative = Float.parseFloat(jsonObject.get(Constants.MC_LEAVING_COOPERATIVE).toString());
+        	
+        	lot.setMcLeavingCooperative(mcLeavingCooperative);
+        	lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
+        	
+        	Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+        			timestamp, Constants.MC_LEAVING_COOPERATIVE, mcLeavingCooperative+"");
+        	activity = activityService.save(activity);
         }
         if(jsonObject.has(Constants.TIME_TO_FACTORY)) {
-        	timeToFactory = new Timestamp(jsonObject.getLong(Constants.TIME_TO_FACTORY));
-        	if(!timeToFactory.equals(lot.getTimeToFactory())) {
-        		lot.setTimeToFactory(timeToFactory);
-        		lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
-        		
-        		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
-                        timestamp, Constants.TIME_TO_FACTORY, timeToFactory.toString());
-                activity = activityService.save(activity);
-        	}
+        	if(jsonObject.isNull(Constants.TIME_TO_FACTORY))
+        		timeToFactory = null;
+        	else
+        		timeToFactory = new Timestamp(jsonObject.getLong(Constants.TIME_TO_FACTORY));
+        	
+        	lot.setTimeToFactory(timeToFactory);
+        	lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
+        	
+        	Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId,
+        			timestamp, Constants.TIME_TO_FACTORY, timeToFactory.toString());
+        	activity = activityService.save(activity);
         }
        
         if(jsonObject.has(Constants.FINALIZE_COOP_STATUS)) {
