@@ -188,6 +188,26 @@ public class LotApi {
 	}
 
 	@PUT
+	@Path("updateFactoryAction")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	@ApiOperation(response = Lot.class, value = "Update the factory action")
+	@ApiImplicitParams({
+			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
+	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
+	public Response updateFactoryAction(@Context HttpServletRequest request, String jsonString) {
+		Lot lot;
+		try {
+			lot = lotService.updateFactoryAction(jsonString, request);
+			return Response.ok().entity(lot).build();
+		} catch (JSONException | ValidationException e) {
+			return Response.status(Status.BAD_REQUEST).entity(
+					new HashMap<String, String>().put("error", e.getMessage()))
+					.build();
+		}
+	}
+	
+	@PUT
 	@Path("weightArrivingFactory")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)

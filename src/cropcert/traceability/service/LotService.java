@@ -167,7 +167,6 @@ public class LotService extends AbstractService<Lot> {
 		Timestamp timeToFactory = lot.getTimeToFactory();
 
 		if (jsonObject.has(Constants.WEIGHT_LEAVING_COOPERATIVE)) {
-
 			if (jsonObject.isNull(Constants.WEIGHT_LEAVING_COOPERATIVE))
 				weightLeavingCooperative = null;
 			else
@@ -220,6 +219,125 @@ public class LotService extends AbstractService<Lot> {
 
 				Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
 						Constants.FINALIZE_COOP_STATUS, ActionStatus.DONE.toString());
+				activity = activityService.save(activity);
+			}
+		}
+
+		update(lot);
+		return lot;
+	}
+
+	public Lot updateFactoryAction(String jsonString, HttpServletRequest request) throws JSONException {
+		JSONObject jsonObject = new JSONObject(jsonString);
+
+		Long id = jsonObject.getLong("id");
+		Lot lot = findById(id);
+
+		if (lot == null)
+			throw new ValidationException("Lot not found");
+
+		String userId = UserUtil.getUserDetails(request).getId();
+		Timestamp timestamp = new Timestamp(new Date().getTime());
+
+		Float weightArrivingFactory = lot.getWeightArrivingFactory();
+		Float mcArrivingFactory = lot.getMcArrivingFactory();
+
+		Timestamp millingTime = lot.getMillingTime();
+
+		Float weightLeavingFactory = lot.getWeightLeavingFactory();
+		Float mcLeavingFactory = lot.getMcLeavingFactory();
+
+		if (jsonObject.has(Constants.WEIGHT_ARRIVING_FACTORY)) {
+			if (jsonObject.isNull(Constants.WEIGHT_ARRIVING_FACTORY))
+				weightArrivingFactory = null;
+			else
+				weightArrivingFactory = Float.parseFloat(jsonObject.get(Constants.WEIGHT_ARRIVING_FACTORY).toString());
+
+			lot.setWeightArrivingFactory(weightArrivingFactory);
+			lot.setLotStatus(LotStatus.AT_FACTORY);
+
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.WEIGHT_ARRIVING_FACTORY, weightArrivingFactory + "");
+			activity = activityService.save(activity);
+		}
+		if (jsonObject.has(Constants.WEIGHT_LEAVING_FACTORY)) {
+			if (jsonObject.isNull(Constants.WEIGHT_LEAVING_FACTORY))
+				weightLeavingFactory = null;
+			else
+				weightLeavingFactory = Float.parseFloat(jsonObject.get(Constants.WEIGHT_LEAVING_FACTORY).toString());
+
+			lot.setWeightLeavingFactory(weightLeavingFactory);
+			lot.setLotStatus(LotStatus.AT_FACTORY);
+
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.WEIGHT_LEAVING_FACTORY, weightLeavingFactory + "");
+			activity = activityService.save(activity);
+		}
+		if (jsonObject.has(Constants.MC_ARRIVING_FACTORY)) {
+			if (jsonObject.isNull(Constants.MC_ARRIVING_FACTORY))
+				mcArrivingFactory = null;
+			else
+				mcArrivingFactory = Float.parseFloat(jsonObject.get(Constants.MC_ARRIVING_FACTORY).toString());
+
+			lot.setMcArrivingFactory(mcArrivingFactory);
+			lot.setLotStatus(LotStatus.AT_FACTORY);
+
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.MC_ARRIVING_FACTORY, mcArrivingFactory + "");
+			activity = activityService.save(activity);
+		}
+		if (jsonObject.has(Constants.MC_LEAVING_FACTORY)) {
+			if (jsonObject.isNull(Constants.MC_LEAVING_FACTORY))
+				mcLeavingFactory = null;
+			else
+				mcLeavingFactory = Float.parseFloat(jsonObject.get(Constants.MC_LEAVING_FACTORY).toString());
+
+			lot.setMcLeavingFactory(mcLeavingFactory);
+			lot.setLotStatus(LotStatus.AT_FACTORY);
+
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.MC_LEAVING_FACTORY, mcLeavingFactory + "");
+			activity = activityService.save(activity);
+		}
+		if (jsonObject.has(Constants.MILLING_TIME)) {
+			if (jsonObject.isNull(Constants.MILLING_TIME))
+				millingTime = null;
+			else
+				millingTime = new Timestamp(jsonObject.getLong(Constants.MILLING_TIME));
+
+			lot.setMillingTime(millingTime);
+			lot.setLotStatus(LotStatus.AT_FACTORY);
+
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.MILLING_TIME, millingTime.toString());
+			activity = activityService.save(activity);
+		}
+		if (jsonObject.has(Constants.DISPATCH_TIME)) {
+			if (jsonObject.isNull(Constants.DISPATCH_TIME))
+				millingTime = null;
+			else
+				millingTime = new Timestamp(jsonObject.getLong(Constants.DISPATCH_TIME));
+
+			lot.setLotStatus(LotStatus.AT_FACTORY);
+
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.DISPATCH_TIME, millingTime.toString());
+			activity = activityService.save(activity);
+		}
+		
+		if (jsonObject.has(Constants.FINALIZE_MILLING_STATUS)) {
+
+			Boolean finalizeMillingStatus = jsonObject.getBoolean(Constants.FINALIZE_MILLING_STATUS);
+			if (finalizeMillingStatus) {
+				if (weightArrivingFactory == null || weightLeavingFactory == null || mcArrivingFactory == null
+						|| mcLeavingFactory == null || millingTime == null) {
+					throw new ValidationException("Update the values first");
+				}
+				lot.setMillingStatus(ActionStatus.DONE);
+				lot.setLotStatus(LotStatus.AT_UNION);
+
+				Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+						Constants.FINALIZE_MILLING_STATUS, ActionStatus.DONE.toString());
 				activity = activityService.save(activity);
 			}
 		}
@@ -425,7 +543,7 @@ public class LotService extends AbstractService<Lot> {
 		for (int i = 0; i < values.length; i++) {
 			longValues[i] = Long.parseLong(values[i].toString());
 		}
-		return dao.getByPropertyfromArray("coCode", longValues, limit, offset, "createdOn");
+		return dao.getByPropertyfromArray("coCode", longValues, limit, offset, "createdOn desc");
 		// return ((LotDao) dao).getByPropertyfromArray("coCode", longValues, lotStatus,
 		// limit, offset);
 	}
