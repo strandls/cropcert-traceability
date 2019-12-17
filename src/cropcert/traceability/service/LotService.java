@@ -309,19 +309,18 @@ public class LotService extends AbstractService<Lot> {
 			lot.setLotStatus(LotStatus.AT_FACTORY);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-					Constants.MILLING_TIME, millingTime.toString());
+					Constants.MILLING_TIME, millingTime + "");
 			activity = activityService.save(activity);
 		}
 		if (jsonObject.has(Constants.DISPATCH_TIME)) {
-			if (jsonObject.isNull(Constants.DISPATCH_TIME))
-				millingTime = null;
-			else
-				millingTime = new Timestamp(jsonObject.getLong(Constants.DISPATCH_TIME));
+			Timestamp dispatchTime = null;
+			if (!jsonObject.isNull(Constants.DISPATCH_TIME))
+				dispatchTime = new Timestamp(jsonObject.getLong(Constants.DISPATCH_TIME));
 
-			lot.setLotStatus(LotStatus.AT_FACTORY);
+			lot.setLotStatus(LotStatus.IN_TRANSPORT);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-					Constants.DISPATCH_TIME, millingTime.toString());
+					Constants.DISPATCH_TIME, dispatchTime + "");
 			activity = activityService.save(activity);
 		}
 		
@@ -343,139 +342,6 @@ public class LotService extends AbstractService<Lot> {
 		}
 
 		update(lot);
-		return lot;
-	}
-
-	public Lot updateWeightArrivingFactory(String jsonString, HttpServletRequest request)
-			throws JsonProcessingException, JSONException, IOException {
-		JSONObject jsonObject = new JSONObject(jsonString);
-
-		Long id = jsonObject.getLong("id");
-		Lot lot = findById(id);
-
-		float weightArrivingFactory = Float.parseFloat(jsonObject.get(Constants.WEIGHT_ARRIVING_FACTORY).toString());
-
-		lot.setWeightArrivingFactory(weightArrivingFactory);
-		lot.setLotStatus(LotStatus.AT_FACTORY);
-		lot = update(lot);
-
-		String userId = UserUtil.getUserDetails(request).getId();
-		Timestamp timestamp = new Timestamp(new Date().getTime());
-		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-				Constants.WEIGHT_LEAVING_COOPERATIVE, weightArrivingFactory + "");
-		activity = activityService.save(activity);
-
-		return lot;
-	}
-
-	public Lot updateMCArrivingFactory(String jsonString, HttpServletRequest request)
-			throws JsonProcessingException, JSONException, IOException {
-		JSONObject jsonObject = new JSONObject(jsonString);
-
-		Long id = jsonObject.getLong("id");
-		Lot lot = findById(id);
-
-		float mcArrivingFactory = Float.parseFloat(jsonObject.get(Constants.MC_ARRIVING_FACTORY).toString());
-
-		lot.setMcArrivingFactory(mcArrivingFactory);
-		lot.setLotStatus(LotStatus.AT_FACTORY);
-		lot = update(lot);
-
-		String userId = UserUtil.getUserDetails(request).getId();
-		Timestamp timestamp = new Timestamp(new Date().getTime());
-		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-				Constants.MC_ARRIVING_FACTORY, mcArrivingFactory + "");
-		activity = activityService.save(activity);
-
-		return lot;
-	}
-
-	public Lot updateWeightLeavingFactory(String jsonString, HttpServletRequest request)
-			throws JsonProcessingException, JSONException, IOException {
-		JSONObject jsonObject = new JSONObject(jsonString);
-
-		Long id = jsonObject.getLong("id");
-		Lot lot = findById(id);
-
-		float weightLeavingFactory = Float.parseFloat(jsonObject.get(Constants.WEIGHT_LEAVING_FACTORY).toString());
-
-		lot.setWeightLeavingFactory(weightLeavingFactory);
-		lot.setLotStatus(LotStatus.AT_FACTORY);
-		lot = update(lot);
-
-		String userId = UserUtil.getUserDetails(request).getId();
-		Timestamp timestamp = new Timestamp(new Date().getTime());
-		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-				Constants.WEIGHT_LEAVING_FACTORY, weightLeavingFactory + "");
-		activity = activityService.save(activity);
-
-		return lot;
-	}
-
-	public Lot updateMCLeavingFactory(String jsonString, HttpServletRequest request)
-			throws JsonProcessingException, JSONException, IOException {
-		JSONObject jsonObject = new JSONObject(jsonString);
-
-		Long id = jsonObject.getLong("id");
-		Lot lot = findById(id);
-
-		float mcLeavingFactory = Float.parseFloat(jsonObject.get(Constants.MC_LEAVING_FACTORY).toString());
-
-		lot.setMcLeavingFactory(mcLeavingFactory);
-		lot.setLotStatus(LotStatus.AT_FACTORY);
-		lot = update(lot);
-
-		String userId = UserUtil.getUserDetails(request).getId();
-		Timestamp timestamp = new Timestamp(new Date().getTime());
-		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-				Constants.MC_LEAVING_FACTORY, mcLeavingFactory + "");
-		activity = activityService.save(activity);
-
-		return lot;
-	}
-
-	public Lot updateMillingTime(String jsonString, HttpServletRequest request)
-			throws JsonProcessingException, JSONException, IOException {
-		JSONObject jsonObject = new JSONObject(jsonString);
-
-		Long id = jsonObject.getLong("id");
-		Lot lot = findById(id);
-
-		Timestamp millingTime = new Timestamp((Long) jsonObject.get(Constants.MILLING_TIME));
-
-		lot.setMillingTime(millingTime);
-		lot.setLotStatus(LotStatus.AT_FACTORY);
-		lot = update(lot);
-
-		String userId = UserUtil.getUserDetails(request).getId();
-		Timestamp timestamp = new Timestamp(new Date().getTime());
-		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-				Constants.MILLING_TIME, millingTime.toString());
-		activity = activityService.save(activity);
-
-		return lot;
-	}
-
-	public Lot updateOutTurn(String jsonString, HttpServletRequest request)
-			throws JsonProcessingException, JSONException, IOException {
-		JSONObject jsonObject = new JSONObject(jsonString);
-
-		Long id = jsonObject.getLong("id");
-		Lot lot = findById(id);
-
-		String outTurnString = jsonObject.get(Constants.OUT_TURN).toString();
-		Float outTurn = Float.valueOf(outTurnString);
-
-		lot.setOutTurn(outTurn);
-		lot.setLotStatus(LotStatus.AT_FACTORY);
-		lot = update(lot);
-
-		String userId = UserUtil.getUserDetails(request).getId();
-		Timestamp timestamp = new Timestamp(new Date().getTime());
-		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-				Constants.OUT_TURN, outTurn.toString());
-		activity = activityService.save(activity);
-
 		return lot;
 	}
 
