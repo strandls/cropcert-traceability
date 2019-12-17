@@ -31,7 +31,7 @@ public class FactoryReport {
 	@Column(name = "lot_id", unique = true, nullable = false)
     private Long lotId;
 	
-	@Column(name = "grn_number")
+	@Column(name = "grn_number", unique = true, nullable = false)
 	private String grnNumber;
 	
 	@Column(name = "date")

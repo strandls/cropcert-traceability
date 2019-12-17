@@ -48,7 +48,6 @@ public class FactoryReportService extends AbstractService<FactoryReport> {
 		Lot lot = lotService.findById(lotId);
 		
 		lot.setFactoryReportId(factoryReport.getId());
-		lot.setGrnNumber(factoryReport.getGrnNumber());
 		lotService.update(lot);
 		
 		 /**

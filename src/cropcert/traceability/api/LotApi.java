@@ -22,7 +22,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.google.inject.Inject;
 
@@ -225,30 +224,6 @@ public class LotApi {
 		return Response.status(Status.NO_CONTENT)
 				.entity(new HashMap<String, String>().put("error", "Time to dispatch from factory updation failed"))
 				.build();
-	}
-
-	@PUT
-	@Path("grnNumber")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = Lot.class, value = "update grnNumber to factory")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
-	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
-	public Response updateGRNNumer(@Context HttpServletRequest request, String jsonString) {
-		try {
-			if (lotService.checkForDuplicate(jsonString)) {
-				JSONObject jo = new JSONObject();
-				jo.put("error", "Duplicate GRN Number");
-				return Response.status(Status.PRECONDITION_FAILED).entity(jo.toString()).build();
-			}
-			Lot response = lotService.updateGRNNumer(jsonString, request);
-			return Response.ok().entity(response).build();
-		} catch (JSONException | IOException e) {
-			e.printStackTrace();
-		}
-		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "GNR updation for lot has failed")).build();
 	}
 
 	@PUT
