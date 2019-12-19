@@ -3,6 +3,7 @@ package cropcert.traceability.api;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -81,15 +82,14 @@ public class FactoryReportApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Save the report", response = FactoryReport.class)
+	@ApiOperation(value = "Save the report", response = Map.class)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
 	public Response save(@Context HttpServletRequest request, String jsonString) {
-		FactoryReport factoryReport;
 		try {
-			factoryReport = factoryReportService.save(request, jsonString);
-			return Response.status(Status.CREATED).entity(factoryReport).build();
+			Map<String, Object> result = factoryReportService.save(request, jsonString);
+			return Response.status(Status.CREATED).entity(result).build();
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {

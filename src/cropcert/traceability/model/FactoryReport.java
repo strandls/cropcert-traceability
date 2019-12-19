@@ -31,9 +31,6 @@ public class FactoryReport {
 	@Column(name = "lot_id", unique = true, nullable = false)
     private Long lotId;
 	
-	@Column(name = "grn_number")
-	private String grnNumber;
-	
 	@Column(name = "date")
 	private Timestamp date;
 	
@@ -146,14 +143,6 @@ public class FactoryReport {
 	}
 	public void setLotId(Long lotId) {
 		this.lotId = lotId;
-	}
-
-	public String getGrnNumber() {
-		return grnNumber;
-	}
-
-	public void setGrnNumber(String grnNumber) {
-		this.grnNumber = grnNumber;
 	}
 
 	public Timestamp getDate() {

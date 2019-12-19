@@ -3,6 +3,8 @@ package cropcert.traceability.service;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,7 +39,7 @@ public class FactoryReportService extends AbstractService<FactoryReport> {
 		super(dao);
 	}
 
-	public FactoryReport save(HttpServletRequest request, String jsonString)
+	public Map<String, Object> save(HttpServletRequest request, String jsonString)
 			throws JsonParseException, JsonMappingException, IOException, JSONException, ValidationException {
 		FactoryReport factoryReport = objectMappper.readValue(jsonString, FactoryReport.class);
 		factoryReport.setIsDeleted(false);
@@ -48,7 +50,6 @@ public class FactoryReportService extends AbstractService<FactoryReport> {
 		Lot lot = lotService.findById(lotId);
 		
 		lot.setFactoryReportId(factoryReport.getId());
-		lot.setGrnNumber(factoryReport.getGrnNumber());
 		lotService.update(lot);
 		
 		 /**
@@ -60,7 +61,10 @@ public class FactoryReportService extends AbstractService<FactoryReport> {
                 timestamp, Constants.FACTORY_REPORT, factoryReport.getLotId().toString());
         activity = activityService.save(activity);
 
-		return factoryReport;
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("lot", lot);
+        result.put("factoryReport", factoryReport);
+		return result;
 	}
 	
 	public FactoryReport update(String jsonString) throws JsonParseException, JsonMappingException, IOException, ValidationException {
