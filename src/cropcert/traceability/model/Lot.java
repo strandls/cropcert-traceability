@@ -61,7 +61,7 @@ public class Lot implements Serializable {
 	private Float mcLeavingCooperative;
 	
 	@Column(name = "coop_status")
-	private ActionStatus coopStatus;
+	private ActionStatus coopStatus = ActionStatus.ADD;
 	
 	@Column(name = "weight_arriving_factory")
 	private Float weightArrivingFactory;
@@ -82,19 +82,28 @@ public class Lot implements Serializable {
 	private Float outTurn;
 	
 	@Column(name = "milling_status")
-	private ActionStatus millingStatus;
+	private ActionStatus millingStatus = ActionStatus.NOTAPPLICABLE;
 	
+	@Column(name = "grn_number")
+	private String grnNumber;
+
+	@Column(name = "grn_timestamp")
+	private Timestamp grnTimestamp;
+	
+	@Column(name = "grn_status")
+	private ActionStatus grnStatus;
+
 	@Column(name = "factory_report_id")
 	private Long factoryReportId;
 	
 	@Column(name = "factory_status")
-	private ActionStatus factoryStatus;
+	private ActionStatus factoryStatus = ActionStatus.NOTAPPLICABLE;
 	
 	@Column(name = "green_analysis_id")
 	private Long greenAnalysisId;
 	
 	@Column(name = "green_analysis_status")
-	private ActionStatus greenAnalysisStatus;
+	private ActionStatus greenAnalysisStatus = ActionStatus.NOTAPPLICABLE;
 	
 	@Column(name = "lot_status")
 	private LotStatus lotStatus;
@@ -166,15 +175,6 @@ public class Lot implements Serializable {
 	}
 	
 	public ActionStatus getCoopStatus() {
-		if(coopStatus == null) 
-			coopStatus = ActionStatus.NOTAPPLICABLE;
-		if(this.timeToFactory == null && 
-				this.weightLeavingCooperative == null && 
-				this.mcLeavingCooperative == null) 
-			coopStatus = ActionStatus.ADD;
-		else if(coopStatus != ActionStatus.DONE) 
-			coopStatus = ActionStatus.EDIT;
-		else coopStatus = ActionStatus.DONE;
 		return coopStatus;
 	}
 	public void setCoopStatus(ActionStatus coopStatus) {
@@ -227,18 +227,6 @@ public class Lot implements Serializable {
 	}
 	
 	public ActionStatus getMillingStatus() {
-		if(coopStatus != ActionStatus.DONE || millingStatus == null) 
-			millingStatus =  ActionStatus.NOTAPPLICABLE;
-		else if(weightArrivingFactory == null &&
-				weightLeavingFactory == null &&
-				mcArrivingFactory == null &&
-				mcLeavingFactory == null &&
-				millingTime == null) 
-			millingStatus = ActionStatus.ADD;
-		else if(millingStatus != ActionStatus.DONE) 
-			millingStatus = ActionStatus.EDIT;
-		else 
-			millingStatus = ActionStatus.DONE;
 		return millingStatus;
 	}
 	public void setMillingStatus(ActionStatus millingStatus) {
@@ -249,6 +237,27 @@ public class Lot implements Serializable {
 	 * Action  at union factory
 	 */
 	
+	public String getGrnNumber() {
+		return grnNumber;
+	}
+	public void setGrnNumber(String grnNumber) {
+		this.grnNumber = grnNumber;
+	}
+
+	public Timestamp getGrnTimestamp() {
+		return grnTimestamp;
+	}
+	public void setGrnTimestamp(Timestamp grnTimestamp) {
+		this.grnTimestamp = grnTimestamp;
+	}
+	
+	public ActionStatus getGrnStatus() {
+		return grnStatus;
+	}
+	public void setGrnStatus(ActionStatus grnStatus) {
+		this.grnStatus = grnStatus;
+	}
+	
 	public Long getFactoryReportId() {
 		return factoryReportId;
 	}
@@ -257,16 +266,6 @@ public class Lot implements Serializable {
 	}
 
 	public ActionStatus getFactoryStatus() {
-		
-		if(millingStatus != ActionStatus.DONE || factoryStatus == null)
-			factoryStatus = ActionStatus.NOTAPPLICABLE;
-		else if(factoryReportId == null)
-			factoryStatus = ActionStatus.ADD;
-		else if(factoryStatus != ActionStatus.DONE)
-			factoryStatus = ActionStatus.EDIT;
-		else 
-			factoryStatus = ActionStatus.DONE;
-		
 		return factoryStatus;
 	}
 	public void setFactoryStatus(ActionStatus factoryStatus) {

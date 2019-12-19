@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.google.inject.Inject;
 
@@ -148,25 +149,6 @@ public class LotApi {
 	}
 
 	@PUT
-	@Path("dispatch/factory")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = Lot.class, value = "update time to factory")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
-	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
-	public Response updateTimeToFactory(@Context HttpServletRequest request, String jsonString) {
-		try {
-			String response = lotService.updateTimeToFactory(jsonString, request);
-			return Response.ok().entity(response).build();
-		} catch (JSONException | IOException e) {
-			e.printStackTrace();
-		}
-		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "Time to factory updation failed")).build();
-	}
-
-	@PUT
 	@Path("updateCoopAction")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -187,17 +169,17 @@ public class LotApi {
 	}
 
 	@PUT
-	@Path("updateFactoryAction")
+	@Path("updateMillingAction")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@ApiOperation(response = Lot.class, value = "Update the factory action")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
-	public Response updateFactoryAction(@Context HttpServletRequest request, String jsonString) {
+	public Response updateMillingAction(@Context HttpServletRequest request, String jsonString) {
 		Lot lot;
 		try {
-			lot = lotService.updateFactoryAction(jsonString, request);
+			lot = lotService.updateMillingAction(jsonString, request);
 			return Response.ok().entity(lot).build();
 		} catch (JSONException | ValidationException e) {
 			return Response.status(Status.BAD_REQUEST).entity(
@@ -207,59 +189,26 @@ public class LotApi {
 	}
 
 	@PUT
-	@Path("dispatch/union")
+	@Path("grnNumber")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = Lot.class, value = "update time to dispatch")
+	@ApiOperation(response = Lot.class, value = "update grnNumber to factory")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
-	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
-	public Response dispatchToUnion(@Context HttpServletRequest request, String jsonString) {
+	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
+	public Response updateGRNNumer(@Context HttpServletRequest request, String jsonString) {
 		try {
-			String response = lotService.dispatchToUnion(jsonString, request);
+			if (lotService.checkForDuplicate(jsonString)) {
+				JSONObject jo = new JSONObject();
+				jo.put("error", "Duplicate GRN Number");
+				return Response.status(Status.PRECONDITION_FAILED).entity(jo.toString()).build();
+			}
+			Lot response = lotService.updateGRNNumer(jsonString, request);
 			return Response.ok().entity(response).build();
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
 		}
 		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "Time to dispatch from factory updation failed"))
-				.build();
+				.entity(new HashMap<String, String>().put("error", "GNR updation for lot has failed")).build();
 	}
-
-	@PUT
-	@Path("finalizeCoopAction/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = Lot.class, value = "Finalize the cooperative actions")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
-	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
-	public Response finalizeCoopActions(@Context HttpServletRequest request, @PathParam("id") Long id) {
-		return lotService.finalizeCoopActions(id);
-	}
-
-	@PUT
-	@Path("finalizeMillingAction/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = Lot.class, value = "Finalize the milling actions")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
-	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
-	public Response finalizeMillingActions(@Context HttpServletRequest request, @PathParam("id") Long id) {
-		return lotService.finalizeMillingActions(id);
-	}
-
-	@PUT
-	@Path("finalizeFactoryAction/{id}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(response = Lot.class, value = "Finalize the factory actions")
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
-	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
-	public Response finalizeFactoryActions(@Context HttpServletRequest request, @PathParam("id") Long id) {
-		return lotService.finalizeFactoryActions(id);
-	}
-
 }

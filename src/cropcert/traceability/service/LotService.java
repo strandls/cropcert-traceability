@@ -11,8 +11,6 @@ import java.util.Map;
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -122,34 +120,6 @@ public class LotService extends AbstractService<Lot> {
 		return result;
 	}
 
-	public String updateTimeToFactory(String jsonString, HttpServletRequest request)
-			throws JsonProcessingException, JSONException, IOException {
-		JSONObject jsonObject = new JSONObject(jsonString);
-		JSONArray jsonArray = jsonObject.getJSONArray("ids");
-
-		Timestamp timestamp = new Timestamp(new Date().getTime());
-
-		Timestamp timeToFactory;
-		if (jsonObject.has(Constants.TIME_TO_FACTORY))
-			timeToFactory = new Timestamp((Long) jsonObject.get(Constants.TIME_TO_FACTORY));
-		else
-			timeToFactory = new Timestamp(new Date().getTime());
-
-		for (int i = 0; i < jsonArray.length(); i++) {
-			Long id = jsonArray.getLong(i);
-			Lot lot = findById(id);
-			lot.setTimeToFactory(timeToFactory);
-			lot.setLotStatus(LotStatus.AT_FACTORY);
-			lot = update(lot);
-
-			String userId = UserUtil.getUserDetails(request).getId();
-			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-					Constants.TIME_TO_FACTORY, timeToFactory.toString());
-			activity = activityService.save(activity);
-		}
-		return "Updated succesfully";
-	}
-
 	public Lot updateCoopAction(String jsonString, HttpServletRequest request) throws JSONException {
 		JSONObject jsonObject = new JSONObject(jsonString);
 
@@ -158,6 +128,9 @@ public class LotService extends AbstractService<Lot> {
 
 		if (lot == null)
 			throw new ValidationException("Lot not found");
+		
+		if (ActionStatus.DONE.equals(lot.getCoopStatus()))
+			throw new ValidationException("Status is already done");
 
 		String userId = UserUtil.getUserDetails(request).getId();
 		Timestamp timestamp = new Timestamp(new Date().getTime());
@@ -215,6 +188,7 @@ public class LotService extends AbstractService<Lot> {
 					throw new ValidationException("Update the values first");
 				}
 				lot.setCoopStatus(ActionStatus.DONE);
+				lot.setMillingStatus(ActionStatus.ADD);
 				lot.setLotStatus(LotStatus.IN_TRANSPORT);
 
 				Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
@@ -222,12 +196,19 @@ public class LotService extends AbstractService<Lot> {
 				activity = activityService.save(activity);
 			}
 		}
+		
+		if (weightLeavingCooperative == null || mcLeavingCooperative == null || timeToFactory == null)
+			lot.setCoopStatus(ActionStatus.ADD);
+		else if(!ActionStatus.DONE.equals(lot.getCoopStatus()))
+			lot.setCoopStatus(ActionStatus.EDIT);
+		else
+			lot.setCoopStatus(ActionStatus.DONE);
 
 		update(lot);
 		return lot;
 	}
 
-	public Lot updateFactoryAction(String jsonString, HttpServletRequest request) throws JSONException {
+	public Lot updateMillingAction(String jsonString, HttpServletRequest request) throws JSONException {
 		JSONObject jsonObject = new JSONObject(jsonString);
 
 		Long id = jsonObject.getLong("id");
@@ -235,6 +216,9 @@ public class LotService extends AbstractService<Lot> {
 
 		if (lot == null)
 			throw new ValidationException("Lot not found");
+		
+		if (ActionStatus.DONE.equals(lot.getMillingStatus()))
+			throw new ValidationException("Status is already done");
 
 		String userId = UserUtil.getUserDetails(request).getId();
 		Timestamp timestamp = new Timestamp(new Date().getTime());
@@ -323,7 +307,7 @@ public class LotService extends AbstractService<Lot> {
 					Constants.DISPATCH_TIME, dispatchTime + "");
 			activity = activityService.save(activity);
 		}
-		
+
 		if (jsonObject.has(Constants.FINALIZE_MILLING_STATUS)) {
 
 			Boolean finalizeMillingStatus = jsonObject.getBoolean(Constants.FINALIZE_MILLING_STATUS);
@@ -333,6 +317,7 @@ public class LotService extends AbstractService<Lot> {
 					throw new ValidationException("Update the values first");
 				}
 				lot.setMillingStatus(ActionStatus.DONE);
+				lot.setGrnStatus(ActionStatus.ADD);
 				lot.setLotStatus(LotStatus.AT_UNION);
 
 				Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
@@ -341,31 +326,90 @@ public class LotService extends AbstractService<Lot> {
 			}
 		}
 
+		if (weightArrivingFactory == null || weightLeavingFactory == null || mcArrivingFactory == null
+				|| mcLeavingFactory == null || millingTime == null)
+			lot.setMillingStatus(ActionStatus.ADD);
+		else if (!ActionStatus.DONE.equals(lot.getMillingStatus()))
+			lot.setMillingStatus(ActionStatus.EDIT);
+		else
+			lot.setMillingStatus(ActionStatus.DONE);
+
 		update(lot);
 		return lot;
 	}
 
-	public String dispatchToUnion(String jsonString, HttpServletRequest request)
+	public Lot updateGRNNumer(String jsonString, HttpServletRequest request)
 			throws JsonProcessingException, JSONException, IOException {
 		JSONObject jsonObject = new JSONObject(jsonString);
-		JSONArray jsonArray = jsonObject.getJSONArray("ids");
 
-		Timestamp dispatchTime = new Timestamp((Long) jsonObject.get(Constants.DISPATCH_TIME));
+		Long id = jsonObject.getLong("id");
+		Lot lot = findById(id);
 
-		for (int i = 0; i < jsonArray.length(); i++) {
-			Long lotId = jsonArray.getLong(i);
+		if (lot == null)
+			throw new ValidationException("Lot not found");
 
-			Lot lot = findById(lotId);
+		if (ActionStatus.DONE.equals(lot.getGrnStatus()))
+			throw new ValidationException("Status is already done");
+
+		Timestamp grnTimestamp = lot.getGrnTimestamp();
+		String grnNumber = lot.getGrnNumber();
+		String userId = UserUtil.getUserDetails(request).getId();
+		Timestamp timestamp = new Timestamp(new Date().getTime());
+
+		if (jsonObject.has(Constants.GRN_NUMBER)) {
+			if (jsonObject.isNull(Constants.GRN_NUMBER))
+				grnNumber = null;
+			else
+				grnNumber = jsonObject.get(Constants.GRN_NUMBER).toString();
+
+			lot.setGrnNumber(grnNumber);
 			lot.setLotStatus(LotStatus.AT_UNION);
-			lot = update(lot);
 
-			String userId = UserUtil.getUserDetails(request).getId();
-			Timestamp timestamp = new Timestamp(new Date().getTime());
-			Activity activity = new Activity(lot.getClass().getSimpleName(), lotId, userId, timestamp,
-					Constants.DISPATCH_TIME, dispatchTime.toString());
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.GRN_NUMBER, grnNumber);
 			activity = activityService.save(activity);
 		}
-		return "Dispatched to union succesful";
+		if (jsonObject.has(Constants.GRN_TIME)) {
+			if (jsonObject.isNull(Constants.GRN_TIME))
+				grnTimestamp = null;
+			else
+				grnTimestamp = new Timestamp((Long) jsonObject.get(Constants.GRN_TIME));
+
+			lot.setGrnTimestamp(grnTimestamp);
+			lot.setLotStatus(LotStatus.AT_UNION);
+
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.GRN_TIME, grnTimestamp + "");
+			activity = activityService.save(activity);
+		}
+		if (jsonObject.has(Constants.FINALIZE_GRN_STATUS)) {
+			Boolean finalizeGrnStatus = jsonObject.getBoolean(Constants.FINALIZE_GRN_STATUS);
+			if (finalizeGrnStatus) {
+				if (grnNumber == null || grnTimestamp == null) {
+					throw new ValidationException("Update all value first");
+				}
+
+				lot.setGrnStatus(ActionStatus.DONE);
+				lot.setFactoryStatus(ActionStatus.ADD);
+				lot.setGreenAnalysisStatus(ActionStatus.ADD);
+				lot.setLotStatus(LotStatus.AT_UNION);
+
+				Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+						Constants.FINALIZE_GRN_STATUS, ActionStatus.DONE.toString());
+				activity = activityService.save(activity);
+			}
+		}
+
+		if (grnNumber == null && grnTimestamp == null) {
+			lot.setGrnStatus(ActionStatus.ADD);
+		} else if (!ActionStatus.DONE.equals(lot.getGrnStatus())) {
+			lot.setGrnStatus(ActionStatus.EDIT);
+		} else {
+			lot.setGrnStatus(ActionStatus.DONE);
+		}
+
+		lot = update(lot);
+		return lot;
 	}
 
 	public boolean checkForDuplicate(String jsonString) throws JSONException {
@@ -424,51 +468,5 @@ public class LotService extends AbstractService<Lot> {
 			lotWithCuppings.add(lotWithCupping);
 		}
 		return lotWithCuppings;
-	}
-
-	public Response finalizeCoopActions(Long id) {
-		Lot lot = findById(id);
-		if (lot != null) {
-			if (lot.getTimeToFactory() == null || lot.getWeightLeavingCooperative() == null
-					|| lot.getMcLeavingCooperative() == null)
-				return Response.status(Status.NO_CONTENT)
-						.entity(new HashMap<String, String>().put("error", "Update all the fields first")).build();
-
-			lot.setCoopStatus(ActionStatus.DONE);
-			return Response.ok().entity(lot).build();
-		}
-		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "Error in finalizing the cooperative action"))
-				.build();
-	}
-
-	public Response finalizeMillingActions(Long id) {
-		Lot lot = findById(id);
-		if (lot != null) {
-			if (lot.getWeightArrivingFactory() == null || lot.getWeightLeavingFactory() == null
-					|| lot.getMcArrivingFactory() == null || lot.getMcLeavingFactory() == null
-					|| lot.getMillingTime() == null)
-				return Response.status(Status.NO_CONTENT)
-						.entity(new HashMap<String, String>().put("error", "Update all the fields first")).build();
-
-			lot.setMillingStatus(ActionStatus.DONE);
-			return Response.ok().entity(lot).build();
-		}
-		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "Error in finalizing the Milling action")).build();
-	}
-
-	public Response finalizeFactoryActions(Long id) {
-		Lot lot = findById(id);
-		if (lot != null) {
-			if (lot.getFactoryReportId() == null)
-				return Response.status(Status.NO_CONTENT)
-						.entity(new HashMap<String, String>().put("error", "Update all the fields first")).build();
-
-			lot.setFactoryStatus(ActionStatus.DONE);
-			return Response.ok().entity(lot).build();
-		}
-		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "Error in finalizing the Milling action")).build();
 	}
 }
