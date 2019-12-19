@@ -368,30 +368,6 @@ public class LotService extends AbstractService<Lot> {
 		return "Dispatched to union succesful";
 	}
 
-	public Lot updateGRNNumer(String jsonString, HttpServletRequest request)
-			throws JsonProcessingException, JSONException, IOException {
-		JSONObject jsonObject = new JSONObject(jsonString);
-
-		Long id = jsonObject.getLong("id");
-		Lot lot = findById(id);
-
-		String grnNumber = jsonObject.get(Constants.GRN_NUMBER).toString();
-		Timestamp grnTimestamp = new Timestamp((Long) jsonObject.get(Constants.GRN_TIME));
-
-		lot.setGrnNumber(grnNumber);
-		lot.setLotStatus(LotStatus.AT_UNION);
-		lot.setGrnTimestamp(grnTimestamp);
-		lot = update(lot);
-
-		String userId = UserUtil.getUserDetails(request).getId();
-		Timestamp timestamp = new Timestamp(new Date().getTime());
-		Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-				Constants.GRN_NUMBER, grnNumber);
-		activity = activityService.save(activity);
-
-		return lot;
-	}
-
 	public boolean checkForDuplicate(String jsonString) throws JSONException {
 		JSONObject jsonObject = new JSONObject(jsonString);
 		String grnNumber = jsonObject.get(Constants.GRN_NUMBER).toString();

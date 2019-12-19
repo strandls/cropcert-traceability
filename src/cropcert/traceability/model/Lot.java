@@ -84,12 +84,6 @@ public class Lot implements Serializable {
 	@Column(name = "milling_status")
 	private ActionStatus millingStatus;
 	
-	@Column(name = "grn_number")
-	private String grnNumber;
-	
-	@Column(name = "grn_timestamp")
-	private Timestamp grnTimestamp;
-	
 	@Column(name = "factory_report_id")
 	private Long factoryReportId;
 	
@@ -254,19 +248,6 @@ public class Lot implements Serializable {
 	/*
 	 * Action  at union factory
 	 */
-	public String getGrnNumber() {
-		return grnNumber;
-	}
-	public void setGrnNumber(String grnNumber) {
-		this.grnNumber = grnNumber;
-	}
-	
-	public Timestamp getGrnTimestamp() {
-		return grnTimestamp;
-	}
-	public void setGrnTimestamp(Timestamp grnTimestamp) {
-		this.grnTimestamp = grnTimestamp;
-	}
 	
 	public Long getFactoryReportId() {
 		return factoryReportId;
