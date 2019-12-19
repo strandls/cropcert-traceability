@@ -197,7 +197,7 @@ public class LotService extends AbstractService<Lot> {
 			}
 		}
 		
-		if (weightLeavingCooperative == null || mcLeavingCooperative == null || timeToFactory == null)
+		if (weightLeavingCooperative == null && mcLeavingCooperative == null && timeToFactory == null)
 			lot.setCoopStatus(ActionStatus.ADD);
 		else if(!ActionStatus.DONE.equals(lot.getCoopStatus()))
 			lot.setCoopStatus(ActionStatus.EDIT);
@@ -326,8 +326,8 @@ public class LotService extends AbstractService<Lot> {
 			}
 		}
 
-		if (weightArrivingFactory == null || weightLeavingFactory == null || mcArrivingFactory == null
-				|| mcLeavingFactory == null || millingTime == null)
+		if (weightArrivingFactory == null && weightLeavingFactory == null && mcArrivingFactory == null
+				&& mcLeavingFactory == null && millingTime == null)
 			lot.setMillingStatus(ActionStatus.ADD);
 		else if (!ActionStatus.DONE.equals(lot.getMillingStatus()))
 			lot.setMillingStatus(ActionStatus.EDIT);
