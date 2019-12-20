@@ -91,7 +91,7 @@ public class Lot implements Serializable {
 	private Timestamp grnTimestamp;
 	
 	@Column(name = "grn_status")
-	private ActionStatus grnStatus;
+	private ActionStatus grnStatus = ActionStatus.NOTAPPLICABLE;
 
 	@Column(name = "factory_report_id")
 	private Long factoryReportId;
