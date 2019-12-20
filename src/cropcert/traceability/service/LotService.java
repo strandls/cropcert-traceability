@@ -176,7 +176,7 @@ public class LotService extends AbstractService<Lot> {
 			lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-					Constants.TIME_TO_FACTORY, timeToFactory.toString());
+					Constants.TIME_TO_FACTORY, timeToFactory + "");
 			activity = activityService.save(activity);
 		}
 
