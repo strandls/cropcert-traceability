@@ -110,11 +110,11 @@ public class FactoryReportApi {
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
 	public Response update(@Context HttpServletRequest request, String jsonString) {
-		FactoryReport factoryReport;
+		Map<String, Object> result;
 		try {
-			factoryReport = factoryReportService.update(jsonString);
-			return Response.status(Status.ACCEPTED).entity(factoryReport).build();
-		} catch (IOException e) {
+			result = factoryReportService.update(request, jsonString);
+			return Response.status(Status.ACCEPTED).entity(result).build();
+		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
 			e.printStackTrace();
