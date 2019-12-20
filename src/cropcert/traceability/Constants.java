@@ -42,5 +42,6 @@ public class Constants {
 	public static final String FINALIZE_MILLING_STATUS = "finalizeMillingStatus";
 	public static final String FINALIZE_GRN_STATUS = "finalizeGrnStatus";
 	public static final String FINALIZE_FACTORY_STATUS = "finalizeFactoryStatus";
+	public static final String FINALIZE_GREEN_STATUS = "finalizeGreenStatus";
 	
 }

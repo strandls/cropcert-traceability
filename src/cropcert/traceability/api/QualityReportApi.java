@@ -3,6 +3,7 @@ package cropcert.traceability.api;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
@@ -83,15 +84,15 @@ public class QualityReportApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Save the report", response = QualityReport.class)
+	@ApiOperation(value = "Save the report", response = Map.class)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
 	public Response save(@Context HttpServletRequest request, String jsonString) {
-		QualityReport qualityReport;
+		Map<String, Object> result;
 		try {
-			qualityReport = qualityReportService.save(request, jsonString);
-			return Response.status(Status.CREATED).entity(qualityReport).build();
+			result = qualityReportService.save(request, jsonString);
+			return Response.status(Status.CREATED).entity(result).build();
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
@@ -107,16 +108,16 @@ public class QualityReportApi {
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Update the report", response = QualityReport.class)
+	@ApiOperation(value = "Update the report", response = Map.class)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
 	public Response update(@Context HttpServletRequest request, String jsonString) {
-		QualityReport qualityReport;
+		Map<String, Object> result;
 		try {
-			qualityReport = qualityReportService.update(jsonString);
-			return Response.status(Status.ACCEPTED).entity(qualityReport).build();
-		} catch (IOException e) {
+			result = qualityReportService.update(request, jsonString);
+			return Response.status(Status.ACCEPTED).entity(result).build();
+		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
 			e.printStackTrace();

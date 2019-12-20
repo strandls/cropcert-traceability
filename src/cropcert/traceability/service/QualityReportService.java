@@ -3,16 +3,20 @@ package cropcert.traceability.service;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
+import cropcert.traceability.ActionStatus;
 import cropcert.traceability.Constants;
 import cropcert.traceability.dao.QualityReportDao;
 import cropcert.traceability.model.Activity;
@@ -37,16 +41,28 @@ public class QualityReportService extends AbstractService<QualityReport> {
 		super(dao);
 	}
 
-	public QualityReport save(HttpServletRequest request, String jsonString)
+	public Map<String, Object> save(HttpServletRequest request, String jsonString)
 			throws JsonParseException, JsonMappingException, IOException, JSONException, ValidationException {
+		
+		ActionStatus greenStatus;
+		JSONObject jsonObject = new JSONObject(jsonString);
+		if (jsonObject.has(Constants.FINALIZE_GREEN_STATUS)
+				&& jsonObject.getBoolean(Constants.FINALIZE_GREEN_STATUS))
+			greenStatus = ActionStatus.DONE;
+		else
+			greenStatus = ActionStatus.EDIT;
+		jsonObject.remove(Constants.FINALIZE_GREEN_STATUS);
+		
 		QualityReport qualityReport = objectMappper.readValue(jsonString, QualityReport.class);
 		qualityReport.setIsDeleted(false);
 
 		validationCheck(qualityReport);
 
-		Long lotId = qualityReport.getLotId();
 		qualityReport = save(qualityReport);
+		
+		Long lotId = qualityReport.getLotId();
 		Lot lot = lotService.findById(lotId);
+		lot.setGreenAnalysisStatus(greenStatus);
 		lot.setGreenAnalysisId(qualityReport.getId());
 		lotService.update(lot);
 
@@ -58,16 +74,49 @@ public class QualityReportService extends AbstractService<QualityReport> {
 		Activity activity = new Activity(qualityReport.getClass().getSimpleName(), qualityReport.getId(), userId,
 				timestamp, Constants.GREEN_ANALYSIS, qualityReport.getLotId() + "");
 		activity = activityService.save(activity);
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("lot", lot);
+		result.put("qualityReport", qualityReport);
 
-		return qualityReport;
+		return result;
 	}
 
-	public QualityReport update(String jsonString)
-			throws JsonParseException, JsonMappingException, IOException, ValidationException {
+	public Map<String, Object> update(HttpServletRequest request, String jsonString)
+			throws JsonParseException, JsonMappingException, IOException, ValidationException, JSONException {
+		ActionStatus greenStatus;
+		JSONObject jsonObject = new JSONObject(jsonString);
+		if (jsonObject.has(Constants.FINALIZE_GREEN_STATUS)
+				&& jsonObject.getBoolean(Constants.FINALIZE_GREEN_STATUS))
+			greenStatus = ActionStatus.DONE;
+		else
+			greenStatus = ActionStatus.EDIT;
+		jsonObject.remove(Constants.FINALIZE_GREEN_STATUS);
+		
 		QualityReport qualityReport = objectMappper.readValue(jsonString, QualityReport.class);
 		validationCheck(qualityReport);
 		qualityReport = update(qualityReport);
-		return qualityReport;
+		
+		Long lotId = qualityReport.getLotId();
+		Lot lot = lotService.findById(lotId);
+		lot.setGreenAnalysisStatus(greenStatus);
+		lot.setGreenAnalysisId(qualityReport.getId());
+		lotService.update(lot);
+		
+		/**
+		 * save the activity here.
+		 */
+		String userId = UserUtil.getUserDetails(request).getId();
+		Timestamp timestamp = new Timestamp(new Date().getTime());
+		Activity activity = new Activity(qualityReport.getClass().getSimpleName(), qualityReport.getId(), userId,
+				timestamp, Constants.GREEN_ANALYSIS, qualityReport.getLotId() + "");
+		activity = activityService.save(activity);
+		
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("lot", lot);
+		result.put("qualityReport", qualityReport);
+
+		return result;
 	}
 
 	private void validationCheck(QualityReport qualityReport) throws ValidationException {
