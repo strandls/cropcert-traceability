@@ -56,7 +56,7 @@ public class FactoryReportService extends AbstractService<FactoryReport> {
 		factoryReport.setIsDeleted(false);
 
 		Long lotId = factoryReport.getLotId();
-		factoryReport = saveOrUpdate(factoryReport);
+		factoryReport = save(factoryReport);
 		
 		Lot lot = lotService.findById(lotId);
 		lot.setFactoryStatus(factoryStatus);
@@ -78,5 +78,11 @@ public class FactoryReportService extends AbstractService<FactoryReport> {
 		result.put("lot", lot);
 		result.put("factoryReport", factoryReport);
 		return result;
+	}
+	
+	public FactoryReport update(String jsonString) throws JsonParseException, JsonMappingException, IOException, ValidationException {
+		FactoryReport factoryReport = objectMappper.readValue(jsonString, FactoryReport.class);
+		factoryReport = update(factoryReport);
+		return factoryReport;
 	}
 }

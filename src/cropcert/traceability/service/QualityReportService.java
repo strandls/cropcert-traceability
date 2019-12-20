@@ -28,7 +28,7 @@ public class QualityReportService extends AbstractService<QualityReport> {
 
 	@Inject
 	private LotService lotService;
-	
+
 	@Inject
 	private ActivityService activityService;
 
@@ -45,20 +45,28 @@ public class QualityReportService extends AbstractService<QualityReport> {
 		validationCheck(qualityReport);
 
 		Long lotId = qualityReport.getLotId();
-		qualityReport = saveOrUpdate(qualityReport);
+		qualityReport = save(qualityReport);
 		Lot lot = lotService.findById(lotId);
 		lot.setGreenAnalysisId(qualityReport.getId());
 		lotService.update(lot);
-		
-		 /**
-         * save the activity here.
-         */
-        String userId = UserUtil.getUserDetails(request).getId();
-        Timestamp timestamp = new Timestamp(new Date().getTime());
-        Activity activity = new Activity(qualityReport.getClass().getSimpleName(), qualityReport.getId(), userId,
-                timestamp, Constants.GREEN_ANALYSIS, qualityReport.getLotId()+"");
-        activity = activityService.save(activity);
 
+		/**
+		 * save the activity here.
+		 */
+		String userId = UserUtil.getUserDetails(request).getId();
+		Timestamp timestamp = new Timestamp(new Date().getTime());
+		Activity activity = new Activity(qualityReport.getClass().getSimpleName(), qualityReport.getId(), userId,
+				timestamp, Constants.GREEN_ANALYSIS, qualityReport.getLotId() + "");
+		activity = activityService.save(activity);
+
+		return qualityReport;
+	}
+
+	public QualityReport update(String jsonString)
+			throws JsonParseException, JsonMappingException, IOException, ValidationException {
+		QualityReport qualityReport = objectMappper.readValue(jsonString, QualityReport.class);
+		validationCheck(qualityReport);
+		qualityReport = update(qualityReport);
 		return qualityReport;
 	}
 
