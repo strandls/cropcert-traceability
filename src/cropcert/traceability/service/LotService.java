@@ -415,12 +415,17 @@ public class LotService extends AbstractService<Lot> {
 	public boolean checkForDuplicate(String jsonString) throws JSONException {
 		JSONObject jsonObject = new JSONObject(jsonString);
 		String grnNumber = jsonObject.get(Constants.GRN_NUMBER).toString();
+		Lot lot = null;
 		try {
-			findByPropertyWithCondtion("grnNumber", grnNumber, "=");
+			lot = findByPropertyWithCondtion(Constants.GRN_NUMBER, grnNumber, "=");
 		} catch (NoResultException e) {
 			return false;
 		}
-		return true;
+		if(jsonObject.has("id") && !jsonObject.isNull("id")) {
+			Long id = jsonObject.getLong("id");
+			return ! id.equals(lot.getId());
+		}
+		throw new ValidationException("Id not found");
 	}
 
 	public List<Lot> getByCoCodes(String coCodes, Integer limit, Integer offset) {
