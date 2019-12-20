@@ -53,7 +53,7 @@ public class QualityReportService extends AbstractService<QualityReport> {
 			greenStatus = ActionStatus.EDIT;
 		jsonObject.remove(Constants.FINALIZE_GREEN_STATUS);
 		
-		QualityReport qualityReport = objectMappper.readValue(jsonString, QualityReport.class);
+		QualityReport qualityReport = objectMappper.readValue(jsonObject.toString(), QualityReport.class);
 		qualityReport.setIsDeleted(false);
 
 		validationCheck(qualityReport);
@@ -93,7 +93,7 @@ public class QualityReportService extends AbstractService<QualityReport> {
 			greenStatus = ActionStatus.EDIT;
 		jsonObject.remove(Constants.FINALIZE_GREEN_STATUS);
 		
-		QualityReport qualityReport = objectMappper.readValue(jsonString, QualityReport.class);
+		QualityReport qualityReport = objectMappper.readValue(jsonObject.toString(), QualityReport.class);
 		validationCheck(qualityReport);
 		qualityReport = update(qualityReport);
 		
