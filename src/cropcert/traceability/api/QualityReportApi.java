@@ -9,7 +9,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -93,30 +92,6 @@ public class QualityReportApi {
 			qualityReport = qualityReportService.save(request, jsonString);
 			return Response.status(Status.CREATED).entity(qualityReport).build();
 		} catch (IOException | JSONException e) {
-			e.printStackTrace();
-		} catch (ValidationException e) {
-			e.printStackTrace();
-			return Response.status(Status.BAD_REQUEST)
-					.entity(new HashMap<String, String>().put("error", "Defects should not be more than grading"))
-					.build();
-		}
-		return Response.status(Status.NO_CONTENT)
-				.entity(new HashMap<String, String>().put("error", "Quality report save failed")).build();
-	}
-	
-	@PUT
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Update the report", response = QualityReport.class)
-	@ApiImplicitParams({
-			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
-	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
-	public Response update(@Context HttpServletRequest request, String jsonString) {
-		QualityReport qualityReport;
-		try {
-			qualityReport = qualityReportService.update(jsonString);
-			return Response.status(Status.ACCEPTED).entity(qualityReport).build();
-		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (ValidationException e) {
 			e.printStackTrace();

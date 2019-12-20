@@ -24,6 +24,15 @@ public abstract class  AbstractService<T> {
 			throw re;
 		}
 	}
+	
+	public T saveOrUpdate(T entity) {
+		try {
+			this.dao.saveOrUpdate(entity);
+			return entity;
+		} catch (RuntimeException re) {
+			throw re;
+		}
+	}
 
 	public T update(T entity)  {
 		try {

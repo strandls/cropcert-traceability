@@ -41,6 +41,23 @@ public abstract class AbstractDao<T, K extends Serializable> {
 		}
 		return entity;
 	}
+	
+	public T saveOrUpdate(T entity) {
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			session.saveOrUpdate(entity);
+			tx.commit();			
+		} catch (Exception e) {
+			if(tx!=null)
+				tx.rollback();
+			throw e;
+		} finally {
+			session.close();
+		}
+		return entity;
+	}
 
 	public T update(T entity) {
 		Session session = sessionFactory.openSession();
