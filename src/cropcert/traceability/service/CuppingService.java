@@ -49,23 +49,22 @@ public class CuppingService extends AbstractService<Cupping> {
 		jsonObject.remove("lotId");
 
 		Lot lot = lotService.findById(lotId);
-		
+
 		ActionStatus status = ActionStatus.EDIT;
 		if (jsonObject.has(Constants.FINALIZE_CUPPING_STATUS) && !jsonObject.isNull(Constants.FINALIZE_CUPPING_STATUS)
 				&& jsonObject.getBoolean(Constants.FINALIZE_CUPPING_STATUS)) {
 			status = ActionStatus.DONE;
 		}
-                
-                jsonObject.remove(Constants.FINALIZE_CUPPING_STATUS);
+
+		jsonObject.remove(Constants.FINALIZE_CUPPING_STATUS);
 		Cupping cupping = objectMappper.readValue(jsonObject.toString(), Cupping.class);
 		cupping.setLot(lot);
 		cupping.setIsDeleted(false);
 		cupping.setStatus(status);
-		
-		cupping = save(cupping);
-                lot.getCuppings().add(cupping);
-		lotService.update(lot);
 
+		cupping = save(cupping);
+		lot.getCuppings().add(cupping);
+		lotService.update(lot);
 
 		/**
 		 * save the activity here.
@@ -98,19 +97,19 @@ public class CuppingService extends AbstractService<Cupping> {
 			status = ActionStatus.DONE;
 		}
 
-                jsonObject.remove(Constants.FINALIZE_CUPPING_STATUS);		
+		jsonObject.remove(Constants.FINALIZE_CUPPING_STATUS);
 		Cupping cupping = objectMappper.readValue(jsonObject.toString(), Cupping.class);
-                if(ActionStatus.DONE.equals(cupping.getStatus()))
-                    throw new ValidationException("Can't modify already completed cupping");
+		if (ActionStatus.DONE.equals(cupping.getStatus()))
+			throw new ValidationException("Can't modify already completed cupping");
 		cupping.setLot(lot);
 		cupping.setIsDeleted(false);
 		cupping.setStatus(status);
-		
+
 		cupping = update(cupping);
-                lot.getCuppings().remove(cupping);
-                lot.getCuppings().add(cupping);
+		lot.getCuppings().remove(cupping);
+		lot.getCuppings().add(cupping);
 		lotService.update(lot);
-		
+
 		/**
 		 * save the activity here.
 		 */
