@@ -158,7 +158,7 @@ public class BatchService extends AbstractService<Batch> {
 			}
 		}
 		if (fermentationEndTime != null) {
-			if (startTime == null || startTime.compareTo(fermentationEndTime) > 0) {
+			if (startTime != null && startTime.compareTo(fermentationEndTime) > 0) {
 				throw new ValidationException("Fermentation time can't be before start time");
 			}
 			if (dryingEndTime != null && fermentationEndTime.compareTo(dryingEndTime) > 0) {
@@ -166,10 +166,10 @@ public class BatchService extends AbstractService<Batch> {
 			}
 		}
 		if (dryingEndTime != null) {
-			if (startTime == null || startTime.compareTo(dryingEndTime) > 0) {
+			if (startTime != null && startTime.compareTo(dryingEndTime) > 0) {
 				throw new ValidationException("Drying time can't be before start time");
 			}
-			if (fermentationEndTime == null || fermentationEndTime.compareTo(dryingEndTime) > 0) {
+			if (fermentationEndTime != null && fermentationEndTime.compareTo(dryingEndTime) > 0) {
 				throw new ValidationException("Drying time can't be before fermentation end time");
 			}
 		}
@@ -177,11 +177,8 @@ public class BatchService extends AbstractService<Batch> {
 		if (jsonObject.has(Constants.PERCHMENT_QUANTITY)) {
 			if (jsonObject.isNull(Constants.PERCHMENT_QUANTITY))
 				perchmentQuantity = 0f;
-			else {
-				if (dryingEndTime == null || startTime == null || fermentationEndTime == null)
-					throw new ValidationException("Update the time first");
+			else
 				perchmentQuantity = (float) jsonObject.getDouble(Constants.PERCHMENT_QUANTITY);
-			}
 		}
 
 		batch.setStartTime(startTime);
@@ -191,10 +188,8 @@ public class BatchService extends AbstractService<Batch> {
 
 		if (jsonObject.has(Constants.FINALIZE_BATCH) && jsonObject.getBoolean(Constants.FINALIZE_BATCH) == true) {
 
-			if (batch.getStartTime() == null || batch.getFermentationEndTime() == null
-					|| batch.getDryingEndTime() == null
-					|| (batch.getPerchmentQuantity() == null || batch.getPerchmentQuantity() <= 0)) {
-				throw new ValidationException("Update the batch first");
+			if (batch.getPerchmentQuantity() == null || batch.getPerchmentQuantity() == 0) {
+				throw new ValidationException("Update the perchment quantity");
 			}
 			batch.setIsReadyForLot(true);
 			batch.setBatchStatus(ActionStatus.DONE);

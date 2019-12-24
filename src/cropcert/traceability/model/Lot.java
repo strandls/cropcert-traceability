@@ -2,17 +2,25 @@ package cropcert.traceability.model;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import cropcert.traceability.ActionStatus;
 import cropcert.traceability.LotStatus;
@@ -22,6 +30,7 @@ import io.swagger.annotations.ApiModel;
 @Table(name = "lot")
 @XmlRootElement
 @JsonIgnoreProperties
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @ApiModel("Lot")
 public class Lot implements Serializable {
 
@@ -105,12 +114,17 @@ public class Lot implements Serializable {
 	@Column(name = "green_analysis_status")
 	private ActionStatus greenAnalysisStatus = ActionStatus.NOTAPPLICABLE;
 	
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "lot", 
+			fetch = FetchType.EAGER, targetEntity = Cupping.class)
+	@OrderBy("id")
+	private Set<Cupping> cuppings = new LinkedHashSet<Cupping>();
+	
 	@Column(name = "lot_status")
 	private LotStatus lotStatus;
 	
 	@Column(name = "is_deleted")
 	private Boolean isDeleted;
-
+		
 	public Long getId() {
 		return id;
 	}
@@ -297,6 +311,13 @@ public class Lot implements Serializable {
 	}
 	public void setGreenAnalysisStatus(ActionStatus greenAnalysisStatus) {
 		this.greenAnalysisStatus = greenAnalysisStatus;
+	}
+	
+	public Set<Cupping> getCuppings() {
+		return cuppings;
+	}
+	public void setCuppings(Set<Cupping> cuppings) {
+		this.cuppings = cuppings;
 	}
 
 	public LotStatus getLotStatus() {

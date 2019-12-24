@@ -4,24 +4,29 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Timestamp;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import io.swagger.annotations.ApiModel;
-import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "report_cupping", uniqueConstraints = @UniqueConstraint(columnNames = {"lot_id", "cupper"}))
+@Table(name = "report_cupping")//, uniqueConstraints = @UniqueConstraint(columnNames = {"lot_id", "cupper"}))
 @XmlRootElement
 @JsonIgnoreProperties
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @ApiModel("Cupping")
 public class Cupping implements Serializable {
 
@@ -36,8 +41,11 @@ public class Cupping implements Serializable {
 	@Column(name = "id", updatable = false, nullable = false)
 	private Long id;
 	
-	@Column(name = "lot_id")
-    private Long lotId;
+	/*
+	 * @Column(name = "lot_id") private Long lotId;
+	 */
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false, targetEntity = Lot.class)
+	private Lot lot;
 	
 	@Column(name = "lot_name")
     private String lotName;
@@ -110,12 +118,12 @@ public class Cupping implements Serializable {
 		this.id = id;
 	}
 	
-	public Long getLotId() {
-		return lotId;
+	public Lot getLot() {
+		return lot;
 	}
 	
-	public void setLotId(Long lotId) {
-		this.lotId = lotId;
+	public void setLot(Lot lot) {
+		this.lot = lot;
 	}
 	
 	public String getLotName() {

@@ -7,6 +7,7 @@ import java.util.Date;
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -26,6 +27,9 @@ public class CuppingService extends AbstractService<Cupping> {
 	
 	@Inject
 	private ActivityService activityService;
+	
+	@Inject
+	private LotService lotService;
 
 	@Inject
 	public CuppingService(CuppingDao dao) {
@@ -34,8 +38,16 @@ public class CuppingService extends AbstractService<Cupping> {
 
 	public Cupping save(HttpServletRequest request, String jsonString)
 			throws JsonParseException, JsonMappingException, IOException, JSONException {
-		Cupping cupping = objectMappper.readValue(jsonString, Cupping.class);
+		
+		JSONObject jsonObject = new JSONObject(jsonString);
+		Long lotId = jsonObject.getLong("lotId");
+		jsonObject.remove("lotId");
+		
+		Cupping cupping = objectMappper.readValue(jsonObject.toString(), Cupping.class);
+		cupping.setLot(lotService.findById(lotId));
 		cupping.setIsDeleted(false);
+		
+		cupping = save(cupping);
 		
 		 /**
          * save the activity here.
@@ -46,7 +58,7 @@ public class CuppingService extends AbstractService<Cupping> {
                 timestamp, Constants.CUPPING, cupping.getId().toString());
         activity = activityService.save(activity);
         
-		return save(cupping);
+		return cupping;
 	}
 
     public Cupping update(String jsonString) throws JsonParseException, JsonMappingException, IOException {
