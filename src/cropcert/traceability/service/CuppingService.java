@@ -23,6 +23,7 @@ import cropcert.traceability.model.Activity;
 import cropcert.traceability.model.Cupping;
 import cropcert.traceability.model.Lot;
 import cropcert.traceability.util.UserUtil;
+import cropcert.traceability.util.ValidationException;
 
 public class CuppingService extends AbstractService<Cupping> {
 
@@ -53,15 +54,16 @@ public class CuppingService extends AbstractService<Cupping> {
 		if (jsonObject.has(Constants.FINALIZE_CUPPING_STATUS) && !jsonObject.isNull(Constants.FINALIZE_CUPPING_STATUS)
 				&& jsonObject.getBoolean(Constants.FINALIZE_CUPPING_STATUS)) {
 			status = ActionStatus.DONE;
-			jsonObject.remove(Constants.FINALIZE_CUPPING_STATUS);
 		}
-
+                
+                jsonObject.remove(Constants.FINALIZE_CUPPING_STATUS);
 		Cupping cupping = objectMappper.readValue(jsonObject.toString(), Cupping.class);
 		cupping.setLot(lot);
 		cupping.setIsDeleted(false);
 		cupping.setStatus(status);
 		
 		cupping = save(cupping);
+                lot.getCuppings().add(cupping);
 		lotService.update(lot);
 
 
@@ -82,7 +84,7 @@ public class CuppingService extends AbstractService<Cupping> {
 	}
 
 	public Map<String, Object> update(HttpServletRequest request, String jsonString)
-			throws JsonParseException, JsonMappingException, IOException, JSONException {
+			throws JsonParseException, JsonMappingException, IOException, JSONException, ValidationException {
 
 		JSONObject jsonObject = new JSONObject(jsonString);
 		Long lotId = jsonObject.getLong("lotId");
@@ -94,15 +96,19 @@ public class CuppingService extends AbstractService<Cupping> {
 		if (jsonObject.has(Constants.FINALIZE_CUPPING_STATUS) && !jsonObject.isNull(Constants.FINALIZE_CUPPING_STATUS)
 				&& jsonObject.getBoolean(Constants.FINALIZE_CUPPING_STATUS)) {
 			status = ActionStatus.DONE;
-			jsonObject.remove(Constants.FINALIZE_CUPPING_STATUS);
 		}
-		
+
+                jsonObject.remove(Constants.FINALIZE_CUPPING_STATUS);		
 		Cupping cupping = objectMappper.readValue(jsonObject.toString(), Cupping.class);
+                if(ActionStatus.DONE.equals(cupping.getStatus()))
+                    throw new ValidationException("Can't modify already completed cupping");
 		cupping.setLot(lot);
 		cupping.setIsDeleted(false);
 		cupping.setStatus(status);
 		
 		cupping = update(cupping);
+                lot.getCuppings().remove(cupping);
+                lot.getCuppings().add(cupping);
 		lotService.update(lot);
 		
 		/**

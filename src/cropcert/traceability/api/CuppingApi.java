@@ -28,6 +28,7 @@ import cropcert.traceability.filter.Permissions;
 import cropcert.traceability.filter.TokenAndUserAuthenticated;
 import cropcert.traceability.model.Cupping;
 import cropcert.traceability.service.CuppingService;
+import cropcert.traceability.util.ValidationException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -108,7 +109,7 @@ public class CuppingApi {
 		try {
 			Map<String, Object> result = cuppingService.update(request, jsonString);
 			return Response.status(Status.ACCEPTED).entity(result).build();
-		} catch (IOException e) {
+		} catch (IOException | ValidationException e) {
 			e.printStackTrace();
 		} catch (JSONException e) {
 			e.printStackTrace();
