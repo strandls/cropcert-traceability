@@ -392,6 +392,10 @@ public class LotService extends AbstractService<Lot> {
 				lot.setGrnStatus(ActionStatus.DONE);
 				lot.setFactoryStatus(ActionStatus.ADD);
 				lot.setGreenAnalysisStatus(ActionStatus.ADD);
+				for(Cupping cupping : lot.getCuppings()) {
+					cupping.setStatus(ActionStatus.ADD);
+				}
+				
 				lot.setLotStatus(LotStatus.AT_UNION);
 
 				Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,

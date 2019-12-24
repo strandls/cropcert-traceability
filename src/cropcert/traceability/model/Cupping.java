@@ -17,9 +17,11 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import cropcert.traceability.ActionStatus;
 import io.swagger.annotations.ApiModel;
 
 @Entity
@@ -44,6 +46,7 @@ public class Cupping implements Serializable {
 	/*
 	 * @Column(name = "lot_id") private Long lotId;
 	 */
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false, targetEntity = Lot.class)
 	private Lot lot;
 	
@@ -106,6 +109,9 @@ public class Cupping implements Serializable {
 	
 	@Column(name = "notes")
 	private String notes;
+	
+	@Column(name = "status")
+	private ActionStatus status = ActionStatus.NOTAPPLICABLE;
 	
 	@Column(name = "is_deleted")
 	private Boolean isDeleted;
@@ -284,6 +290,13 @@ public class Cupping implements Serializable {
 
 	public void setNotes(String notes) {
 		this.notes = notes;
+	}
+	
+	public ActionStatus getStatus() {
+		return status;
+	}
+	public void setStatus(ActionStatus status) {
+		this.status = status;
 	}
 
 	public Boolean getIsDeleted() {

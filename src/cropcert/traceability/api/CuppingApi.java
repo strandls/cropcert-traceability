@@ -3,12 +3,14 @@ package cropcert.traceability.api;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -30,7 +32,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import javax.ws.rs.PUT;
 
 @Path("cupping")
 @Api("Cupping")
@@ -81,15 +82,14 @@ public class CuppingApi {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Save the Cupping", response = Cupping.class)
+	@ApiOperation(value = "Save the Cupping", response = Map.class)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
 	public Response save(@Context HttpServletRequest request, String jsonString) {
-		Cupping cupping;
 		try {
-			cupping = cuppingService.save(request, jsonString);
-			return Response.status(Status.CREATED).entity(cupping).build();
+			Map<String, Object> result = cuppingService.save(request, jsonString);
+			return Response.status(Status.CREATED).entity(result).build();
 		} catch (IOException | JSONException e) {
 			e.printStackTrace();
 		}
@@ -100,19 +100,20 @@ public class CuppingApi {
     @PUT
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@ApiOperation(value = "Update the report", response = Cupping.class)
+	@ApiOperation(value = "Update the report", response = Map.class)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
 	public Response update(@Context HttpServletRequest request, String jsonString) {
-		Cupping cuppingReport;
 		try {
-			cuppingReport = cuppingService.update(jsonString);
-			return Response.status(Status.ACCEPTED).entity(cuppingReport).build();
+			Map<String, Object> result = cuppingService.update(request, jsonString);
+			return Response.status(Status.ACCEPTED).entity(result).build();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
 		}
-		return Response.status(Status.NO_CONTENT)
+		return Response.status(Status.BAD_REQUEST)
 				.entity(new HashMap<String, String>().put("error", "Cupping report save failed")).build();
 	}
 }
