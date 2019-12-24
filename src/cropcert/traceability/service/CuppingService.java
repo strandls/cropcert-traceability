@@ -62,6 +62,7 @@ public class CuppingService extends AbstractService<Cupping> {
 		cupping.setStatus(status);
 		
 		cupping = save(cupping);
+		lotService.update(lot);
 
 
 		/**
@@ -102,6 +103,7 @@ public class CuppingService extends AbstractService<Cupping> {
 		cupping.setStatus(status);
 		
 		cupping = update(cupping);
+		lotService.update(lot);
 		
 		/**
 		 * save the activity here.
