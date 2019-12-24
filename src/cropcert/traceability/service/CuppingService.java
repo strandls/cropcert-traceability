@@ -90,8 +90,6 @@ public class CuppingService extends AbstractService<Cupping> {
 		Long lotId = jsonObject.getLong("lotId");
 		jsonObject.remove("lotId");
 
-		Lot lot = lotService.findById(lotId);
-
 		ActionStatus status = ActionStatus.EDIT;
 		if (jsonObject.has(Constants.FINALIZE_CUPPING_STATUS) && !jsonObject.isNull(Constants.FINALIZE_CUPPING_STATUS)
 				&& jsonObject.getBoolean(Constants.FINALIZE_CUPPING_STATUS)) {
@@ -102,13 +100,13 @@ public class CuppingService extends AbstractService<Cupping> {
 		Cupping cupping = objectMappper.readValue(jsonObject.toString(), Cupping.class);
                 if(ActionStatus.DONE.equals(cupping.getStatus()))
                     throw new ValidationException("Can't modify already completed cupping");
-		cupping.setLot(lot);
-		cupping.setIsDeleted(false);
+                Lot lot = lotService.findById(lotId);
 		cupping.setStatus(status);
-		
+		cupping.setLot(lot);
 		cupping = update(cupping);
-                lot.getCuppings().remove(cupping);
-                lot.getCuppings().add(cupping);
+                
+                //lot.getCuppings().remove(cupping);
+                //lot.getCuppings().add(cupping);
 		lotService.update(lot);
 		
 		/**

@@ -47,7 +47,7 @@ public class Cupping implements Serializable {
 	 * @Column(name = "lot_id") private Long lotId;
 	 */
 	@JsonIgnore
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, optional = false, targetEntity = Lot.class)
+	@ManyToOne(fetch = FetchType.EAGER, targetEntity = Lot.class)
 	private Lot lot;
 	
 	@Column(name = "lot_name")

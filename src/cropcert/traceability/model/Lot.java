@@ -114,7 +114,7 @@ public class Lot implements Serializable {
 	@Column(name = "green_analysis_status")
 	private ActionStatus greenAnalysisStatus = ActionStatus.NOTAPPLICABLE;
 	
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "lot", 
+	@OneToMany(mappedBy = "lot", 
 			fetch = FetchType.EAGER, targetEntity = Cupping.class)
 	@OrderBy("id")
 	private Set<Cupping> cuppings = new LinkedHashSet<Cupping>();
@@ -124,6 +124,12 @@ public class Lot implements Serializable {
 	
 	@Column(name = "is_deleted")
 	private Boolean isDeleted;
+
+        public Lot() {
+        }
+    public Lot(Long lotId) {
+        this.id = lotId;
+    }
 		
 	public Long getId() {
 		return id;
