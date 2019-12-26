@@ -78,7 +78,8 @@ public class Batch implements Serializable {
 	@Column(name = "lot_id")
 	private Long lotId;
 	
-	private ActionStatus batchStatus;
+	@Column(name = "batch_status")
+	private ActionStatus batchStatus = ActionStatus.NOTAPPLICABLE;
 
 	@Column(name = "is_deleted")
 	private Boolean isDeleted;
@@ -196,22 +197,6 @@ public class Batch implements Serializable {
 	}
 	
 	public ActionStatus getBatchStatus() {
-		if(batchStatus == null) {
-			batchStatus = ActionStatus.NOTAPPLICABLE;
-		}
-		if(BatchType.DRY.equals(type)) {
-			batchStatus = ActionStatus.DONE;
-		} else {
-			if(startTime == null&&
-					fermentationEndTime == null &&
-					dryingEndTime == null &&
-					perchmentQuantity == null)
-				batchStatus = ActionStatus.ADD;
-			else if(batchStatus != ActionStatus.DONE)
-				batchStatus = ActionStatus.EDIT;
-			else 
-				batchStatus = ActionStatus.DONE;
-		}
 		return batchStatus;
 	}
 	

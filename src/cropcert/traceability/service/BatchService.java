@@ -60,10 +60,14 @@ public class BatchService extends AbstractService<Batch> {
 			createdOn = new Timestamp(new Date().getTime());
 			batch.setCreatedOn(createdOn);
 		}
-		if (BatchType.DRY.equals(batch.getType()))
+		if (BatchType.DRY.equals(batch.getType())) {
 			batch.setIsReadyForLot(true);
-		else
+			batch.setBatchStatus(ActionStatus.NOTAPPLICABLE);
+		}
+		else {
 			batch.setIsReadyForLot(false);
+			batch.setBatchStatus(ActionStatus.ADD);
+		}
 		batch = save(batch);
 
 		String userId = UserUtil.getUserDetails(request).getId();
@@ -194,6 +198,12 @@ public class BatchService extends AbstractService<Batch> {
 			batch.setIsReadyForLot(true);
 			batch.setBatchStatus(ActionStatus.DONE);
 		}
+
+		if (startTime == null && fermentationEndTime == null && dryingEndTime == null
+				&& (perchmentQuantity == null || perchmentQuantity == 0f))
+			batch.setBatchStatus(ActionStatus.ADD);
+		else if (!ActionStatus.DONE.equals(batch.getBatchStatus()))
+			batch.setBatchStatus(ActionStatus.EDIT);
 
 		return update(batch);
 	}
