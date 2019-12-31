@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -304,15 +303,6 @@ public class Lot implements Serializable {
 	}
 
 	public ActionStatus getGreenAnalysisStatus() {
-		if(factoryStatus != ActionStatus.DONE || greenAnalysisStatus == null) 
-			greenAnalysisStatus = ActionStatus.NOTAPPLICABLE;
-		else if(greenAnalysisId == null)
-			greenAnalysisStatus = ActionStatus.ADD;
-		else if(greenAnalysisStatus != ActionStatus.DONE)
-			greenAnalysisStatus = ActionStatus.EDIT;
-		else
-			greenAnalysisStatus = ActionStatus.DONE;
-		
 		return greenAnalysisStatus;
 	}
 	public void setGreenAnalysisStatus(ActionStatus greenAnalysisStatus) {
