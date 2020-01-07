@@ -208,13 +208,13 @@ public class BatchService extends AbstractService<Batch> {
 		return update(batch);
 	}
 
-	public List<Batch> getByPropertyfromArray(String property, String objectList, int limit, int offset)
+	public List getByPropertyfromArray(String property, String objectList, int limit, int offset)
 			throws NumberFormatException {
 		Object[] values = objectList.split(",");
 		Long[] longValues = new Long[values.length];
 		for (int i = 0; i < values.length; i++) {
 			longValues[i] = Long.parseLong(values[i].toString());
 		}
-		return dao.getByPropertyfromArray(property, longValues, limit, offset, "createdOn desc");
+		return ((BatchDao) dao).getByPropertyfromArray(property, longValues, limit, offset, "createdOn desc");
 	}
 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
+import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -32,6 +33,25 @@ public class BatchDao extends AbstractDao<Batch, Long>{
 			session.close();
 		}
 		return entity;
+	}
+	
+	public List getByPropertyfromArray(String property, Object[] values, int limit, int offset, String orderBy) {
+		if(orderBy == null || "".equals(orderBy))
+			orderBy = "id";
+		String queryStr = "from Batch B left outer join Lot L "
+				+ "on B.lotId = L.id and B.isDeleted != true";
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery(queryStr);
+		
+		try {
+			if(limit>0 && offset >= 0)
+				query = query.setFirstResult(offset).setMaxResults(limit);
+			List resultList = query.getResultList();
+			session.close();
+			return resultList;
+		} catch (NoResultException e) {
+			throw e;
+		}
 	}
 	
 	public List<Batch> getByPropertyfromArray(String property, Object[] values, Boolean isLotDone, Boolean isReadyForLot, int limit, int offset) {

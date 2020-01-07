@@ -81,7 +81,7 @@ public class BatchApi {
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 
-		List<Batch> batches = batchService.getByPropertyfromArray("ccCode", ccCodes, limit, offset);
+		List batches = batchService.getByPropertyfromArray("ccCode", ccCodes, limit, offset);
 		return Response.ok().entity(batches).build();
 	}
 
