@@ -39,9 +39,11 @@ public class BatchDao extends AbstractDao<Batch, Long>{
 		if(orderBy == null || "".equals(orderBy))
 			orderBy = "id";
 		String queryStr = "from Batch B left outer join Lot L "
-				+ "on B.lotId = L.id and B.isDeleted != true";
+				+ "on B.lotId = L.id where B.isDeleted != true "
+				+ "and B."+property+" in (:values)";
 		Session session = sessionFactory.openSession();
 		Query query = session.createQuery(queryStr);
+		query.setParameterList("values", values);
 		
 		try {
 			if(limit>0 && offset >= 0)
