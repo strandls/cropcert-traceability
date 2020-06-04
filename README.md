@@ -2,7 +2,7 @@
 
 Traceability API for Cropcert
 
-[![Build Status](https://travis-ci.com/strandls/cropcert-traceability.svg?branch=master)](https://travis-ci.com/strandls/cropcert-traceability)
+![Build + SDK](https://github.com/strandls/cropcert-traceability/workflows/Build%20+%20SDK/badge.svg?branch=master)
 
 ## 🚀 Quick start
 
