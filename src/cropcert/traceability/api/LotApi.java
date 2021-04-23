@@ -175,7 +175,7 @@ public class LotApi {
 	@ApiOperation(response = Lot.class, value = "Update the factory action")
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
-	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY })
+	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY, Permissions.CO_PERSON })
 	public Response updateMillingAction(@Context HttpServletRequest request, String jsonString) {
 		Lot lot;
 		try {
