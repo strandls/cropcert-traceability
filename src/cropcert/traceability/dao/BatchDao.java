@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.NoResultException;
 
-import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -13,6 +12,7 @@ import org.hibernate.query.Query;
 import com.google.inject.Inject;
 
 import cropcert.traceability.model.Batch;
+import cropcert.traceability.model.Lot;
 
 public class BatchDao extends AbstractDao<Batch, Long>{
 
@@ -40,7 +40,8 @@ public class BatchDao extends AbstractDao<Batch, Long>{
 			orderBy = "id";
 		String queryStr = "from Batch B left outer join Lot L "
 				+ "on B.lotId = L.id where B.isDeleted != true "
-				+ "and B."+property+" in (:values)";
+				+ "and B."+property+" in (:values)"
+				+ " order by B.createdOn";
 		Session session = sessionFactory.openSession();
 		Query query = session.createQuery(queryStr);
 		query.setParameterList("values", values);
@@ -48,11 +49,17 @@ public class BatchDao extends AbstractDao<Batch, Long>{
 		try {
 			if(limit>0 && offset >= 0)
 				query = query.setFirstResult(offset).setMaxResults(limit);
-			List resultList = query.getResultList();
+			List<Object[]> resultList = query.getResultList();
+			for(Object[] l : resultList) {
+				if(l[1] != null)
+					l[1] = ((Lot) l[1]).clone();
+			}
 			session.close();
 			return resultList;
 		} catch (NoResultException e) {
 			throw e;
+		} catch (CloneNotSupportedException e) {
+			throw new NoResultException("Not able to clone the Lot");
 		}
 	}
 	

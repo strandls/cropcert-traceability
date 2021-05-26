@@ -31,7 +31,7 @@ import io.swagger.annotations.ApiModel;
 @JsonIgnoreProperties
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @ApiModel("Lot")
-public class Lot implements Serializable {
+public class Lot implements Serializable, Cloneable {
 
 	/**
 	 * 
@@ -328,6 +328,11 @@ public class Lot implements Serializable {
 	}
 	public void setDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
+	}
+	
+	@Override
+	public Lot clone() throws CloneNotSupportedException {
+		return (Lot) super.clone();
 	}
 	
 }
