@@ -10,7 +10,6 @@ public class MillingActionData {
 	private Float mcArrivingFactory;
 	private Float mcLeavingFactory;
 	private Timestamp millingTime;
-	private Timestamp dispatchTime;
 	private Boolean finalizeMillingStatus;
 	private Long unionCode;
 
@@ -28,7 +27,6 @@ public class MillingActionData {
 		this.mcArrivingFactory = mcArrivingFactory;
 		this.mcLeavingFactory = mcLeavingFactory;
 		this.millingTime = millingTime;
-		this.dispatchTime = dispatchTime;
 		this.finalizeMillingStatus = finalizeMillingStatus;
 		this.unionCode = unionCode;
 	}
@@ -79,14 +77,6 @@ public class MillingActionData {
 
 	public void setMillingTime(Timestamp millingTime) {
 		this.millingTime = millingTime;
-	}
-
-	public Timestamp getDispatchTime() {
-		return dispatchTime;
-	}
-
-	public void setDispatchTime(Timestamp dispatchTime) {
-		this.dispatchTime = dispatchTime;
 	}
 
 	public Boolean getFinalizeMillingStatus() {

@@ -285,14 +285,6 @@ public class LotService extends AbstractService<Lot> {
 			activity = activityService.save(activity);
 		}
 
-		if (millingActionData.getDispatchTime() != null) {
-			lot.setLotStatus(LotStatus.IN_TRANSPORT);
-
-			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-					Constants.DISPATCH_TIME, millingActionData.getDispatchTime() + "");
-			activity = activityService.save(activity);
-		}
-
 		if (millingActionData.getFinalizeMillingStatus() != null && millingActionData.getFinalizeMillingStatus()) {
 			if (weightArrivingFactory == null || weightLeavingFactory == null || mcArrivingFactory == null
 					|| mcLeavingFactory == null || millingTime == null || unionCode == null) {
