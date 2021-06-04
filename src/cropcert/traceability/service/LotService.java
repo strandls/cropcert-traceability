@@ -293,7 +293,7 @@ public class LotService extends AbstractService<Lot> {
 
 			lot.setMillingStatus(ActionStatus.DONE);
 			lot.setGrnStatus(ActionStatus.ADD);
-			lot.setLotStatus(LotStatus.AT_UNION);
+			lot.setLotStatus(LotStatus.IN_TRANSPORT);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
 					Constants.FINALIZE_MILLING_STATUS, ActionStatus.DONE.toString());
@@ -361,7 +361,7 @@ public class LotService extends AbstractService<Lot> {
 				cupping.setStatus(ActionStatus.ADD);
 			}
 
-			lot.setLotStatus(LotStatus.IN_TRANSPORT);
+			lot.setLotStatus(LotStatus.AT_UNION);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
 					Constants.FINALIZE_GRN_STATUS, ActionStatus.DONE.toString());
