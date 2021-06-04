@@ -179,6 +179,11 @@
 			<artifactId>swagger-jersey-jaxrs</artifactId>
 			<version>${swagger.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>cropcert</groupId>
+			<artifactId>user-client</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
 
 	</dependencies>
 

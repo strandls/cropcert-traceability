@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.persistence.NoResultException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ValidationException;
+import javax.ws.rs.core.HttpHeaders;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,12 +27,18 @@ import cropcert.traceability.ActionStatus;
 import cropcert.traceability.Constants;
 import cropcert.traceability.LotStatus;
 import cropcert.traceability.dao.LotDao;
+import cropcert.traceability.filter.Permissions;
 import cropcert.traceability.model.Activity;
 import cropcert.traceability.model.Batch;
+import cropcert.traceability.model.CoopActionData;
 import cropcert.traceability.model.Cupping;
+import cropcert.traceability.model.GRNNumberData;
 import cropcert.traceability.model.Lot;
 import cropcert.traceability.model.LotCreation;
+import cropcert.traceability.model.MillingActionData;
 import cropcert.traceability.util.UserUtil;
+import cropcert.user.ApiException;
+import cropcert.user.api.UserApi;
 
 public class LotService extends AbstractService<Lot> {
 
@@ -49,6 +56,9 @@ public class LotService extends AbstractService<Lot> {
 
 	@Inject
 	private CuppingService cuppingService;
+
+	@Inject
+	private UserApi userApi;
 
 	@Inject
 	public LotService(LotDao dao) {
@@ -120,15 +130,14 @@ public class LotService extends AbstractService<Lot> {
 		return result;
 	}
 
-	public Lot updateCoopAction(String jsonString, HttpServletRequest request) throws JSONException {
-		JSONObject jsonObject = new JSONObject(jsonString);
+	public Lot updateCoopAction(CoopActionData coopActionData, HttpServletRequest request) throws JSONException {
 
-		Long id = jsonObject.getLong("id");
+		Long id = coopActionData.getId();
 		Lot lot = findById(id);
 
 		if (lot == null)
 			throw new ValidationException("Lot not found");
-		
+
 		if (ActionStatus.DONE.equals(lot.getCoopStatus()))
 			throw new ValidationException("Status is already done");
 
@@ -139,84 +148,64 @@ public class LotService extends AbstractService<Lot> {
 		Float mcLeavingCooperative = lot.getMcLeavingCooperative();
 		Timestamp timeToFactory = lot.getTimeToFactory();
 
-		if (jsonObject.has(Constants.WEIGHT_LEAVING_COOPERATIVE)) {
-			if (jsonObject.isNull(Constants.WEIGHT_LEAVING_COOPERATIVE))
-				weightLeavingCooperative = null;
-			else
-				weightLeavingCooperative = Float
-						.parseFloat(jsonObject.get(Constants.WEIGHT_LEAVING_COOPERATIVE).toString());
-
+		if (isDifferent(weightLeavingCooperative, coopActionData.getWeightLeavingCooperative())) {
+			weightLeavingCooperative = coopActionData.getWeightLeavingCooperative();
 			lot.setWeightLeavingCooperative(weightLeavingCooperative);
-			lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
 					Constants.WEIGHT_LEAVING_COOPERATIVE, weightLeavingCooperative + "");
 			activity = activityService.save(activity);
 		}
-		if (jsonObject.has(Constants.MC_LEAVING_COOPERATIVE)) {
-			if (jsonObject.isNull(Constants.MC_LEAVING_COOPERATIVE))
-				mcLeavingCooperative = null;
-			else
-				mcLeavingCooperative = Float.parseFloat(jsonObject.get(Constants.MC_LEAVING_COOPERATIVE).toString());
 
+		if (isDifferent(mcLeavingCooperative, coopActionData.getMcLeavingCooperative())) {
+			mcLeavingCooperative = coopActionData.getMcLeavingCooperative();
 			lot.setMcLeavingCooperative(mcLeavingCooperative);
-			lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
 					Constants.MC_LEAVING_COOPERATIVE, mcLeavingCooperative + "");
 			activity = activityService.save(activity);
 		}
-		if (jsonObject.has(Constants.TIME_TO_FACTORY)) {
-			if (jsonObject.isNull(Constants.TIME_TO_FACTORY))
-				timeToFactory = null;
-			else
-				timeToFactory = new Timestamp(jsonObject.getLong(Constants.TIME_TO_FACTORY));
 
+		if (isDifferent(timeToFactory, coopActionData.getTimeToFactory())) {
+			timeToFactory = coopActionData.getTimeToFactory();
 			lot.setTimeToFactory(timeToFactory);
-			lot.setLotStatus(LotStatus.AT_CO_OPERATIVE);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
 					Constants.TIME_TO_FACTORY, timeToFactory + "");
 			activity = activityService.save(activity);
 		}
 
-		if (jsonObject.has(Constants.FINALIZE_COOP_STATUS)) {
-
-			Boolean finalizeCoopStatus = jsonObject.getBoolean(Constants.FINALIZE_COOP_STATUS);
-			if (finalizeCoopStatus) {
-				if (weightLeavingCooperative == null || mcLeavingCooperative == null || timeToFactory == null) {
-					throw new ValidationException("Update the values first");
-				}
-				lot.setCoopStatus(ActionStatus.DONE);
-				lot.setMillingStatus(ActionStatus.ADD);
-				lot.setLotStatus(LotStatus.IN_TRANSPORT);
-
-				Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-						Constants.FINALIZE_COOP_STATUS, ActionStatus.DONE.toString());
-				activity = activityService.save(activity);
+		if (coopActionData.getFinalizeCoopStatus() != null && coopActionData.getFinalizeCoopStatus()) {
+			if (weightLeavingCooperative == null || mcLeavingCooperative == null || timeToFactory == null) {
+				throw new ValidationException("Update the values first");
 			}
+			lot.setCoopStatus(ActionStatus.DONE);
+			lot.setMillingStatus(ActionStatus.ADD);
+			lot.setLotStatus(LotStatus.IN_TRANSPORT);
+
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.FINALIZE_COOP_STATUS, ActionStatus.DONE.toString());
+			activity = activityService.save(activity);
 		}
-		
+
 		if (weightLeavingCooperative == null && mcLeavingCooperative == null && timeToFactory == null)
 			lot.setCoopStatus(ActionStatus.ADD);
-		else if(!ActionStatus.DONE.equals(lot.getCoopStatus()))
+		else if (!ActionStatus.DONE.equals(lot.getCoopStatus()))
 			lot.setCoopStatus(ActionStatus.EDIT);
 		else
 			lot.setCoopStatus(ActionStatus.DONE);
 
-		update(lot);
-		return lot;
+		return update(lot);
 	}
 
-	public Lot updateMillingAction(String jsonString, HttpServletRequest request) throws JSONException {
-		JSONObject jsonObject = new JSONObject(jsonString);
-
-		Long id = jsonObject.getLong("id");
+	public Lot updateMillingAction(MillingActionData millingActionData, HttpServletRequest request)
+			throws JSONException {
+		Long id = millingActionData.getId();
 		Lot lot = findById(id);
 
 		if (lot == null)
 			throw new ValidationException("Lot not found");
-		
+
 		if (ActionStatus.DONE.equals(lot.getMillingStatus()))
 			throw new ValidationException("Status is already done");
 
@@ -227,122 +216,114 @@ public class LotService extends AbstractService<Lot> {
 		Float mcArrivingFactory = lot.getMcArrivingFactory();
 
 		Timestamp millingTime = lot.getMillingTime();
+		Long unionCode = lot.getUnionCode();
 
 		Float weightLeavingFactory = lot.getWeightLeavingFactory();
 		Float mcLeavingFactory = lot.getMcLeavingFactory();
 
-		if (jsonObject.has(Constants.WEIGHT_ARRIVING_FACTORY)) {
-			if (jsonObject.isNull(Constants.WEIGHT_ARRIVING_FACTORY))
-				weightArrivingFactory = null;
-			else
-				weightArrivingFactory = Float.parseFloat(jsonObject.get(Constants.WEIGHT_ARRIVING_FACTORY).toString());
-
+		// Update the weight arriving factory
+		if (isDifferent(lot.getWeightArrivingFactory(), millingActionData.getWeightArrivingFactory())) {
+			weightArrivingFactory = millingActionData.getWeightArrivingFactory();
 			lot.setWeightArrivingFactory(weightArrivingFactory);
 			lot.setLotStatus(LotStatus.AT_FACTORY);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-					Constants.WEIGHT_ARRIVING_FACTORY, weightArrivingFactory + "");
-			activity = activityService.save(activity);
+					Constants.WEIGHT_ARRIVING_FACTORY, lot.getWeightArrivingFactory() + "");
+			activityService.save(activity);
 		}
-		if (jsonObject.has(Constants.WEIGHT_LEAVING_FACTORY)) {
-			if (jsonObject.isNull(Constants.WEIGHT_LEAVING_FACTORY))
-				weightLeavingFactory = null;
-			else
-				weightLeavingFactory = Float.parseFloat(jsonObject.get(Constants.WEIGHT_LEAVING_FACTORY).toString());
 
+		// Update the weight leaving factory
+		if (isDifferent(lot.getWeightLeavingFactory(), millingActionData.getWeightLeavingFactory())) {
+			weightLeavingFactory = millingActionData.getWeightLeavingFactory();
 			lot.setWeightLeavingFactory(weightLeavingFactory);
 			lot.setLotStatus(LotStatus.AT_FACTORY);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-					Constants.WEIGHT_LEAVING_FACTORY, weightLeavingFactory + "");
-			activity = activityService.save(activity);
+					Constants.WEIGHT_LEAVING_FACTORY, lot.getWeightLeavingFactory() + "");
+			activityService.save(activity);
 		}
-		if (jsonObject.has(Constants.MC_ARRIVING_FACTORY)) {
-			if (jsonObject.isNull(Constants.MC_ARRIVING_FACTORY))
-				mcArrivingFactory = null;
-			else
-				mcArrivingFactory = Float.parseFloat(jsonObject.get(Constants.MC_ARRIVING_FACTORY).toString());
 
+		// Update the mc arriving factory
+		if (isDifferent(lot.getMcArrivingFactory(), millingActionData.getMcArrivingFactory())) {
+			mcArrivingFactory = millingActionData.getMcArrivingFactory();
 			lot.setMcArrivingFactory(mcArrivingFactory);
 			lot.setLotStatus(LotStatus.AT_FACTORY);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-					Constants.MC_ARRIVING_FACTORY, mcArrivingFactory + "");
-			activity = activityService.save(activity);
+					Constants.MC_ARRIVING_FACTORY, lot.getMcArrivingFactory() + "");
+			activityService.save(activity);
 		}
-		if (jsonObject.has(Constants.MC_LEAVING_FACTORY)) {
-			if (jsonObject.isNull(Constants.MC_LEAVING_FACTORY))
-				mcLeavingFactory = null;
-			else
-				mcLeavingFactory = Float.parseFloat(jsonObject.get(Constants.MC_LEAVING_FACTORY).toString());
 
+		// Update the mc leaving factory
+		if (isDifferent(lot.getMcLeavingFactory(), millingActionData.getMcLeavingFactory())) {
+			mcLeavingFactory = millingActionData.getMcLeavingFactory();
 			lot.setMcLeavingFactory(mcLeavingFactory);
 			lot.setLotStatus(LotStatus.AT_FACTORY);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-					Constants.MC_LEAVING_FACTORY, mcLeavingFactory + "");
-			activity = activityService.save(activity);
+					Constants.MC_LEAVING_FACTORY, lot.getMcLeavingFactory() + "");
+			activityService.save(activity);
 		}
-		if (jsonObject.has(Constants.MILLING_TIME)) {
-			if (jsonObject.isNull(Constants.MILLING_TIME))
-				millingTime = null;
-			else
-				millingTime = new Timestamp(jsonObject.getLong(Constants.MILLING_TIME));
 
+		if (isDifferent(lot.getMillingTime(), millingActionData.getMillingTime())) {
+			millingTime = millingActionData.getMillingTime();
 			lot.setMillingTime(millingTime);
 			lot.setLotStatus(LotStatus.AT_FACTORY);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-					Constants.MILLING_TIME, millingTime + "");
+					Constants.MILLING_TIME, millingActionData.getMillingTime() + "");
 			activity = activityService.save(activity);
 		}
-		if (jsonObject.has(Constants.DISPATCH_TIME)) {
-			Timestamp dispatchTime = null;
-			if (!jsonObject.isNull(Constants.DISPATCH_TIME))
-				dispatchTime = new Timestamp(jsonObject.getLong(Constants.DISPATCH_TIME));
 
+		if (isDifferent(lot.getUnionCode(), millingActionData.getUnionCode())) {
+			unionCode = millingActionData.getUnionCode();
+			lot.setUnionCode(unionCode);
+			lot.setLotStatus(LotStatus.AT_FACTORY);
+
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.UNION_CODE, millingActionData.getUnionCode() + "");
+			activity = activityService.save(activity);
+		}
+
+		if (millingActionData.getDispatchTime() != null) {
 			lot.setLotStatus(LotStatus.IN_TRANSPORT);
 
 			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-					Constants.DISPATCH_TIME, dispatchTime + "");
+					Constants.DISPATCH_TIME, millingActionData.getDispatchTime() + "");
 			activity = activityService.save(activity);
 		}
 
-		if (jsonObject.has(Constants.FINALIZE_MILLING_STATUS)) {
-
-			Boolean finalizeMillingStatus = jsonObject.getBoolean(Constants.FINALIZE_MILLING_STATUS);
-			if (finalizeMillingStatus) {
-				if (weightArrivingFactory == null || weightLeavingFactory == null || mcArrivingFactory == null
-						|| mcLeavingFactory == null || millingTime == null) {
-					throw new ValidationException("Update the values first");
-				}
-				lot.setMillingStatus(ActionStatus.DONE);
-				lot.setGrnStatus(ActionStatus.ADD);
-				lot.setLotStatus(LotStatus.AT_UNION);
-
-				Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-						Constants.FINALIZE_MILLING_STATUS, ActionStatus.DONE.toString());
-				activity = activityService.save(activity);
+		if (millingActionData.getFinalizeMillingStatus() != null && millingActionData.getFinalizeMillingStatus()) {
+			if (weightArrivingFactory == null || weightLeavingFactory == null || mcArrivingFactory == null
+					|| mcLeavingFactory == null || millingTime == null || unionCode == null) {
+				throw new ValidationException("Update the values first");
 			}
+
+			lot.setMillingStatus(ActionStatus.DONE);
+			lot.setGrnStatus(ActionStatus.ADD);
+			lot.setLotStatus(LotStatus.AT_UNION);
+
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.FINALIZE_MILLING_STATUS, ActionStatus.DONE.toString());
+			activity = activityService.save(activity);
 		}
 
 		if (weightArrivingFactory == null && weightLeavingFactory == null && mcArrivingFactory == null
-				&& mcLeavingFactory == null && millingTime == null)
+				&& mcLeavingFactory == null && millingTime == null && unionCode == null)
 			lot.setMillingStatus(ActionStatus.ADD);
 		else if (!ActionStatus.DONE.equals(lot.getMillingStatus()))
 			lot.setMillingStatus(ActionStatus.EDIT);
 		else
 			lot.setMillingStatus(ActionStatus.DONE);
 
-		update(lot);
-		return lot;
+		return update(lot);
 	}
 
-	public Lot updateGRNNumer(String jsonString, HttpServletRequest request)
+	public Lot updateGRNNumer(GRNNumberData grnNumberData, HttpServletRequest request)
 			throws JsonProcessingException, JSONException, IOException {
-		JSONObject jsonObject = new JSONObject(jsonString);
+		// JSONObject jsonObject = new JSONObject(grnNumberData);
 
-		Long id = jsonObject.getLong("id");
+		Long id = grnNumberData.getId();
 		Lot lot = findById(id);
 
 		if (lot == null)
@@ -356,11 +337,8 @@ public class LotService extends AbstractService<Lot> {
 		String userId = UserUtil.getUserDetails(request).getId();
 		Timestamp timestamp = new Timestamp(new Date().getTime());
 
-		if (jsonObject.has(Constants.GRN_NUMBER)) {
-			if (jsonObject.isNull(Constants.GRN_NUMBER))
-				grnNumber = null;
-			else
-				grnNumber = jsonObject.get(Constants.GRN_NUMBER).toString();
+		if (isDifferent(grnNumber, grnNumberData.getGrnNumber())) {
+			grnNumber = grnNumberData.getGrnNumber();
 
 			lot.setGrnNumber(grnNumber);
 			lot.setLotStatus(LotStatus.AT_UNION);
@@ -369,11 +347,8 @@ public class LotService extends AbstractService<Lot> {
 					Constants.GRN_NUMBER, grnNumber);
 			activity = activityService.save(activity);
 		}
-		if (jsonObject.has(Constants.GRN_TIME)) {
-			if (jsonObject.isNull(Constants.GRN_TIME))
-				grnTimestamp = null;
-			else
-				grnTimestamp = new Timestamp((Long) jsonObject.get(Constants.GRN_TIME));
+		if (isDifferent(grnTimestamp, grnNumberData.getGrnTimestamp())) {
+			grnTimestamp = grnNumberData.getGrnTimestamp();
 
 			lot.setGrnTimestamp(grnTimestamp);
 			lot.setLotStatus(LotStatus.AT_UNION);
@@ -382,26 +357,23 @@ public class LotService extends AbstractService<Lot> {
 					Constants.GRN_TIME, grnTimestamp + "");
 			activity = activityService.save(activity);
 		}
-		if (jsonObject.has(Constants.FINALIZE_GRN_STATUS)) {
-			Boolean finalizeGrnStatus = jsonObject.getBoolean(Constants.FINALIZE_GRN_STATUS);
-			if (finalizeGrnStatus) {
-				if (grnNumber == null || grnTimestamp == null) {
-					throw new ValidationException("Update all value first");
-				}
-
-				lot.setGrnStatus(ActionStatus.DONE);
-				lot.setFactoryStatus(ActionStatus.ADD);
-				lot.setGreenAnalysisStatus(ActionStatus.ADD);
-				for(Cupping cupping : lot.getCuppings()) {
-					cupping.setStatus(ActionStatus.ADD);
-				}
-				
-				lot.setLotStatus(LotStatus.AT_UNION);
-
-				Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
-						Constants.FINALIZE_GRN_STATUS, ActionStatus.DONE.toString());
-				activity = activityService.save(activity);
+		if (grnNumberData.getFinalizeGrnStatus() != null && grnNumberData.getFinalizeGrnStatus()) {
+			if (grnNumber == null || grnTimestamp == null) {
+				throw new ValidationException("Update all value first");
 			}
+
+			lot.setGrnStatus(ActionStatus.DONE);
+			lot.setFactoryStatus(ActionStatus.ADD);
+			lot.setGreenAnalysisStatus(ActionStatus.ADD);
+			for (Cupping cupping : lot.getCuppings()) {
+				cupping.setStatus(ActionStatus.ADD);
+			}
+
+			lot.setLotStatus(LotStatus.AT_UNION);
+
+			Activity activity = new Activity(lot.getClass().getSimpleName(), lot.getId(), userId, timestamp,
+					Constants.FINALIZE_GRN_STATUS, ActionStatus.DONE.toString());
+			activity = activityService.save(activity);
 		}
 
 		if (grnNumber == null && grnTimestamp == null) {
@@ -416,31 +388,48 @@ public class LotService extends AbstractService<Lot> {
 		return lot;
 	}
 
-	public boolean checkForDuplicate(String jsonString) throws JSONException {
-		JSONObject jsonObject = new JSONObject(jsonString);
-		String grnNumber = jsonObject.get(Constants.GRN_NUMBER).toString();
-		Lot lot = null;
+	public boolean checkForDuplicate(GRNNumberData grnNumberData) throws JSONException {
+		if (grnNumberData.getId() == null)
+			throw new ValidationException("Id not found");
+
+		String grnNumber = grnNumberData.getGrnNumber();
 		try {
-			lot = findByPropertyWithCondtion(Constants.GRN_NUMBER, grnNumber, "=");
+			Lot lot = findByPropertyWithCondtion(Constants.GRN_NUMBER, grnNumber, "=");
+			return !lot.getId().equals(grnNumberData.getId());
 		} catch (NoResultException e) {
 			return false;
 		}
-		if(jsonObject.has("id") && !jsonObject.isNull("id")) {
-			Long id = jsonObject.getLong("id");
-			return ! id.equals(lot.getId());
-		}
-		throw new ValidationException("Id not found");
 	}
 
-	public List<Lot> getByCoCodes(String coCodes, Integer limit, Integer offset) {
-		Object[] values = coCodes.split(",");
-		Long[] longValues = new Long[values.length];
-		for (int i = 0; i < values.length; i++) {
-			longValues[i] = Long.parseLong(values[i].toString());
+	@SuppressWarnings("unchecked")
+	public List<Lot> getByCoCodes(HttpServletRequest request, String coCodes, Integer limit, Integer offset) {
+		Map<String, Object> userData;
+		try {
+			userData = userApi.getUser(request.getHeader(HttpHeaders.AUTHORIZATION));
+		} catch (ApiException e) {
+			return new ArrayList<Lot>();
 		}
-		return dao.getByPropertyfromArray("coCode", longValues, limit, offset, "createdOn desc");
-		// return ((LotDao) dao).getByPropertyfromArray("coCode", longValues, lotStatus,
-		// limit, offset);
+		Map<String, Object> user = (Map<String, Object>) userData.get("user");
+		String role = (String) user.get("role");
+
+		switch (role) {
+		case Permissions.CO_PERSON:
+			Long coCode = Long.parseLong(userData.get("coCode").toString());
+			return dao.getByPropertyWithCondtion("coCode", coCode, "=", limit, offset, "createdOn desc");
+		case Permissions.UNION:
+			Long unionCode = Long.parseLong(userData.get("unionCode").toString());
+			return dao.getByPropertyWithCondtion("unionCode", unionCode, "=", limit, offset, "createdOn desc");
+		case Permissions.ADMIN:
+			Object[] values = coCodes.split(",");
+			Long[] longValues = new Long[values.length];
+			for (int i = 0; i < values.length; i++) {
+				longValues[i] = Long.parseLong(values[i].toString());
+			}
+			return dao.getByPropertyfromArray("coCode", longValues, limit, offset, "createdOn desc");
+		default:
+			return new ArrayList<Lot>();
+		}
+
 	}
 
 	public List<Lot> getByStatusAndUnion(String lotStatusString, String coCodes, Integer limit, Integer offset) {

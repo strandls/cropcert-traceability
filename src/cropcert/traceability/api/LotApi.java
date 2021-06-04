@@ -29,12 +29,16 @@ import com.google.inject.Inject;
 import cropcert.traceability.filter.Permissions;
 import cropcert.traceability.filter.TokenAndUserAuthenticated;
 import cropcert.traceability.model.Batch;
+import cropcert.traceability.model.CoopActionData;
+import cropcert.traceability.model.GRNNumberData;
 import cropcert.traceability.model.Lot;
+import cropcert.traceability.model.MillingActionData;
 import cropcert.traceability.service.LotService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 
 @Path("lot")
 @Api("Lot")
@@ -91,7 +95,7 @@ public class LotApi {
 			@DefaultValue("-1") @QueryParam("coCodes") String coCodes,
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
-		List<Lot> lots = lotService.getByCoCodes(coCodes, limit, offset);
+		List<Lot> lots = lotService.getByCoCodes(request, coCodes, limit, offset);
 		return Response.ok().entity(lots).build();
 	}
 
@@ -156,15 +160,14 @@ public class LotApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.CO_PERSON })
-	public Response updateCooperativeAction(@Context HttpServletRequest request, String jsonString) {
+	public Response updateCooperativeAction(@Context HttpServletRequest request, @ApiParam("coopActionData") CoopActionData coopActionData) {
 		Lot lot;
 		try {
-			lot = lotService.updateCoopAction(jsonString, request);
+			lot = lotService.updateCoopAction(coopActionData, request);
 			return Response.ok().entity(lot).build();
 		} catch (JSONException | ValidationException e) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					new HashMap<String, String>().put("error", e.getMessage()))
-					.build();
+			return Response.status(Status.BAD_REQUEST)
+					.entity(new HashMap<String, String>().put("error", e.getMessage())).build();
 		}
 	}
 
@@ -176,15 +179,15 @@ public class LotApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.FACTORY, Permissions.CO_PERSON })
-	public Response updateMillingAction(@Context HttpServletRequest request, String jsonString) {
+	public Response updateMillingAction(@Context HttpServletRequest request,
+			@ApiParam("millingActionData") MillingActionData millingActionData) {
 		Lot lot;
 		try {
-			lot = lotService.updateMillingAction(jsonString, request);
+			lot = lotService.updateMillingAction(millingActionData, request);
 			return Response.ok().entity(lot).build();
 		} catch (JSONException | ValidationException e) {
-			return Response.status(Status.BAD_REQUEST).entity(
-					new HashMap<String, String>().put("error", e.getMessage()))
-					.build();
+			return Response.status(Status.BAD_REQUEST)
+					.entity(new HashMap<String, String>().put("error", e.getMessage())).build();
 		}
 	}
 
@@ -196,14 +199,14 @@ public class LotApi {
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "Authorization", value = "Authorization token", required = true, dataType = "string", paramType = "header") })
 	@TokenAndUserAuthenticated(permissions = { Permissions.UNION })
-	public Response updateGRNNumer(@Context HttpServletRequest request, String jsonString) {
+	public Response updateGRNNumer(@Context HttpServletRequest request, @ApiParam("grnNumberData") GRNNumberData grnNumberData) {
 		try {
-			if (lotService.checkForDuplicate(jsonString)) {
+			if (lotService.checkForDuplicate(grnNumberData)) {
 				JSONObject jo = new JSONObject();
 				jo.put("error", "Duplicate GRN Number");
 				return Response.status(Status.PRECONDITION_FAILED).entity(jo.toString()).build();
 			}
-			Lot response = lotService.updateGRNNumer(jsonString, request);
+			Lot response = lotService.updateGRNNumer(grnNumberData, request);
 			return Response.ok().entity(response).build();
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();

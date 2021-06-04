@@ -133,13 +133,18 @@ public abstract class AbstractDao<T, K extends Serializable> {
 	}
 	
 	public List<T> getByPropertyWithCondtion(String property, Object value, String condition, int limit, int offset) {
+		return getByPropertyWithCondtion(property, value, condition, limit, offset, "id");
+	}
+	
+	public List<T> getByPropertyWithCondtion(String property, Object value, String condition, int limit, int offset, String orderBy) {
 		String queryStr = "" +
 			    "from "+daoType.getSimpleName()+" t " +
 			    "where t."+property+" "+condition+" :value" +
-			    " order by id";
+			    " order by :orderBy";
 		Session session = sessionFactory.openSession();
 		org.hibernate.query.Query query = session.createQuery(queryStr);
 		query.setParameter("value", value);
+		query.setParameter("orderBy", orderBy);
 
 		List<T> resultList = new ArrayList<T>();
 		try {
