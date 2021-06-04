@@ -35,38 +35,11 @@ public class BatchDao extends AbstractDao<Batch, Long>{
 		return entity;
 	}
 	
-	public List getByPropertyfromArray(String property, Object[] values, int limit, int offset, String orderBy) {
-		if(orderBy == null || "".equals(orderBy))
-			orderBy = "id";
-		String queryStr = "from Batch B left outer join Lot L "
-				+ "on B.lotId = L.id where B.isDeleted != true "
-				+ "and B."+property+" in (:values)"
-				+ " order by B.createdOn";
-		Session session = sessionFactory.openSession();
-		Query query = session.createQuery(queryStr);
-		query.setParameterList("values", values);
-		
-		try {
-			if(limit>0 && offset >= 0)
-				query = query.setFirstResult(offset).setMaxResults(limit);
-			List<Object[]> resultList = query.getResultList();
-			for(Object[] l : resultList) {
-				if(l[1] != null)
-					l[1] = ((Lot) l[1]).clone();
-			}
-			session.close();
-			return resultList;
-		} catch (NoResultException e) {
-			throw e;
-		} catch (CloneNotSupportedException e) {
-			throw new NoResultException("Not able to clone the Lot");
-		}
-	}
-	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public List<Batch> getByPropertyfromArray(String property, Object[] values, Boolean isLotDone, Boolean isReadyForLot, int limit, int offset) {
 		
 		/*
-		 * queary to get all batches from collection center ids specified in the values and 
+		 * query to get all batches from collection center ids specified in the values and 
 		 * the status of the batch is Not lot done.
 		 */
 		String queryStr = "" +
@@ -91,5 +64,58 @@ public class BatchDao extends AbstractDao<Batch, Long>{
 		}
 		session.close();
 		return resultList;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public List getBatchesForCooperative(Long[] cccodes, int limit, int offset) {
+		String queryStr = "from Batch B left outer join Lot L "
+				+ "on B.lotId = L.id where B.isDeleted != true "
+				+ "and B.ccCode in (:values)"
+				+ " order by B.createdOn";
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery(queryStr);
+		query.setParameterList("values", cccodes);
+		
+		try {
+			if(limit>0 && offset >= 0)
+				query = query.setFirstResult(offset).setMaxResults(limit);
+			List<Object[]> resultList = query.getResultList();
+			for(Object[] l : resultList) {
+				if(l[1] != null)
+					l[1] = ((Lot) l[1]).clone();
+			}
+			session.close();
+			return resultList;
+		} catch (NoResultException e) {
+			throw e;
+		} catch (CloneNotSupportedException e) {
+			throw new NoResultException("Not able to clone the Lot");
+		}
+	}
+	
+	public List getBatchesForUnion(Long unionCode, int limit, int offset) {
+		String queryStr = "from Batch B left outer join Lot L "
+				+ "on B.lotId = L.id where B.isDeleted != true "
+				+ "and L.unionCode = :unionCode"
+				+ " order by B.createdOn";
+		Session session = sessionFactory.openSession();
+		Query query = session.createQuery(queryStr);
+		query.setParameter("unionCode", unionCode);
+		
+		try {
+			if(limit>0 && offset >= 0)
+				query = query.setFirstResult(offset).setMaxResults(limit);
+			List<Object[]> resultList = query.getResultList();
+			for(Object[] l : resultList) {
+				if(l[1] != null)
+					l[1] = ((Lot) l[1]).clone();
+			}
+			session.close();
+			return resultList;
+		} catch (NoResultException e) {
+			throw e;
+		} catch (CloneNotSupportedException e) {
+			throw new NoResultException("Not able to clone the Lot");
+		}
 	}
 }

@@ -72,6 +72,7 @@ public class BatchApi {
 		return Response.ok().entity(batches).build();
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Path("all/cc")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -81,7 +82,7 @@ public class BatchApi {
 			@DefaultValue("-1") @QueryParam("limit") Integer limit,
 			@DefaultValue("-1") @QueryParam("offset") Integer offset) {
 
-		List batches = batchService.getByPropertyfromArray("ccCode", ccCodes, limit, offset);
+		List batches = batchService.getAllBatches(request, ccCodes, limit, offset);
 		return Response.ok().entity(batches).build();
 	}
 
